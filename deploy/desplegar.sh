@@ -38,10 +38,11 @@ echo "▸ Construyendo las imágenes ($VERSION)…"
 docker compose --profile tools build
 
 echo "▸ Aplicando migraciones…"
+# `-T` evita que `compose run` se quede con la entrada estándar del script.
 if [ "$SEMBRAR" -eq 1 ]; then
-  docker compose --profile tools run --rm migrator
+  docker compose --profile tools run --rm -T migrator < /dev/null
 else
-  SEED_DEMO=0 docker compose --profile tools run --rm migrator
+  SEED_DEMO=0 docker compose --profile tools run --rm -T migrator < /dev/null
 fi
 
 echo "▸ Levantando el stack…"

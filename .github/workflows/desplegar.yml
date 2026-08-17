@@ -117,12 +117,14 @@ jobs:
             echo "▸ Construyendo las imágenes ($VERSION)…"
             docker compose --profile tools build
 
+            # `-T` es imprescindible: sin él, `compose run` toma la entrada
+            # estándar, que aquí es el propio script viajando por `ssh bash -s`,
+            # y se come todas las líneas siguientes. El despliegue parecía
+            # correcto porque las migraciones sí corrían, pero la aplicación
+            # nunca llegaba a reiniciarse.
             echo "▸ Aplicando migraciones…"
-            SEED_DEMO=0 docker compose --profile tools run --rm migrator
+            SEED_DEMO=0 docker compose --profile tools run --rm -T migrator < /dev/null
 
-            # `up -d` a secas no siempre reemplaza el contenedor cuando sólo
-            # cambió el contenido de la imagen: hay que forzarlo, o la app
-            # sigue sirviendo la versión anterior.
             echo "▸ Reiniciando la aplicación…"
             docker compose up -d --remove-orphans
             docker compose up -d --no-deps --force-recreate app
@@ -138,7 +140,7 @@ jobs:
           USUARIO: ${{ secrets.VPS_USER }}
         run: |
           ssh -o BatchMode=yes "$USUARIO@$HOST" \
-            'cd /opt/stacks/medigex && docker compose --profile tools run --rm migrator'
+            'cd /opt/stacks/medigex && docker compose --profile tools run --rm -T migrator < /dev/null'
 
       - name: Comprobar que responde
         env:
