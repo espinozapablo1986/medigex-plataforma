@@ -39,6 +39,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
+# El commit queda dentro de la imagen: permite comprobar desde fuera qué
+# versión está sirviendo realmente el contenedor, en vez de suponerlo.
+ARG VERSION=dev
+ENV APP_VERSION=$VERSION
+
 RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
 
 # Salida standalone de Next.js: incluye sólo las dependencias que la

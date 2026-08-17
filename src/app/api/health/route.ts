@@ -7,7 +7,14 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return NextResponse.json({ estado: 'ok', db: 'ok', hora: new Date().toISOString() });
+    return NextResponse.json({
+      estado: 'ok',
+      db: 'ok',
+      // Commit con el que se construyó esta imagen. Sirve para confirmar que
+      // el contenedor en ejecución es realmente el del último despliegue.
+      version: process.env.APP_VERSION ?? 'desconocida',
+      hora: new Date().toISOString(),
+    });
   } catch {
     return NextResponse.json({ estado: 'degradado', db: 'error' }, { status: 503 });
   }

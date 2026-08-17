@@ -33,7 +33,8 @@ git reset --hard origin/main
 
 # `migrator` está tras el perfil "tools": sin él, `build` lo omite y las
 # migraciones correrían con una imagen desactualizada.
-echo "▸ Construyendo las imágenes…"
+export VERSION="$(git rev-parse --short HEAD)"
+echo "▸ Construyendo las imágenes ($VERSION)…"
 docker compose --profile tools build
 
 echo "▸ Aplicando migraciones…"
@@ -45,6 +46,9 @@ fi
 
 echo "▸ Levantando el stack…"
 docker compose up -d --remove-orphans
+# Forzar el recambio: si sólo cambió el contenido de la imagen, `up -d` puede
+# dejar corriendo el contenedor anterior.
+docker compose up -d --no-deps --force-recreate app
 
 echo "▸ Esperando a que la aplicación responda…"
 for intento in $(seq 1 20); do

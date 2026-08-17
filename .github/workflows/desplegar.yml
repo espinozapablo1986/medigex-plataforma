@@ -113,14 +113,19 @@ jobs:
             # Se construyen ambas imágenes: `migrator` vive tras un perfil, así
             # que `docker compose build` a secas lo omite y las migraciones
             # correrían con una copia vieja del código.
-            echo "▸ Construyendo las imágenes…"
+            export VERSION="$(git rev-parse --short HEAD)"
+            echo "▸ Construyendo las imágenes ($VERSION)…"
             docker compose --profile tools build
 
             echo "▸ Aplicando migraciones…"
             SEED_DEMO=0 docker compose --profile tools run --rm migrator
 
+            # `up -d` a secas no siempre reemplaza el contenedor cuando sólo
+            # cambió el contenido de la imagen: hay que forzarlo, o la app
+            # sigue sirviendo la versión anterior.
             echo "▸ Reiniciando la aplicación…"
             docker compose up -d --remove-orphans
+            docker compose up -d --no-deps --force-recreate app
 
             echo "▸ Limpiando imágenes antiguas…"
             docker image prune -f --filter "until=168h"
@@ -142,16 +147,28 @@ jobs:
         run: |
           ssh -o BatchMode=yes "$USUARIO@$HOST" bash -s <<'REMOTO'
             set -euo pipefail
+            cd /opt/stacks/medigex
+            esperada="$(git rev-parse --short HEAD)"
+
             for intento in $(seq 1 20); do
               estado=$(docker inspect --format '{{.State.Health.Status}}' medigex-app 2>/dev/null || echo "sin-datos")
               if [ "$estado" = "healthy" ]; then
-                echo "✅ La aplicación responde correctamente."
-                exit 0
+                # No basta con que responda: tiene que responder la versión
+                # recién desplegada.
+                servida=$(docker exec medigex-app node -e \
+                  'fetch("http://127.0.0.1:3000/api/health").then(r=>r.json()).then(j=>console.log(j.version))' 2>/dev/null || echo "")
+                if [ "$servida" = "$esperada" ]; then
+                  echo "✅ Sirviendo $servida."
+                  exit 0
+                fi
+                echo "  saludable pero sirviendo '$servida', se esperaba '$esperada'"
+              else
+                echo "  intento $intento/20 — estado: $estado"
               fi
-              echo "  intento $intento/20 — estado: $estado"
               sleep 6
             done
-            echo "❌ La aplicación no quedó saludable. Últimos registros:"
-            docker compose -f /opt/stacks/medigex/docker-compose.yml logs --tail 60 app
+
+            echo "❌ El contenedor no quedó sirviendo la versión desplegada. Últimos registros:"
+            docker compose logs --tail 60 app
             exit 1
           REMOTO
