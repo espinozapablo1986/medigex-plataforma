@@ -13,6 +13,7 @@ import {
   Tarjeta,
 } from '@/components/ui';
 import { BotonEliminar, BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SubirArchivos } from '@/components/subir-archivos';
 
 import { crearExamen, eliminarExamen, registrarResultadoExamen, subirArchivos } from '../../acciones';
 import { CabeceraPaciente } from '../cabecera';
@@ -230,7 +231,7 @@ export default async function ExamenesPaciente({ params }: { params: Promise<{ i
                             <input type="hidden" name="examenId" value={e.id} />
                             <input type="hidden" name="categoria" value="EXAMEN" />
                             <Campo etiqueta="Archivos" requerido>
-                              <input name="archivos" type="file" multiple required className="campo" />
+                              <SubirArchivos name="archivos" requerido etiquetaCamara="Fotografiar resultado" />
                             </Campo>
                             <Campo etiqueta="Descripción">
                               <input name="descripcion" className="campo" />

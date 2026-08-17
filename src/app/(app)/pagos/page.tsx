@@ -16,6 +16,7 @@ import {
 } from '@/components/ui';
 import { BotonEnviar, Formulario, Modal } from '@/components/formulario';
 import { SelectorBuscable } from '@/components/selector';
+import { SubirArchivos } from '@/components/subir-archivos';
 
 import { registrarPago } from '../ventas/acciones';
 
@@ -132,7 +133,12 @@ export default async function PaginaPagos({
                   </Campo>
                 </Grilla>
                 <Campo etiqueta="Comprobante">
-                  <input name="comprobante" type="file" accept="image/*,application/pdf" className="campo" />
+                  <SubirArchivos
+                    name="comprobante"
+                    multiple={false}
+                    aceptar="image/*,application/pdf"
+                    etiquetaCamara="Fotografiar comprobante"
+                  />
                 </Campo>
                 <Campo etiqueta="Observaciones">
                   <input name="observaciones" className="campo" />

@@ -17,6 +17,7 @@ import {
   Tarjeta,
 } from '@/components/ui';
 import { BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SubirArchivos } from '@/components/subir-archivos';
 
 import { anularPago, anularVenta, registrarPago } from '../acciones';
 
@@ -113,8 +114,13 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                       </Campo>
                     </Grilla>
 
-                    <Campo etiqueta="Comprobante de pago" ayuda="Foto o PDF del voucher, transferencia o depósito.">
-                      <input name="comprobante" type="file" accept="image/*,application/pdf" className="campo" />
+                    <Campo etiqueta="Comprobante de pago" ayuda="Foto del voucher, transferencia o depósito.">
+                      <SubirArchivos
+                        name="comprobante"
+                        multiple={false}
+                        aceptar="image/*,application/pdf"
+                        etiquetaCamara="Fotografiar comprobante"
+                      />
                     </Campo>
 
                     <Campo etiqueta="Observaciones">

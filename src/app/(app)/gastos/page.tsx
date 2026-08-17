@@ -14,6 +14,7 @@ import {
   Tarjeta,
 } from '@/components/ui';
 import { BotonEliminar, BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SubirArchivos } from '@/components/subir-archivos';
 
 import {
   crearCategoriaGasto,
@@ -196,8 +197,13 @@ export default async function PaginaGastos({
         </Campo>
       </Grilla>
 
-      <Campo etiqueta="Respaldo del gasto" ayuda="Factura, boleta o comprobante en imagen o PDF." className="mt-4">
-        <input name="documento" type="file" accept="image/*,application/pdf" className="campo" />
+      <Campo etiqueta="Respaldo del gasto" ayuda="Factura, boleta o comprobante." className="mt-4">
+        <SubirArchivos
+          name="documento"
+          multiple={false}
+          aceptar="image/*,application/pdf"
+          etiquetaCamara="Fotografiar documento"
+        />
       </Campo>
 
       <Campo etiqueta="Observaciones" className="mt-4">

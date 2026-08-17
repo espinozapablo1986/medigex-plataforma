@@ -5,6 +5,7 @@ import { fechaHora, humanizar } from '@/lib/format';
 import { esImagen, tamanoLegible } from '@/lib/uploads';
 import { Badge, Campo, EstadoVacio, Grilla, Tarjeta } from '@/components/ui';
 import { BotonEliminar, BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SubirArchivos } from '@/components/subir-archivos';
 
 import { borrarArchivo, subirArchivos } from '../../acciones';
 import { CabeceraPaciente } from '../cabecera';
@@ -85,8 +86,12 @@ export default async function ArchivosPaciente({
           <Modal titulo="Subir archivos" etiquetaBoton="Subir archivos" ancho="max-w-lg">
             <Formulario accion={subirArchivos} className="space-y-4">
               <input type="hidden" name="pacienteId" value={id} />
-              <Campo etiqueta="Archivos" requerido ayuda="Imágenes, PDF y documentos. Máx. 20 MB por archivo.">
-                <input name="archivos" type="file" multiple required className="campo" />
+              <Campo
+                etiqueta="Archivos"
+                requerido
+                ayuda="Las fotos se optimizan en el teléfono antes de subirlas, sin perder calidad visible."
+              >
+                <SubirArchivos name="archivos" requerido />
               </Campo>
               <Grilla cols={2}>
                 <Campo etiqueta="Categoría" requerido>

@@ -110,8 +110,11 @@ jobs:
             git fetch --all --prune
             git reset --hard origin/main
 
-            echo "▸ Construyendo la imagen…"
-            docker compose build app
+            # Se construyen ambas imágenes: `migrator` vive tras un perfil, así
+            # que `docker compose build` a secas lo omite y las migraciones
+            # correrían con una copia vieja del código.
+            echo "▸ Construyendo las imágenes…"
+            docker compose --profile tools build
 
             echo "▸ Aplicando migraciones…"
             SEED_DEMO=0 docker compose --profile tools run --rm migrator

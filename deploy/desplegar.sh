@@ -31,8 +31,10 @@ echo "▸ Trayendo los últimos cambios…"
 git fetch --all --prune
 git reset --hard origin/main
 
-echo "▸ Construyendo la imagen…"
-docker compose build app
+# `migrator` está tras el perfil "tools": sin él, `build` lo omite y las
+# migraciones correrían con una imagen desactualizada.
+echo "▸ Construyendo las imágenes…"
+docker compose --profile tools build
 
 echo "▸ Aplicando migraciones…"
 if [ "$SEMBRAR" -eq 1 ]; then
