@@ -18,6 +18,7 @@ import {
   crearUsuario,
   editarUsuario,
   eliminarUsuario,
+  verComoUsuario,
 } from './acciones';
 
 export const metadata = { title: 'Usuarios' };
@@ -41,6 +42,8 @@ export default async function PaginaUsuarios() {
   const puedeCrear = puede(sesion, 'usuarios', 'crear');
   const puedeEditar = puede(sesion, 'usuarios', 'editar');
   const puedeEliminar = puede(sesion, 'usuarios', 'eliminar');
+  // En vista previa no se ofrece encadenar otra: hay que salir primero.
+  const puedeSuplantar = puede(sesion, 'usuarios', 'suplantar') && !sesion.vistaPrevia;
 
   const camposUsuario = (
     valores?: {
@@ -162,6 +165,14 @@ export default async function PaginaUsuarios() {
                   <td>{usuario.activo ? <Badge tono="verde">activo</Badge> : <Badge tono="rojo">inactivo</Badge>}</td>
                   <td>
                     <div className="flex flex-wrap justify-end gap-1.5">
+                      {puedeSuplantar && usuario.activo && usuario.id !== sesion.usuarioId && (
+                        <BotonEliminar
+                          accion={verComoUsuario}
+                          id={usuario.id}
+                          texto="Ver como"
+                          mensaje={`Verás la plataforma con los permisos de ${usuario.email}, para comprobar qué alcanza a hacer.\n\nEs sólo lectura: mientras dure no podrás guardar nada, ni siquiera lo que tú sí puedes normalmente.`}
+                        />
+                      )}
                       {puedeEditar && (
                         <>
                           <Modal

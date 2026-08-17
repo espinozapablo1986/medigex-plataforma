@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
-import { auditar, exigirPermiso, hashPassword } from '@/lib/auth';
+import { auditar, exigirPermiso, hashPassword, iniciarVistaPrevia } from '@/lib/auth';
 import { normalizarRut, validarRut } from '@/lib/format';
 import { intentar, requerido, texto, textoOpcional, type Resultado } from '@/lib/resultado';
 
@@ -175,4 +176,14 @@ export async function eliminarUsuario(fd: FormData): Promise<void> {
     entidadId: id,
   });
   revalidatePath('/usuarios');
+}
+
+/**
+ * Deja al administrador mirando la plataforma con los permisos de otra cuenta,
+ * para comprobar qué ve y qué no. La comprobación de permisos y el registro en
+ * auditoría viven en iniciarVistaPrevia.
+ */
+export async function verComoUsuario(fd: FormData): Promise<void> {
+  await iniciarVistaPrevia(String(fd.get('id')));
+  redirect('/');
 }

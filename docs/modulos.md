@@ -12,9 +12,9 @@ por combinación de rol, módulo y acción, de modo que un administrador puede
 activar o desactivar cualquier casilla desde **Roles y permisos** sin tocar el
 código ni volver a desplegar.
 
-**Acciones disponibles:** ver, crear, editar, eliminar, exportar, aprobar y
-anular. No todos los módulos usan todas: la matriz sólo muestra las que
-aplican a cada uno.
+**Acciones disponibles:** ver, crear, editar, eliminar, exportar, aprobar,
+anular y «ver como». No todos los módulos usan todas: la matriz sólo muestra
+las que aplican a cada uno.
 
 ### Roles que vienen cargados
 
@@ -28,6 +28,30 @@ aplican a cada uno.
 Se pueden crear roles nuevos copiando los permisos de uno existente y
 ajustando desde ahí. Los cuatro roles base están marcados como «de sistema» y
 no se pueden eliminar, pero sí desactivar y modificar.
+
+### Comprobar los permisos: «Ver como»
+
+Ajustar la matriz a ciegas es incómodo, así que quien tenga la acción
+**«Ver como»** en el módulo Usuarios (por defecto sólo el administrador)
+encuentra ese botón en cada fila de **Usuarios**. Al pulsarlo, la plataforma
+pasa a mostrarse con los permisos de esa cuenta —su menú, su agenda, sus
+módulos— y una banda fija abajo recuerda de quién es la vista y permite
+salir en cualquier momento.
+
+La vista previa es **de sólo lectura**, a propósito. En un sistema con datos
+clínicos, escribir en nombre de otro rompería la autoría de la ficha y el
+registro de auditoría; como lo que se quiere verificar es qué alcanza a
+hacer cada perfil, basta con mirar. El bloqueo se aplica en el servidor a
+toda acción distinta de «ver», no sólo escondiendo botones.
+
+Detalles que conviene conocer:
+
+- Caduca sola a la hora, y se descarta al cerrar o iniciar sesión.
+- No se puede encadenar: hay que salir de una vista previa antes de abrir otra.
+- Se anota en auditoría al entrar y al salir, siempre a nombre del
+  administrador real y nunca del usuario observado.
+- La salida vive en una ruta suelta (`/api/vista-previa/salir`) porque el
+  perfil observado podría no tener acceso al módulo Usuarios.
 
 ---
 

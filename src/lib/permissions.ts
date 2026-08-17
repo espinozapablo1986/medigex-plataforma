@@ -6,7 +6,7 @@
  * desactivar cualquier combinación desde Configuración > Roles sin tocar código.
  */
 
-export const ACCIONES = ['ver', 'crear', 'editar', 'eliminar', 'exportar', 'aprobar', 'anular'] as const;
+export const ACCIONES = ['ver', 'crear', 'editar', 'eliminar', 'exportar', 'aprobar', 'anular', 'suplantar'] as const;
 export type Accion = (typeof ACCIONES)[number];
 
 export const ETIQUETA_ACCION: Record<Accion, string> = {
@@ -17,6 +17,7 @@ export const ETIQUETA_ACCION: Record<Accion, string> = {
   exportar: 'Exportar',
   aprobar: 'Aprobar',
   anular: 'Anular',
+  suplantar: 'Ver como',
 };
 
 export interface ModuloDef {
@@ -195,8 +196,8 @@ export const MODULOS: ModuloDef[] = [
     slug: 'usuarios',
     nombre: 'Usuarios',
     grupo: 'Administración',
-    descripcion: 'Cuentas de acceso al sistema',
-    acciones: ['ver', 'crear', 'editar', 'eliminar'],
+    descripcion: 'Cuentas de acceso y vista previa de la plataforma como otro usuario',
+    acciones: ['ver', 'crear', 'editar', 'eliminar', 'suplantar'],
   },
   {
     slug: 'roles',
