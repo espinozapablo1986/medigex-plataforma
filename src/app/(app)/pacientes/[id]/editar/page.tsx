@@ -14,12 +14,17 @@ export default async function PaginaEditarPaciente({ params }: { params: Promise
   const { id } = await params;
   await requerirPermiso('pacientes', 'editar');
 
-  const [paciente, convenios] = await Promise.all([
+  const [paciente, convenios, previsiones] = await Promise.all([
     prisma.paciente.findUnique({ where: { id } }),
     prisma.convenio.findMany({
       where: { activo: true },
       orderBy: { nombre: 'asc' },
       select: { id: true, nombre: true, tipo: true },
+    }),
+    prisma.prevision.findMany({
+      where: { activo: true },
+      orderBy: [{ orden: 'asc' }, { nombre: 'asc' }],
+      select: { id: true, nombre: true, tipo: true, requiereDetalle: true, etiquetaDetalle: true },
     }),
   ]);
   if (!paciente) notFound();
@@ -34,7 +39,7 @@ export default async function PaginaEditarPaciente({ params }: { params: Promise
 
       <Formulario accion={editarPaciente} className="mx-auto max-w-4xl">
         <input type="hidden" name="id" value={paciente.id} />
-        <CamposPaciente valores={paciente} convenios={convenios} />
+        <CamposPaciente valores={paciente} convenios={convenios} previsiones={previsiones} />
         <div className="sticky bottom-4 mt-5 flex justify-end">
           <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
             <BotonEnviar tamano="lg">Guardar cambios</BotonEnviar>

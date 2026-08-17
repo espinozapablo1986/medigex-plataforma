@@ -108,7 +108,7 @@ export async function eliminarServicio(fd: FormData): Promise<void> {
 
   const [enVentas, enCitas] = await Promise.all([
     prisma.ventaItem.count({ where: { servicioId: id } }),
-    prisma.cita.count({ where: { servicioId: id } }),
+    prisma.cita.count({ where: { servicios: { some: { servicioId: id } } } }),
   ]);
   if (enVentas > 0 || enCitas > 0) {
     throw new Error('El servicio tiene movimientos asociados. Desactívalo en vez de eliminarlo.');

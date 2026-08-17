@@ -4,6 +4,7 @@ import { clp, isoFecha } from '@/lib/format';
 import { Aviso, Campo, EncabezadoPagina, Grilla, Tarjeta } from '@/components/ui';
 import { BotonEnviar, Formulario } from '@/components/formulario';
 import { EditorItems, type LineaItem } from '@/components/editor-items';
+import { SelectorBuscable } from '@/components/selector';
 
 import { crearVenta } from '../acciones';
 
@@ -118,34 +119,41 @@ export default async function PaginaNuevaVenta({
         <Tarjeta titulo="Datos de la venta">
           <Grilla cols={3}>
             <Campo etiqueta="Paciente" requerido>
-              <select name="pacienteId" defaultValue={pacienteId ?? ''} required className="campo">
-                <option value="">Selecciona…</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.apellidoPaterno} {p.apellidoMaterno ?? ''}, {p.nombres} — {p.rut ?? `Ficha ${p.numeroFicha}`}
-                  </option>
-                ))}
-              </select>
+              <SelectorBuscable
+                name="pacienteId"
+                opciones={pacientes.map((p) => ({
+                  valor: p.id,
+                  etiqueta: `${p.apellidoPaterno} ${p.apellidoMaterno ?? ''}, ${p.nombres}`.replace(/\s+/g, ' '),
+                  detalle: p.rut ?? `Ficha ${p.numeroFicha}`,
+                  buscarPor: p.rut ?? '',
+                }))}
+                valorInicial={pacienteId}
+                placeholder="Busca por nombre o RUT…"
+                permiteVacio={false}
+                requerido
+              />
             </Campo>
             <Campo etiqueta="Profesional responsable" ayuda="Base para el cálculo de comisiones.">
-              <select name="profesionalId" defaultValue={sesion.profesionalId ?? ''} className="campo">
-                <option value="">Sin asignar</option>
-                {profesionales.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.apellidos}, {p.nombres} — {p.especialidad}
-                  </option>
-                ))}
-              </select>
+              <SelectorBuscable
+                name="profesionalId"
+                opciones={profesionales.map((p) => ({
+                  valor: p.id,
+                  etiqueta: `${p.apellidos}, ${p.nombres}`,
+                  detalle: p.especialidad,
+                }))}
+                valorInicial={sesion.profesionalId}
+                placeholder="Sin asignar"
+                textoVacio="Sin asignar"
+              />
             </Campo>
             <Campo etiqueta="Convenio" ayuda="Por defecto se usa el del paciente.">
-              <select name="convenioId" defaultValue={pacienteSeleccionado?.convenio?.id ?? ''} className="campo">
-                <option value="">Sin convenio</option>
-                {convenios.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </select>
+              <SelectorBuscable
+                name="convenioId"
+                opciones={convenios.map((c) => ({ valor: c.id, etiqueta: c.nombre }))}
+                valorInicial={pacienteSeleccionado?.convenio?.id}
+                placeholder="Sin convenio"
+                textoVacio="Sin convenio"
+              />
             </Campo>
             <Campo etiqueta="Fecha">
               <input name="fecha" type="date" defaultValue={isoFecha(new Date())} className="campo" />

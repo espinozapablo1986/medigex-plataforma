@@ -117,6 +117,30 @@ async function main() {
   }
   log(`${formasPago.length} formas de pago.`);
 
+  // ── Previsiones ──────────────────────────────────────────────
+  // La migración ya deja el juego base; aquí sólo se asegura que exista
+  // en instalaciones nuevas creadas con `prisma db push`.
+  const previsiones = [
+    { codigo: 'PARTICULAR', nombre: 'Particular', tipo: 'PARTICULAR' as const, orden: 1 },
+    { codigo: 'FONASA', nombre: 'Fonasa', tipo: 'FONASA' as const, orden: 2, requiereDetalle: true, etiquetaDetalle: 'Tramo (A, B, C o D)' },
+    { codigo: 'ISAPRE_BANMEDICA', nombre: 'Isapre Banmédica', tipo: 'ISAPRE' as const, orden: 10, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_COLMENA', nombre: 'Isapre Colmena', tipo: 'ISAPRE' as const, orden: 11, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_CONSALUD', nombre: 'Isapre Consalud', tipo: 'ISAPRE' as const, orden: 12, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_CRUZ_BLANCA', nombre: 'Isapre Cruz Blanca', tipo: 'ISAPRE' as const, orden: 13, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_NUEVA_MASVIDA', nombre: 'Isapre Nueva Masvida', tipo: 'ISAPRE' as const, orden: 14, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_VIDA_TRES', nombre: 'Isapre Vida Tres', tipo: 'ISAPRE' as const, orden: 15, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_ESENCIAL', nombre: 'Isapre Esencial', tipo: 'ISAPRE' as const, orden: 16, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE_FUNDACION', nombre: 'Isapre Fundación', tipo: 'ISAPRE' as const, orden: 17, requiereDetalle: true, etiquetaDetalle: 'Nº de plan' },
+    { codigo: 'ISAPRE', nombre: 'Isapre (sin especificar)', tipo: 'ISAPRE' as const, orden: 18, requiereDetalle: true, etiquetaDetalle: 'Nombre de la Isapre' },
+    { codigo: 'SEGURO_COMPLEMENTARIO', nombre: 'Seguro complementario', tipo: 'SEGURO_COMPLEMENTARIO' as const, orden: 30, requiereDetalle: true, etiquetaDetalle: 'Compañía y póliza' },
+    { codigo: 'OTRO', nombre: 'Otra previsión', tipo: 'OTRO' as const, orden: 90, requiereDetalle: true, etiquetaDetalle: 'Detalle' },
+  ];
+
+  for (const prevision of previsiones) {
+    await prisma.prevision.upsert({ where: { codigo: prevision.codigo }, create: prevision, update: {} });
+  }
+  log(`${previsiones.length} previsiones.`);
+
   // ── Categorías de gasto ──────────────────────────────────────
   const categoriasGasto = [
     { nombre: 'Arriendo del local', tipo: 'ARRIENDO' as const },
@@ -450,6 +474,10 @@ async function main() {
   log('Disponibilidad horaria configurada.');
 
   // ── Pacientes ────────────────────────────────────────────────
+  const previsionFonasa = await prisma.prevision.findUniqueOrThrow({ where: { codigo: 'FONASA' } });
+  const previsionParticular = await prisma.prevision.findUniqueOrThrow({ where: { codigo: 'PARTICULAR' } });
+  const previsionConsalud = await prisma.prevision.findUniqueOrThrow({ where: { codigo: 'ISAPRE_CONSALUD' } });
+
   const pacientesDemo = [
     {
       rut: '18234567-9',
@@ -463,8 +491,8 @@ async function main() {
       email: 'camila.torres@ejemplo.cl',
       comuna: 'Providencia',
       ciudad: 'Santiago',
-      prevision: 'ISAPRE' as const,
-      previsionDetalle: 'Consalud',
+      previsionId: previsionConsalud.id,
+      previsionDetalle: 'Plan 2B',
       convenioId: convConsalud.id,
       numeroAfiliado: 'CS-884512',
       alergias: 'Penicilina',
@@ -480,7 +508,7 @@ async function main() {
       telefonoPrincipal: '+56 9 5544 3322',
       comuna: 'Ñuñoa',
       ciudad: 'Santiago',
-      prevision: 'FONASA' as const,
+      previsionId: previsionFonasa.id,
       previsionDetalle: 'Tramo B',
       antecedentesMedicos: 'Hipertensión arterial controlada',
       medicamentosActuales: 'Losartán 50 mg cada 24 h',
@@ -497,7 +525,7 @@ async function main() {
       email: 'sofia.munoz@ejemplo.cl',
       comuna: 'La Florida',
       ciudad: 'Santiago',
-      prevision: 'PARTICULAR' as const,
+      previsionId: previsionParticular.id,
       vieneDeOtroCentro: true,
       centroOrigen: 'Clínica Dental Los Andes',
       profesionalOrigen: 'Dr. Patricio Silva',
@@ -515,7 +543,7 @@ async function main() {
       telefonoPrincipal: '+56 9 6677 8899',
       comuna: 'Maipú',
       ciudad: 'Santiago',
-      prevision: 'FONASA' as const,
+      previsionId: previsionFonasa.id,
       previsionDetalle: 'Tramo A',
       antecedentesMedicos: 'Diabetes mellitus tipo 2',
       alergias: 'Ninguna conocida',
@@ -556,11 +584,12 @@ async function main() {
     };
 
     const citas = [
-      { pacienteId: camila.id, profesionalId: drCarolina.id, boxId: boxB1.id, servicioId: limpieza.id, inicio: proximoDia(0, 10, 0), duracion: 45, motivo: 'Limpieza semestral' },
-      { pacienteId: jorge.id, profesionalId: drCarolina.id, boxId: boxB1.id, servicioId: consulta.id, inicio: proximoDia(0, 11, 0), duracion: 30, motivo: 'Dolor en molar inferior derecho' },
-      { pacienteId: sofia.id, profesionalId: drAndres.id, boxId: boxB2.id, servicioId: null, inicio: proximoDia(1, 9, 0), duracion: 90, motivo: 'Evaluación para endodoncia pieza 3.6' },
-      { pacienteId: camila.id, profesionalId: drRodrigo.id, boxId: boxB3.id, servicioId: null, inicio: proximoDia(2, 9, 0), duracion: 30, motivo: 'Control médico general' },
-      { pacienteId: jorge.id, profesionalId: drCarolina.id, boxId: boxRX.id, servicioId: panoramica.id, inicio: proximoDia(3, 12, 0), duracion: 20, motivo: 'Radiografía panorámica de control', usaRayosX: true },
+      { pacienteId: camila.id, profesionalId: drCarolina.id, boxId: boxB1.id, servicios: [limpieza.id], inicio: proximoDia(0, 10, 0), duracion: 45, motivo: 'Limpieza semestral' },
+      { pacienteId: jorge.id, profesionalId: drCarolina.id, boxId: boxB1.id, servicios: [consulta.id], inicio: proximoDia(0, 11, 0), duracion: 30, motivo: 'Dolor en molar inferior derecho' },
+      { pacienteId: sofia.id, profesionalId: drAndres.id, boxId: boxB2.id, servicios: [], inicio: proximoDia(1, 9, 0), duracion: 90, motivo: 'Evaluación para endodoncia pieza 3.6' },
+      { pacienteId: camila.id, profesionalId: drRodrigo.id, boxId: boxB3.id, servicios: [], inicio: proximoDia(2, 9, 0), duracion: 30, motivo: 'Control médico general' },
+      // Sesión con dos procedimientos: consulta más radiografía.
+      { pacienteId: jorge.id, profesionalId: drCarolina.id, boxId: boxRX.id, servicios: [consulta.id, panoramica.id], inicio: proximoDia(3, 12, 0), duracion: 50, motivo: 'Control con radiografía panorámica', usaRayosX: true },
     ];
 
     for (const c of citas) {
@@ -569,13 +598,15 @@ async function main() {
           pacienteId: c.pacienteId,
           profesionalId: c.profesionalId,
           boxId: c.boxId,
-          servicioId: c.servicioId,
           inicio: c.inicio,
           fin: new Date(c.inicio.getTime() + c.duracion * 60_000),
           motivoConsulta: c.motivo,
           usaRayosX: c.usaRayosX ?? false,
           estado: 'CONFIRMADA',
           creadoPorId: admin.id,
+          servicios: {
+            createMany: { data: c.servicios.map((servicioId, orden) => ({ servicioId, orden })) },
+          },
         },
       });
     }

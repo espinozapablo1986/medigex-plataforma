@@ -6,6 +6,7 @@ import { BotonEnviar, Formulario } from '@/components/formulario';
 
 import { crearReceta } from '../acciones';
 import { EditorMedicamentos } from '../editor-medicamentos';
+import { SelectorBuscable } from '@/components/selector';
 
 export const metadata = { title: 'Nueva receta' };
 
@@ -81,25 +82,34 @@ export default async function PaginaNuevaReceta({
         <Tarjeta titulo="Datos de la receta">
           <Grilla cols={2}>
             <Campo etiqueta="Paciente" requerido>
-              <select name="pacienteId" defaultValue={pacienteId ?? ''} required className="campo">
-                <option value="">Selecciona…</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.apellidoPaterno} {p.apellidoMaterno ?? ''}, {p.nombres} — {p.rut ?? `Ficha ${p.numeroFicha}`}
-                  </option>
-                ))}
-              </select>
+              <SelectorBuscable
+                name="pacienteId"
+                opciones={pacientes.map((p) => ({
+                  valor: p.id,
+                  etiqueta: `${p.apellidoPaterno} ${p.apellidoMaterno ?? ''}, ${p.nombres}`.replace(/\s+/g, ' '),
+                  detalle: p.rut ?? `Ficha ${p.numeroFicha}`,
+                  buscarPor: p.rut ?? '',
+                }))}
+                valorInicial={pacienteId}
+                placeholder="Busca por nombre o RUT…"
+                permiteVacio={false}
+                requerido
+              />
             </Campo>
 
             <Campo etiqueta="Profesional que prescribe" requerido>
-              <select name="profesionalId" defaultValue={sesion.profesionalId ?? ''} required className="campo">
-                <option value="">Selecciona…</option>
-                {profesionales.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.apellidos}, {p.nombres} — {p.especialidad}
-                  </option>
-                ))}
-              </select>
+              <SelectorBuscable
+                name="profesionalId"
+                opciones={profesionales.map((p) => ({
+                  valor: p.id,
+                  etiqueta: `${p.apellidos}, ${p.nombres}`,
+                  detalle: p.especialidad,
+                }))}
+                valorInicial={sesion.profesionalId}
+                placeholder="Busca por nombre o especialidad…"
+                permiteVacio={false}
+                requerido
+              />
             </Campo>
 
             <Campo etiqueta="Tipo de receta" requerido>

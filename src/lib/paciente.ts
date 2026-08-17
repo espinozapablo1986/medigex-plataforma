@@ -12,6 +12,7 @@ export async function cargarPacienteConCabecera(id: string) {
     where: { id },
     include: {
       convenio: { select: { id: true, nombre: true, tipo: true, coberturaPorcentaje: true } },
+      prevision: { select: { id: true, nombre: true, tipo: true } },
       movimientosCuenta: {
         orderBy: [{ fecha: 'desc' }, { createdAt: 'desc' }],
         take: 1,

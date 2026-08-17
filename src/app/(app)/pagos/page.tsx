@@ -15,6 +15,7 @@ import {
   Tarjeta,
 } from '@/components/ui';
 import { BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SelectorBuscable } from '@/components/selector';
 
 import { registrarPago } from '../ventas/acciones';
 
@@ -94,14 +95,18 @@ export default async function PaginaPagos({
                   el detalle de esa venta.
                 </p>
                 <Campo etiqueta="Paciente" requerido>
-                  <select name="pacienteId" required className="campo">
-                    <option value="">Selecciona…</option>
-                    {pacientes.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.apellidoPaterno}, {p.nombres} — {p.rut ?? 'sin RUT'}
-                      </option>
-                    ))}
-                  </select>
+                  <SelectorBuscable
+                    name="pacienteId"
+                    opciones={pacientes.map((p) => ({
+                      valor: p.id,
+                      etiqueta: `${p.apellidoPaterno}, ${p.nombres}`,
+                      detalle: p.rut ?? 'sin RUT',
+                      buscarPor: p.rut ?? '',
+                    }))}
+                    placeholder="Busca por nombre o RUT…"
+                    permiteVacio={false}
+                    requerido
+                  />
                 </Campo>
                 <Grilla cols={2}>
                   <Campo etiqueta="Monto" requerido>

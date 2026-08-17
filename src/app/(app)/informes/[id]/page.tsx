@@ -29,7 +29,7 @@ export default async function DetalleInforme({ params }: { params: Promise<{ id:
     prisma.informeBeneficio.findUnique({
       where: { id },
       include: {
-        paciente: true,
+        paciente: { include: { prevision: { select: { nombre: true } } } },
         convenio: true,
         profesional: true,
         emitidoPor: { select: { nombres: true, apellidos: true } },
@@ -107,7 +107,7 @@ export default async function DetalleInforme({ params }: { params: Promise<{ id:
           <Dato etiqueta="Paciente" valor={`${paciente.nombres} ${paciente.apellidoPaterno} ${paciente.apellidoMaterno ?? ''}`} />
           <Dato etiqueta="RUT" valor={formatearRut(paciente.rut) || paciente.pasaporte || '—'} />
           <Dato etiqueta="Edad" valor={edad !== null ? `${edad} años` : '—'} />
-          <Dato etiqueta="Previsión" valor={humanizar(paciente.prevision)} />
+          <Dato etiqueta="Previsión" valor={paciente.prevision?.nombre ?? 'Sin registrar'} />
           {informe.convenio && <Dato etiqueta="Convenio / aseguradora" valor={informe.convenio.nombre} />}
           {paciente.numeroAfiliado && <Dato etiqueta="Nº de afiliado / póliza" valor={paciente.numeroAfiliado} />}
           {informe.diagnostico && <Dato etiqueta="Diagnóstico" valor={informe.diagnostico} />}

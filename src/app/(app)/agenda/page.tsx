@@ -43,7 +43,7 @@ export default async function PaginaAgenda({
           select: { id: true, nombres: true, apellidoPaterno: true, telefonoPrincipal: true, alergias: true },
         },
         profesional: { select: { id: true, nombres: true, apellidos: true, colorAgenda: true } },
-        servicio: { select: { nombre: true, duracionMinutos: true } },
+        servicios: { orderBy: { orden: 'asc' }, include: { servicio: { select: { nombre: true } } } },
         box: { select: { id: true, codigo: true } },
         atencion: { select: { id: true } },
       },
@@ -294,7 +294,8 @@ export default async function PaginaAgenda({
                     </Link>
                     <p className="text-xs text-slate-500">
                       {cita.profesional.nombres} {cita.profesional.apellidos}
-                      {cita.servicio && ` · ${cita.servicio.nombre}`}
+                      {cita.servicios.length > 0 &&
+                        ` · ${cita.servicios.map((s) => s.servicio.nombre).join(', ')}`}
                       {cita.box && ` · Box ${cita.box.codigo}`}
                     </p>
                   </div>

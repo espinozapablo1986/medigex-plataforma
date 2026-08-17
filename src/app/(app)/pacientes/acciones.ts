@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import type { CategoriaAdjunto, Sexo, TipoExamen, TipoPrevision } from '@prisma/client';
+import type { CategoriaAdjunto, Sexo, TipoExamen } from '@prisma/client';
 
 import { prisma } from '@/lib/prisma';
 import { auditar, exigirPermiso } from '@/lib/auth';
@@ -22,7 +22,6 @@ import {
 } from '@/lib/resultado';
 
 const SEXOS: Sexo[] = ['MASCULINO', 'FEMENINO', 'OTRO', 'NO_ESPECIFICA'];
-const PREVISIONES: TipoPrevision[] = ['FONASA', 'ISAPRE', 'PARTICULAR', 'SEGURO_COMPLEMENTARIO', 'OTRO'];
 const TIPOS_EXAMEN: TipoExamen[] = [
   'RADIOGRAFIA',
   'LABORATORIO',
@@ -57,7 +56,6 @@ function datosPaciente(fd: FormData) {
   if (rut && !validarRut(rut)) throw new Error('El RUT ingresado no es válido. Revisa el dígito verificador.');
 
   const sexo = texto(fd, 'sexo') as Sexo;
-  const prevision = texto(fd, 'prevision') as TipoPrevision;
   const edad = entero(fd, 'edadRegistrada', -1);
   const vieneDeOtroCentro = booleano(fd, 'vieneDeOtroCentro');
 
@@ -77,7 +75,7 @@ function datosPaciente(fd: FormData) {
     comuna: textoOpcional(fd, 'comuna'),
     ciudad: textoOpcional(fd, 'ciudad'),
     ocupacion: textoOpcional(fd, 'ocupacion'),
-    prevision: PREVISIONES.includes(prevision) ? prevision : ('PARTICULAR' as TipoPrevision),
+    previsionId: textoOpcional(fd, 'previsionId'),
     previsionDetalle: textoOpcional(fd, 'previsionDetalle'),
     convenioId: textoOpcional(fd, 'convenioId'),
     numeroAfiliado: textoOpcional(fd, 'numeroAfiliado'),
@@ -238,17 +236,22 @@ export async function registrarAtencion(_previo: Resultado | null, fd: FormData)
         },
       });
 
-      // Marca la cita como atendida y descuenta los insumos del servicio.
+      // Marca la cita como atendida y descuenta los insumos de cada servicio
+      // de la sesión, que pueden ser varios.
       if (citaId) {
-        const cita = await tx.cita.findUnique({ where: { id: citaId } });
+        const cita = await tx.cita.findUnique({
+          where: { id: citaId },
+          include: { servicios: true },
+        });
         if (cita) {
           await tx.cita.update({
             where: { id: citaId },
             data: { estado: 'ATENDIDA', atendidaAt: new Date(), motivoConsulta },
           });
-          if (cita.servicioId) {
+          for (const linea of cita.servicios) {
             await consumirInsumosDeServicio(tx, {
-              servicioId: cita.servicioId,
+              servicioId: linea.servicioId,
+              veces: linea.cantidad,
               referenciaTipo: 'atencion',
               referenciaId: creada.id,
               usuarioId: sesion.usuarioId,

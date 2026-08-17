@@ -15,6 +15,7 @@ import {
   Tarjeta,
 } from '@/components/ui';
 import { BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SelectorBuscable } from '@/components/selector';
 
 import { emitirInforme } from '../convenios/acciones';
 
@@ -77,15 +78,19 @@ export default async function PaginaInformes({
                 </Aviso>
 
                 <Campo etiqueta="Paciente" requerido>
-                  <select name="pacienteId" defaultValue={pacientePreseleccionado ?? ''} required className="campo">
-                    <option value="">Selecciona…</option>
-                    {pacientes.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.apellidoPaterno}, {p.nombres} — {p.rut ?? 'sin RUT'}
-                        {p.convenio ? ` (${p.convenio.nombre})` : ''}
-                      </option>
-                    ))}
-                  </select>
+                  <SelectorBuscable
+                    name="pacienteId"
+                    opciones={pacientes.map((p) => ({
+                      valor: p.id,
+                      etiqueta: `${p.apellidoPaterno}, ${p.nombres}`,
+                      detalle: `${p.rut ?? 'sin RUT'}${p.convenio ? ` · ${p.convenio.nombre}` : ''}`,
+                      buscarPor: p.rut ?? '',
+                    }))}
+                    valorInicial={pacientePreseleccionado}
+                    placeholder="Busca por nombre o RUT…"
+                    permiteVacio={false}
+                    requerido
+                  />
                 </Campo>
 
                 <Grilla cols={2}>

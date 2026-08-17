@@ -25,7 +25,7 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
         examenes: { select: { id: true, nombre: true, estado: true } },
         recetas: { select: { id: true, folio: true } },
         adjuntos: { select: { id: true, nombreOriginal: true } },
-        cita: { select: { id: true, servicio: { select: { nombre: true } } } },
+        cita: { select: { id: true, servicios: { include: { servicio: { select: { nombre: true } } } } } },
       },
     }),
     prisma.profesional.findMany({
@@ -176,7 +176,11 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5">
-                  {a.cita?.servicio && <Badge tono="azul">{a.cita.servicio.nombre}</Badge>}
+                  {a.cita?.servicios.map((s) => (
+                    <Badge key={s.id} tono="azul">
+                      {s.servicio.nombre}
+                    </Badge>
+                  ))}
                   {a.recetas.length > 0 && <Badge tono="verde">{a.recetas.length} receta(s)</Badge>}
                   {a.examenes.length > 0 && <Badge tono="ambar">{a.examenes.length} examen(es)</Badge>}
                   {a.adjuntos.length > 0 && <Badge tono="gris">{a.adjuntos.length} archivo(s)</Badge>}

@@ -16,7 +16,7 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
     prisma.receta.findUnique({
       where: { id },
       include: {
-        paciente: true,
+        paciente: { include: { prevision: { select: { nombre: true } } } },
         profesional: true,
         atencion: { select: { id: true, fecha: true, motivoConsulta: true } },
         items: { orderBy: { orden: 'asc' } },
@@ -95,7 +95,7 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
           <Dato etiqueta="Paciente" valor={`${paciente.nombres} ${paciente.apellidoPaterno} ${paciente.apellidoMaterno ?? ''}`} />
           <Dato etiqueta="RUT" valor={formatearRut(paciente.rut) || paciente.pasaporte || '—'} />
           <Dato etiqueta="Edad" valor={edad !== null ? `${edad} años` : '—'} />
-          <Dato etiqueta="Previsión" valor={humanizar(paciente.prevision)} />
+          <Dato etiqueta="Previsión" valor={paciente.prevision?.nombre ?? 'Sin registrar'} />
           {paciente.direccion && (
             <Dato etiqueta="Domicilio" valor={[paciente.direccion, paciente.comuna].filter(Boolean).join(', ')} />
           )}

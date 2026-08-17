@@ -16,7 +16,7 @@ interface CitaPanel {
   observaciones: string | null;
   paciente: { id: string; nombres: string; apellidoPaterno: string; telefonoPrincipal: string; alergias: string | null };
   profesional: { nombres: string; apellidos: string; colorAgenda: string };
-  servicio: { nombre: string } | null;
+  servicios: { id: string; servicio: { nombre: string } }[];
   box: { codigo: string } | null;
   atencion: { id: string } | null;
 }
@@ -76,7 +76,11 @@ export function PanelCita({
           {hhmm(cita.inicio)}–{hhmm(cita.fin)}
           {cita.box && ` · ${cita.box.codigo}`}
         </p>
-        {cita.servicio && <p className="truncate text-[11px] text-slate-500">{cita.servicio.nombre}</p>}
+        {cita.servicios.length > 0 && (
+          <p className="truncate text-[11px] text-slate-500">
+            {cita.servicios.map((s) => s.servicio.nombre).join(' + ')}
+          </p>
+        )}
         <div className="mt-0.5 flex gap-1">
           {cita.usaRayosX && <span className="rounded bg-violet-200 px-1 text-[10px] text-violet-800">RX</span>}
           {cita.paciente.alergias && <span className="rounded bg-rose-200 px-1 text-[10px] text-rose-800">ALG</span>}
@@ -102,7 +106,12 @@ export function PanelCita({
 
             <div className="space-y-2 px-5 py-4 text-sm">
               <Fila etiqueta="Estado" valor={cita.estado.replace(/_/g, ' ').toLowerCase()} />
-              {cita.servicio && <Fila etiqueta="Servicio" valor={cita.servicio.nombre} />}
+              {cita.servicios.length > 0 && (
+                <Fila
+                  etiqueta={cita.servicios.length === 1 ? 'Servicio' : 'Servicios'}
+                  valor={cita.servicios.map((s) => s.servicio.nombre).join(', ')}
+                />
+              )}
               {cita.box && <Fila etiqueta="Box" valor={cita.box.codigo} />}
               <Fila etiqueta="Teléfono" valor={cita.paciente.telefonoPrincipal} />
               {cita.motivoConsulta && <Fila etiqueta="Motivo" valor={cita.motivoConsulta} />}

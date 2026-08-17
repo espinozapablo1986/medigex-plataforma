@@ -11,11 +11,18 @@ export const metadata = { title: 'Nuevo paciente' };
 export default async function PaginaNuevoPaciente() {
   await requerirPermiso('pacientes', 'crear');
 
-  const convenios = await prisma.convenio.findMany({
-    where: { activo: true },
-    orderBy: { nombre: 'asc' },
-    select: { id: true, nombre: true, tipo: true },
-  });
+  const [convenios, previsiones] = await Promise.all([
+    prisma.convenio.findMany({
+      where: { activo: true },
+      orderBy: { nombre: 'asc' },
+      select: { id: true, nombre: true, tipo: true },
+    }),
+    prisma.prevision.findMany({
+      where: { activo: true },
+      orderBy: [{ orden: 'asc' }, { nombre: 'asc' }],
+      select: { id: true, nombre: true, tipo: true, requiereDetalle: true, etiquetaDetalle: true },
+    }),
+  ]);
 
   return (
     <>
@@ -26,7 +33,7 @@ export default async function PaginaNuevoPaciente() {
       />
 
       <Formulario accion={crearPaciente} className="mx-auto max-w-4xl">
-        <CamposPaciente convenios={convenios} />
+        <CamposPaciente convenios={convenios} previsiones={previsiones} />
         <div className="sticky bottom-4 mt-5 flex justify-end">
           <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
             <BotonEnviar tamano="lg">Crear ficha del paciente</BotonEnviar>

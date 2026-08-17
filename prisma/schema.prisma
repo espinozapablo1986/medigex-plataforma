@@ -129,12 +129,35 @@ enum Sexo {
   NO_ESPECIFICA
 }
 
+/// Familia a la que pertenece una previsión. Sirve para agrupar en reportes.
 enum TipoPrevision {
   FONASA
   ISAPRE
   PARTICULAR
   SEGURO_COMPLEMENTARIO
   OTRO
+}
+
+/// Previsión de salud del paciente. Es un mantenedor editable desde
+/// Configuración, no una lista fija en el código: cada centro maneja su propio
+/// juego de Isapres, tramos de Fonasa y seguros.
+model Prevision {
+  id              String        @id @default(cuid())
+  codigo          String        @unique
+  nombre          String
+  tipo            TipoPrevision @default(OTRO)
+  /// Pide un dato extra al elegirla (nº de plan, tramo, póliza…).
+  requiereDetalle Boolean       @default(false)
+  etiquetaDetalle String? // qué se pide exactamente, ej. "Nº de plan"
+  orden           Int           @default(0)
+  activo          Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  pacientes Paciente[]
+
+  @@index([activo, orden])
+  @@map("previsiones")
 }
 
 model Paciente {
@@ -155,8 +178,8 @@ model Paciente {
   comuna            String?
   ciudad            String?
   ocupacion         String?
-  prevision         TipoPrevision @default(PARTICULAR)
-  previsionDetalle  String? // nombre de la Isapre, seguro, etc.
+  previsionId       String?
+  previsionDetalle  String? // nº de plan, tramo, póliza…
   convenioId        String? // convenio al que está adscrito (Isapre, empresa, seguro)
   numeroAfiliado    String? // nº de póliza / carnet del convenio
 
@@ -184,8 +207,9 @@ model Paciente {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  creadoPor    Usuario?  @relation("PacienteCreadoPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
-  convenio     Convenio? @relation(fields: [convenioId], references: [id], onDelete: SetNull)
+  creadoPor    Usuario?   @relation("PacienteCreadoPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  convenio     Convenio?  @relation(fields: [convenioId], references: [id], onDelete: SetNull)
+  prevision    Prevision? @relation(fields: [previsionId], references: [id], onDelete: SetNull)
   informes     InformeBeneficio[]
   citas        Cita[]
   atenciones   Atencion[]
@@ -339,7 +363,7 @@ model Servicio {
 
   categoria    CategoriaServicio? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
   insumos      InsumoServicio[]
-  citas        Cita[]
+  citas        CitaServicio[]
   itemsPresupuesto PresupuestoItem[]
   itemsVenta   VentaItem[]
   comisiones   ComisionServicio[]
@@ -581,7 +605,6 @@ model Cita {
   pacienteId    String
   profesionalId String
   boxId         String?
-  servicioId    String?
   inicio        DateTime
   fin           DateTime
   estado        EstadoCita        @default(AGENDADA)
@@ -601,7 +624,7 @@ model Cita {
   paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
   profesional Profesional  @relation(fields: [profesionalId], references: [id])
   box         Box?         @relation(fields: [boxId], references: [id], onDelete: SetNull)
-  servicio    Servicio?    @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+  servicios   CitaServicio[]
   citaOrigen  Cita?        @relation("CitaDerivada", fields: [citaOrigenId], references: [id], onDelete: SetNull)
   citasDerivadas Cita[]    @relation("CitaDerivada")
   creadoPor   Usuario?     @relation("CitaCreadaPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
@@ -613,6 +636,23 @@ model Cita {
   @@index([boxId, inicio])
   @@index([pacienteId])
   @@map("citas")
+}
+
+/// Un paciente puede aprovechar la misma sesión para varios procedimientos.
+/// La duración de la cita es la suma de las duraciones de sus servicios.
+model CitaServicio {
+  id         String @id @default(cuid())
+  citaId     String
+  servicioId String
+  cantidad   Int    @default(1)
+  orden      Int    @default(0)
+
+  cita     Cita     @relation(fields: [citaId], references: [id], onDelete: Cascade)
+  servicio Servicio @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+
+  @@unique([citaId, servicioId])
+  @@index([citaId])
+  @@map("cita_servicios")
 }
 
 enum EstadoInterconsulta {

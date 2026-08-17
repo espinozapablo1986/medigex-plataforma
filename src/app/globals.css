@@ -60,7 +60,7 @@
     @apply bg-slate-50/70;
   }
 
-  /* Oculta elementos al imprimir recetas, presupuestos, etc. */
+  /* Oculta elementos al imprimir recetas, presupuestos, fichas, etc. */
   @media print {
     .no-imprimir {
       display: none !important;
@@ -71,7 +71,31 @@
     body {
       @apply bg-white;
     }
+
+    /* El documento ocupa toda la hoja: sin barra lateral ni márgenes de la app */
+    main {
+      padding: 0 !important;
+    }
+
+    /* Evita cortar una atención o una fila a la mitad entre dos páginas */
+    .break-inside-avoid {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .break-before-page {
+      break-before: page;
+      page-break-before: always;
+    }
+
+    /* Las tablas repiten su encabezado en cada página */
+    thead {
+      display: table-header-group;
+    }
   }
+}
+
+@page {
+  margin: 15mm;
 }
 
 .solo-imprimir {

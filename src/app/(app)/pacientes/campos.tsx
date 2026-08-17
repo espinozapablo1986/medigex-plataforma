@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Campo, Grilla } from '@/components/ui';
+import { SelectorBuscable } from '@/components/selector';
 
 export interface ValoresPaciente {
   rut: string | null;
@@ -19,7 +20,7 @@ export interface ValoresPaciente {
   comuna: string | null;
   ciudad: string | null;
   ocupacion: string | null;
-  prevision: string;
+  previsionId: string | null;
   previsionDetalle: string | null;
   convenioId: string | null;
   numeroAfiliado: string | null;
@@ -46,13 +47,13 @@ const SEXOS = [
   { valor: 'OTRO', texto: 'Otro' },
 ];
 
-const PREVISIONES = [
-  { valor: 'PARTICULAR', texto: 'Particular' },
-  { valor: 'FONASA', texto: 'Fonasa' },
-  { valor: 'ISAPRE', texto: 'Isapre' },
-  { valor: 'SEGURO_COMPLEMENTARIO', texto: 'Seguro complementario' },
-  { valor: 'OTRO', texto: 'Otro' },
-];
+export interface OpcionPrevision {
+  id: string;
+  nombre: string;
+  tipo: string;
+  requiereDetalle: boolean;
+  etiquetaDetalle: string | null;
+}
 
 const ORIGENES = [
   'Recomendación de un paciente',
@@ -74,11 +75,21 @@ function aFecha(valor: Date | string | null | undefined) {
 export function CamposPaciente({
   valores,
   convenios,
+  previsiones,
 }: {
   valores?: ValoresPaciente;
   convenios: { id: string; nombre: string; tipo: string }[];
+  previsiones: OpcionPrevision[];
 }) {
   const [derivado, setDerivado] = useState(valores?.vieneDeOtroCentro ?? false);
+  const [previsionId, setPrevisionId] = useState(valores?.previsionId ?? '');
+
+  // El dato extra depende de la previsión elegida: tramo en Fonasa,
+  // nº de plan en Isapre, póliza en un seguro…
+  const previsionActual = useMemo(
+    () => previsiones.find((p) => p.id === previsionId),
+    [previsiones, previsionId],
+  );
 
   return (
     <div className="space-y-6">
@@ -190,27 +201,48 @@ export function CamposPaciente({
       <section className="tarjeta p-4">
         <h3 className="mb-3 text-sm font-semibold text-slate-900">Previsión y convenio</h3>
         <Grilla cols={2}>
-          <Campo etiqueta="Previsión">
-            <select name="prevision" defaultValue={valores?.prevision ?? 'PARTICULAR'} className="campo">
-              {PREVISIONES.map((p) => (
-                <option key={p.valor} value={p.valor}>
-                  {p.texto}
-                </option>
-              ))}
-            </select>
+          <Campo etiqueta="Previsión" ayuda="Se administra en Configuración → Previsiones.">
+            <SelectorBuscable
+              name="previsionId"
+              opciones={previsiones.map((p) => ({
+                valor: p.id,
+                etiqueta: p.nombre,
+                detalle: p.tipo.replace(/_/g, ' ').toLowerCase(),
+              }))}
+              valorInicial={valores?.previsionId}
+              placeholder="Busca la previsión…"
+              textoVacio="Sin previsión registrada"
+              onCambio={setPrevisionId}
+            />
           </Campo>
-          <Campo etiqueta="Detalle de previsión" ayuda="Nombre de la Isapre, seguro o tramo Fonasa.">
-            <input name="previsionDetalle" defaultValue={valores?.previsionDetalle ?? ''} className="campo" />
-          </Campo>
+
+          {previsionActual?.requiereDetalle ? (
+            <Campo etiqueta={previsionActual.etiquetaDetalle ?? 'Detalle de previsión'} requerido>
+              <input
+                name="previsionDetalle"
+                defaultValue={valores?.previsionDetalle ?? ''}
+                required
+                className="campo"
+              />
+            </Campo>
+          ) : (
+            <Campo etiqueta="Detalle de previsión">
+              <input name="previsionDetalle" defaultValue={valores?.previsionDetalle ?? ''} className="campo" />
+            </Campo>
+          )}
+
           <Campo etiqueta="Convenio" ayuda="Aplica tarifas y cobertura especial en presupuestos y ventas.">
-            <select name="convenioId" defaultValue={valores?.convenioId ?? ''} className="campo">
-              <option value="">Sin convenio</option>
-              {convenios.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+            <SelectorBuscable
+              name="convenioId"
+              opciones={convenios.map((c) => ({
+                valor: c.id,
+                etiqueta: c.nombre,
+                detalle: c.tipo.replace(/_/g, ' ').toLowerCase(),
+              }))}
+              valorInicial={valores?.convenioId}
+              placeholder="Sin convenio"
+              textoVacio="Sin convenio"
+            />
           </Campo>
           <Campo etiqueta="Nº de afiliado / póliza">
             <input name="numeroAfiliado" defaultValue={valores?.numeroAfiliado ?? ''} className="campo" />

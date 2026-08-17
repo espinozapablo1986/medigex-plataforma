@@ -13,6 +13,7 @@ import {
   Tarjeta,
 } from '@/components/ui';
 import { BotonEnviar, Formulario, Modal } from '@/components/formulario';
+import { SelectorBuscable, SelectorMultiple } from '@/components/selector';
 
 import { agendarDesdeInterconsulta, crearInterconsulta, responderInterconsulta } from '../agenda/acciones';
 
@@ -69,6 +70,19 @@ export default async function PaginaInterconsultas({
 
   const pendientes = interconsultas.filter((i) => i.estado === 'PENDIENTE').length;
 
+  const opcionesPacientes = pacientes.map((p) => ({
+    valor: p.id,
+    etiqueta: `${p.apellidoPaterno}, ${p.nombres}`,
+    detalle: p.rut ?? 'sin RUT',
+    buscarPor: p.rut ?? '',
+  }));
+
+  const opcionesProfesionales = profesionales.map((p) => ({
+    valor: p.id,
+    etiqueta: `${p.apellidos}, ${p.nombres}`,
+    detalle: p.especialidad,
+  }));
+
   return (
     <>
       <EncabezadoPagina
@@ -79,35 +93,33 @@ export default async function PaginaInterconsultas({
             <Modal titulo="Nueva interconsulta" etiquetaBoton="Nueva interconsulta" ancho="max-w-2xl">
               <Formulario accion={crearInterconsulta} className="space-y-4">
                 <Campo etiqueta="Paciente" requerido>
-                  <select name="pacienteId" required className="campo">
-                    <option value="">Selecciona…</option>
-                    {pacientes.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.apellidoPaterno}, {p.nombres} — {p.rut ?? 'sin RUT'}
-                      </option>
-                    ))}
-                  </select>
+                  <SelectorBuscable
+                    name="pacienteId"
+                    opciones={opcionesPacientes}
+                    placeholder="Busca por nombre o RUT…"
+                    permiteVacio={false}
+                    requerido
+                  />
                 </Campo>
                 <Grilla cols={2}>
                   <Campo etiqueta="Profesional que deriva" requerido>
-                    <select name="profesionalOrigenId" defaultValue={sesion.profesionalId ?? ''} required className="campo">
-                      <option value="">Selecciona…</option>
-                      {profesionales.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.apellidos}, {p.nombres}
-                        </option>
-                      ))}
-                    </select>
+                    <SelectorBuscable
+                      name="profesionalOrigenId"
+                      opciones={opcionesProfesionales}
+                      valorInicial={sesion.profesionalId}
+                      placeholder="Busca…"
+                      permiteVacio={false}
+                      requerido
+                    />
                   </Campo>
                   <Campo etiqueta="Profesional de destino" requerido>
-                    <select name="profesionalDestinoId" required className="campo">
-                      <option value="">Selecciona…</option>
-                      {profesionales.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.apellidos}, {p.nombres} — {p.especialidad}
-                        </option>
-                      ))}
-                    </select>
+                    <SelectorBuscable
+                      name="profesionalDestinoId"
+                      opciones={opcionesProfesionales}
+                      placeholder="Busca por nombre o especialidad…"
+                      permiteVacio={false}
+                      requerido
+                    />
                   </Campo>
                 </Grilla>
                 <Campo etiqueta="Motivo de la derivación" requerido>
@@ -211,28 +223,28 @@ export default async function PaginaInterconsultas({
                         <Campo etiqueta="Fecha y hora" requerido>
                           <input name="inicio" type="datetime-local" required defaultValue={isoFechaHora(new Date())} className="campo" />
                         </Campo>
-                        <Grilla cols={2}>
-                          <Campo etiqueta="Servicio">
-                            <select name="servicioId" className="campo">
-                              <option value="">Sin servicio</option>
-                              {servicios.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                  {s.nombre} ({s.duracionMinutos} min)
-                                </option>
-                              ))}
-                            </select>
-                          </Campo>
-                          <Campo etiqueta="Box">
-                            <select name="boxId" className="campo">
-                              <option value="">Sin box</option>
-                              {boxes.map((b) => (
-                                <option key={b.id} value={b.id}>
-                                  {b.codigo} — {b.nombre}
-                                </option>
-                              ))}
-                            </select>
-                          </Campo>
-                        </Grilla>
+                        <Campo etiqueta="Servicios de la sesión" ayuda="Puedes agregar más de uno.">
+                          <SelectorMultiple
+                            name="servicioIds"
+                            opciones={servicios.map((s) => ({
+                              valor: s.id,
+                              etiqueta: s.nombre,
+                              detalle: `${s.duracionMinutos} min`,
+                            }))}
+                            placeholder="Buscar y agregar servicios…"
+                          />
+                        </Campo>
+                        <Campo etiqueta="Box">
+                          <SelectorBuscable
+                            name="boxId"
+                            opciones={boxes.map((b) => ({
+                              valor: b.id,
+                              etiqueta: `${b.codigo} — ${b.nombre}`,
+                            }))}
+                            placeholder="Sin box"
+                            textoVacio="Sin box"
+                          />
+                        </Campo>
                         <label className="flex items-center gap-2 text-sm text-slate-700">
                           <input type="checkbox" name="sobrecupo" className="h-4 w-4 rounded border-slate-300 text-amber-600" />
                           Permitir sobrecupo fuera del horario habitual

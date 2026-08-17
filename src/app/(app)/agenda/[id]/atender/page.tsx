@@ -20,6 +20,7 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
     include: {
       paciente: {
         include: {
+          prevision: { select: { nombre: true } },
           atenciones: {
             orderBy: { fecha: 'desc' },
             take: 3,
@@ -28,7 +29,7 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
         },
       },
       profesional: { select: { id: true, nombres: true, apellidos: true, especialidad: true } },
-      servicio: true,
+      servicios: { orderBy: { orden: 'asc' }, include: { servicio: true } },
       box: { select: { codigo: true, nombre: true } },
       atencion: { select: { id: true } },
     },
@@ -51,7 +52,9 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
     <>
       <EncabezadoPagina
         titulo={`Atender a ${paciente.nombres} ${paciente.apellidoPaterno}`}
-        descripcion={`Hora de las ${fechaHora(cita.inicio)}${cita.servicio ? ` · ${cita.servicio.nombre}` : ''}`}
+        descripcion={`Hora de las ${fechaHora(cita.inicio)}${
+          cita.servicios.length > 0 ? ` · ${cita.servicios.map((s) => s.servicio.nombre).join(', ')}` : ''
+        }`}
         volver={{ href: '/agenda', texto: 'Agenda' }}
       />
 
@@ -125,7 +128,7 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
                   <textarea
                     name="tratamientoRealizado"
                     rows={3}
-                    defaultValue={cita.servicio ? cita.servicio.nombre : ''}
+                    defaultValue={cita.servicios.map((s) => s.servicio.nombre).join('\n')}
                     className="campo"
                   />
                 </Campo>
@@ -169,11 +172,10 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
                 </Campo>
               </Grilla>
 
-              {cita.servicio && (
+              {cita.servicios.length > 0 && (
                 <Aviso tono="info">
-                  Al guardar se marcará la hora como atendida
-                  {cita.servicio.nombre ? ` y se descontarán los insumos de "${cita.servicio.nombre}"` : ''} del
-                  inventario.
+                  Al guardar se marcará la hora como atendida y se descontarán del inventario los insumos de{' '}
+                  {cita.servicios.map((s) => `«${s.servicio.nombre}»`).join(', ')}.
                 </Aviso>
               )}
 
@@ -196,7 +198,7 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
               <Definicion termino="RUT">{formatearRut(paciente.rut) || paciente.pasaporte}</Definicion>
               <Definicion termino="Edad">{edad !== null ? `${edad} años` : null}</Definicion>
               <Definicion termino="Previsión">
-                {humanizar(paciente.prevision)}
+                {paciente.prevision?.nombre ?? 'Sin registrar'}
                 {paciente.previsionDetalle ? ` · ${paciente.previsionDetalle}` : ''}
               </Definicion>
               <Definicion termino="Medicamentos actuales">{paciente.medicamentosActuales}</Definicion>
@@ -209,8 +211,17 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
               <Definicion termino="Profesional">
                 {cita.profesional.nombres} {cita.profesional.apellidos}
               </Definicion>
-              <Definicion termino="Servicio">
-                {cita.servicio ? `${cita.servicio.nombre} · ${clp(cita.servicio.precio)}` : null}
+              <Definicion termino={cita.servicios.length === 1 ? 'Servicio' : 'Servicios'}>
+                {cita.servicios.length > 0 ? (
+                  <ul className="space-y-0.5">
+                    {cita.servicios.map((s) => (
+                      <li key={s.id} className="flex justify-between gap-2">
+                        <span>{s.servicio.nombre}</span>
+                        <span className="tabular-nums text-slate-500">{clp(s.servicio.precio)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </Definicion>
               <Definicion termino="Box">{cita.box ? `${cita.box.codigo} — ${cita.box.nombre}` : null}</Definicion>
               <Definicion termino="Rayos X">

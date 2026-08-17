@@ -31,14 +31,28 @@ const ESTADOS: EstadoCita[] = [
   'REAGENDADA',
 ];
 
-/** Calcula el fin de la cita a partir del servicio o de la duración indicada. */
-async function calcularFin(inicio: Date, servicioId: string | null, duracionManual: number) {
-  if (duracionManual > 0) return new Date(inicio.getTime() + duracionManual * 60_000);
-  if (servicioId) {
-    const servicio = await prisma.servicio.findUnique({ where: { id: servicioId } });
-    if (servicio) return new Date(inicio.getTime() + servicio.duracionMinutos * 60_000);
+/** Lee los servicios elegidos para la sesión. Pueden ser varios. */
+function leerServicios(fd: FormData): string[] {
+  return [...new Set(fd.getAll('servicioIds').map(String).filter(Boolean))];
+}
+
+/**
+ * Resuelve duración total y necesidad de rayos X a partir de los servicios.
+ * La duración manual, si viene, manda sobre la suma.
+ */
+async function resolverSesion(servicioIds: string[], duracionManual: number) {
+  if (servicioIds.length === 0) {
+    return { duracion: duracionManual > 0 ? duracionManual : 30, usaRayosX: false, servicios: [] };
   }
-  return new Date(inicio.getTime() + 30 * 60_000);
+
+  const servicios = await prisma.servicio.findMany({ where: { id: { in: servicioIds } } });
+  const suma = servicios.reduce((acc, s) => acc + s.duracionMinutos, 0);
+
+  return {
+    duracion: duracionManual > 0 ? duracionManual : suma || 30,
+    usaRayosX: servicios.some((s) => s.usaRayosX),
+    servicios,
+  };
 }
 
 export async function crearCita(_previo: Resultado | null, fd: FormData): Promise<Resultado> {
@@ -48,11 +62,12 @@ export async function crearCita(_previo: Resultado | null, fd: FormData): Promis
 
     const pacienteId = requerido(fd, 'pacienteId', 'Paciente');
     const profesionalId = requerido(fd, 'profesionalId', 'Profesional');
-    const servicioId = textoOpcional(fd, 'servicioId');
+    const servicioIds = leerServicios(fd);
     const boxId = textoOpcional(fd, 'boxId');
     const inicio = fechaRequerida(fd, 'inicio', 'Fecha y hora');
-    const fin = await calcularFin(inicio, servicioId, entero(fd, 'duracionMinutos'));
 
+    const sesionCita = await resolverSesion(servicioIds, entero(fd, 'duracionMinutos'));
+    const fin = new Date(inicio.getTime() + sesionCita.duracion * 60_000);
     if (fin <= inicio) throw new Error('La hora de término debe ser posterior a la de inicio.');
 
     // Un sobrecupo salta la validación de horario, pero nunca la de choque real.
@@ -70,13 +85,6 @@ export async function crearCita(_previo: Resultado | null, fd: FormData): Promis
       throw new Error(`No se puede agendar:\n· ${bloqueantes.map((c) => c.mensaje).join('\n· ')}`);
     }
 
-    // Si el servicio usa rayos X y no se eligió box, avisamos para que se reserve la sala.
-    let usaRayosX = booleano(fd, 'usaRayosX');
-    if (servicioId) {
-      const servicio = await prisma.servicio.findUnique({ where: { id: servicioId } });
-      if (servicio?.usaRayosX) usaRayosX = true;
-    }
-
     const canal = texto(fd, 'canal') as CanalAgendamiento;
 
     const cita = await prisma.cita.create({
@@ -84,15 +92,20 @@ export async function crearCita(_previo: Resultado | null, fd: FormData): Promis
         pacienteId,
         profesionalId,
         boxId,
-        servicioId,
         inicio,
         fin,
         canal: CANALES.includes(canal) ? canal : 'PRESENCIAL',
         motivoConsulta: textoOpcional(fd, 'motivoConsulta'),
-        usaRayosX,
+        // Basta con que uno de los servicios la use para reservar la sala.
+        usaRayosX: booleano(fd, 'usaRayosX') || sesionCita.usaRayosX,
         observaciones: textoOpcional(fd, 'observaciones'),
         citaOrigenId: textoOpcional(fd, 'citaOrigenId'),
         creadoPorId: sesion.usuarioId,
+        servicios: {
+          createMany: {
+            data: servicioIds.map((servicioId, orden) => ({ servicioId, orden })),
+          },
+        },
       },
     });
     creadaId = cita.id;
@@ -103,7 +116,14 @@ export async function crearCita(_previo: Resultado | null, fd: FormData): Promis
       modulo: 'agenda',
       entidad: 'Cita',
       entidadId: cita.id,
-      detalle: { pacienteId, profesionalId, inicio: inicio.toISOString(), sobrecupo },
+      detalle: {
+        pacienteId,
+        profesionalId,
+        inicio: inicio.toISOString(),
+        servicios: servicioIds.length,
+        duracion: sesionCita.duracion,
+        sobrecupo,
+      },
     });
   });
 
@@ -111,7 +131,7 @@ export async function crearCita(_previo: Resultado | null, fd: FormData): Promis
 
   revalidatePath('/agenda');
   const volverA = texto(fd, 'volverA');
-  redirect(volverA || `/agenda?fecha=${new Date(String(fd.get('inicio'))).toISOString().slice(0, 10)}`);
+  redirect(volverA || '/agenda');
 }
 
 export async function reagendarCita(_previo: Resultado | null, fd: FormData): Promise<Resultado> {
@@ -125,6 +145,7 @@ export async function reagendarCita(_previo: Resultado | null, fd: FormData): Pr
 
     const inicio = fechaRequerida(fd, 'inicio', 'Nueva fecha y hora');
     const boxId = textoOpcional(fd, 'boxId') ?? cita.boxId;
+    // Se conserva el largo de la sesión original salvo que se indique otro.
     const duracionOriginal = Math.round((cita.fin.getTime() - cita.inicio.getTime()) / 60_000);
     const fin = new Date(inicio.getTime() + (entero(fd, 'duracionMinutos') || duracionOriginal) * 60_000);
 
@@ -278,9 +299,11 @@ export async function agendarDesdeInterconsulta(_previo: Resultado | null, fd: F
     if (!interconsulta) throw new Error('La interconsulta no existe.');
 
     const inicio = fechaRequerida(fd, 'inicio', 'Fecha y hora');
-    const servicioId = textoOpcional(fd, 'servicioId');
+    const servicioIds = leerServicios(fd);
     const boxId = textoOpcional(fd, 'boxId');
-    const fin = await calcularFin(inicio, servicioId, entero(fd, 'duracionMinutos'));
+
+    const sesionCita = await resolverSesion(servicioIds, entero(fd, 'duracionMinutos'));
+    const fin = new Date(inicio.getTime() + sesionCita.duracion * 60_000);
 
     const conflictos = await detectarConflictos(prisma, {
       profesionalId: interconsulta.profesionalDestinoId,
@@ -298,13 +321,16 @@ export async function agendarDesdeInterconsulta(_previo: Resultado | null, fd: F
         data: {
           pacienteId: interconsulta.pacienteId,
           profesionalId: interconsulta.profesionalDestinoId,
-          servicioId,
           boxId,
           inicio,
           fin,
           canal: 'DERIVACION',
           motivoConsulta: interconsulta.motivo,
+          usaRayosX: sesionCita.usaRayosX,
           creadoPorId: sesion.usuarioId,
+          servicios: {
+            createMany: { data: servicioIds.map((servicioId, orden) => ({ servicioId, orden })) },
+          },
         },
       });
 

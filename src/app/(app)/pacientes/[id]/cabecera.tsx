@@ -17,7 +17,7 @@ export interface PacienteCabecera {
   telefonoPrincipal: string;
   telefonoSecundario: string | null;
   email: string | null;
-  prevision: string;
+  prevision?: { nombre: string } | null;
   previsionDetalle: string | null;
   alergias: string | null;
   activo: boolean;
@@ -78,7 +78,7 @@ export function CabeceraPaciente({
               {paciente.telefonoSecundario && <span>{paciente.telefonoSecundario}</span>}
               {paciente.email && <span>{paciente.email}</span>}
               <span>
-                {humanizar(paciente.prevision)}
+                {paciente.prevision?.nombre ?? 'Sin previsión'}
                 {paciente.previsionDetalle ? ` · ${paciente.previsionDetalle}` : ''}
               </span>
             </div>
@@ -95,9 +95,12 @@ export function CabeceraPaciente({
                 {saldo < 0 ? `${clp(Math.abs(saldo))} a favor` : clp(saldo)}
               </p>
             </div>
-            <div className="flex gap-2 no-imprimir">
+            <div className="flex flex-wrap justify-end gap-2 no-imprimir">
               <EnlaceBoton href={`/agenda/nueva?paciente=${paciente.id}`} variante="secundario" tamano="sm">
                 Agendar hora
+              </EnlaceBoton>
+              <EnlaceBoton href={`${base}/imprimir`} variante="secundario" tamano="sm">
+                Imprimir ficha
               </EnlaceBoton>
               {puedeEditar && (
                 <EnlaceBoton href={`${base}/editar`} variante="secundario" tamano="sm">

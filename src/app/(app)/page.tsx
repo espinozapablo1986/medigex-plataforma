@@ -60,7 +60,7 @@ export default async function Dashboard({
           include: {
             paciente: { select: { id: true, nombres: true, apellidoPaterno: true, telefonoPrincipal: true } },
             profesional: { select: { nombres: true, apellidos: true, colorAgenda: true } },
-            servicio: { select: { nombre: true } },
+            servicios: { orderBy: { orden: 'asc' }, include: { servicio: { select: { nombre: true } } } },
             box: { select: { codigo: true } },
           },
         })
@@ -318,7 +318,7 @@ export default async function Dashboard({
                       </span>
                     </td>
                     <td className="text-xs text-slate-600">
-                      {cita.servicio?.nombre ?? '—'}
+                      {cita.servicios.length > 0 ? cita.servicios.map((s) => s.servicio.nombre).join(', ') : '—'}
                       {cita.usaRayosX && <Badge tono="morado">RX</Badge>}
                     </td>
                     <td className="text-xs text-slate-600">{cita.box?.codigo ?? '—'}</td>

@@ -28,7 +28,7 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
       take: 5,
       include: {
         profesional: { select: { nombres: true, apellidos: true } },
-        servicio: { select: { nombre: true } },
+        servicios: { include: { servicio: { select: { nombre: true } } } },
         box: { select: { codigo: true } },
       },
     }),
@@ -94,7 +94,8 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
                       <p className="text-sm font-medium text-slate-800">{fechaHora(cita.inicio)}</p>
                       <p className="text-xs text-slate-500">
                         {cita.profesional.nombres} {cita.profesional.apellidos}
-                        {cita.servicio && ` · ${cita.servicio.nombre}`}
+                        {cita.servicios.length > 0 &&
+                          ` · ${cita.servicios.map((s) => s.servicio.nombre).join(', ')}`}
                         {cita.box && ` · Box ${cita.box.codigo}`}
                       </p>
                     </div>
@@ -192,7 +193,7 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
               </Definicion>
               <Definicion termino="Ocupación">{paciente.ocupacion}</Definicion>
               <Definicion termino="Previsión">
-                {humanizar(paciente.prevision)}
+                {paciente.prevision?.nombre ?? 'Sin registrar'}
                 {paciente.previsionDetalle ? ` · ${paciente.previsionDetalle}` : ''}
               </Definicion>
               <Definicion termino="Convenio">

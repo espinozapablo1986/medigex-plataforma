@@ -26,7 +26,7 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
     prisma.presupuesto.findUnique({
       where: { id },
       include: {
-        paciente: { include: { convenio: { select: { nombre: true } } } },
+        paciente: { include: { convenio: { select: { nombre: true } }, prevision: { select: { nombre: true } } } },
         profesional: { select: { nombres: true, apellidos: true, especialidad: true, registroSuperintendencia: true } },
         creadoPor: { select: { nombres: true, apellidos: true } },
         items: { orderBy: { orden: 'asc' }, include: { servicio: true, producto: true } },
@@ -162,7 +162,7 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
             <p className="text-sm text-slate-600">{paciente.telefonoPrincipal}</p>
             {paciente.email && <p className="text-sm text-slate-600">{paciente.email}</p>}
             <p className="text-sm text-slate-600">
-              {humanizar(paciente.prevision)}
+              {paciente.prevision?.nombre ?? 'Sin previsión'}
               {paciente.convenio ? ` · Convenio ${paciente.convenio.nombre}` : ''}
             </p>
           </div>

@@ -11,7 +11,12 @@ import {
 } from '@/components/ui';
 import { BotonEliminar, BotonEnviar, Formulario, Modal } from '@/components/formulario';
 
-import { guardarConfiguracion } from './acciones';
+import {
+  alternarActivoPrevision,
+  eliminarPrevision,
+  guardarConfiguracion,
+  guardarPrevision,
+} from './acciones';
 import { alternarActivoFormaPago, guardarFormaPago } from '../ventas/acciones';
 
 export const metadata = { title: 'Configuración' };
@@ -32,9 +37,13 @@ const TIPOS_PAGO = [
 export default async function PaginaConfiguracion() {
   const sesion = await requerirPermiso('configuracion', 'ver');
 
-  const [config, formasPago, auditoria] = await Promise.all([
+  const [config, formasPago, previsiones, auditoria] = await Promise.all([
     prisma.configuracion.findUnique({ where: { id: 'singleton' } }),
     prisma.formaPago.findMany({ orderBy: [{ activo: 'desc' }, { orden: 'asc' }, { nombre: 'asc' }] }),
+    prisma.prevision.findMany({
+      orderBy: [{ activo: 'desc' }, { orden: 'asc' }, { nombre: 'asc' }],
+      include: { _count: { select: { pacientes: true } } },
+    }),
     prisma.registroAuditoria.findMany({
       orderBy: { createdAt: 'desc' },
       take: 40,
@@ -98,11 +107,54 @@ export default async function PaginaConfiguracion() {
     </>
   );
 
+  const camposPrevision = (p?: (typeof previsiones)[number]) => (
+    <>
+      <Grilla cols={2}>
+        <Campo etiqueta="Nombre" requerido>
+          <input name="nombre" defaultValue={p?.nombre} required className="campo" placeholder="Isapre Colmena" />
+        </Campo>
+        <Campo etiqueta="Código" ayuda="Se genera desde el nombre si lo dejas vacío.">
+          <input name="codigo" defaultValue={p?.codigo ?? ''} className="campo uppercase" />
+        </Campo>
+        <Campo etiqueta="Tipo" requerido ayuda="Agrupa la previsión en los reportes.">
+          <select name="tipo" defaultValue={p?.tipo ?? 'ISAPRE'} required className="campo">
+            <option value="PARTICULAR">Particular</option>
+            <option value="FONASA">Fonasa</option>
+            <option value="ISAPRE">Isapre</option>
+            <option value="SEGURO_COMPLEMENTARIO">Seguro complementario</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </Campo>
+        <Campo etiqueta="Orden en la lista" ayuda="Menor número aparece primero.">
+          <input name="orden" type="number" min={0} defaultValue={p?.orden ?? 50} className="campo" />
+        </Campo>
+      </Grilla>
+
+      <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          name="requiereDetalle"
+          defaultChecked={p?.requiereDetalle ?? false}
+          className="h-4 w-4 rounded border-slate-300 text-brand-600"
+        />
+        Pedir un dato adicional al elegirla
+      </label>
+
+      <Campo
+        etiqueta="Qué dato pedir"
+        ayuda="Aparece como ayuda en la ficha del paciente. Ej: «Nº de plan», «Tramo»."
+        className="mt-4"
+      >
+        <input name="etiquetaDetalle" defaultValue={p?.etiquetaDetalle ?? ''} className="campo" />
+      </Campo>
+    </>
+  );
+
   return (
     <>
       <EncabezadoPagina
         titulo="Configuración"
-        descripcion="Datos del centro, parámetros tributarios, horarios y formas de pago."
+        descripcion="Datos del centro, parámetros tributarios, horarios, previsiones y formas de pago."
       />
 
       <div className="space-y-5">
@@ -307,6 +359,99 @@ export default async function PaginaConfiguracion() {
                           texto={f.activo ? 'Desactivar' : 'Activar'}
                           mensaje={`¿Confirmas ${f.activo ? 'desactivar' : 'activar'} "${f.nombre}"?`}
                         />
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </ContenedorTabla>
+        </Tarjeta>
+
+        <Tarjeta
+          titulo="Previsiones"
+          descripcion="Lo que aparece en el desplegable de la ficha del paciente. Agrega las Isapres o seguros que atienda el centro."
+          sinPadding
+          acciones={
+            puedeEditar && (
+              <Modal titulo="Nueva previsión" etiquetaBoton="Nueva previsión" tamanoBoton="sm" ancho="max-w-xl">
+                <Formulario accion={guardarPrevision} className="space-y-4" reiniciarAlEnviar>
+                  {camposPrevision()}
+                  <div className="flex justify-end">
+                    <BotonEnviar>Crear</BotonEnviar>
+                  </div>
+                </Formulario>
+              </Modal>
+            )
+          }
+        >
+          <ContenedorTabla>
+            <thead>
+              <tr>
+                <th className="w-16 text-right">Orden</th>
+                <th>Previsión</th>
+                <th>Tipo</th>
+                <th>Dato adicional</th>
+                <th className="text-right">Pacientes</th>
+                <th>Estado</th>
+                {puedeEditar && <th className="text-right">Acciones</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {previsiones.map((p) => (
+                <tr key={p.id} className={p.activo ? '' : 'opacity-60'}>
+                  <td className="text-right tabular-nums text-slate-400">{p.orden}</td>
+                  <td>
+                    <p className="font-medium text-slate-800">{p.nombre}</p>
+                    <p className="font-mono text-xs text-slate-400">{p.codigo}</p>
+                  </td>
+                  <td>
+                    <Badge
+                      tono={
+                        p.tipo === 'ISAPRE'
+                          ? 'azul'
+                          : p.tipo === 'FONASA'
+                            ? 'verde'
+                            : p.tipo === 'SEGURO_COMPLEMENTARIO'
+                              ? 'morado'
+                              : 'gris'
+                      }
+                    >
+                      {humanizar(p.tipo)}
+                    </Badge>
+                  </td>
+                  <td className="text-xs text-slate-600">
+                    {p.requiereDetalle ? (p.etiquetaDetalle ?? 'Sí, sin etiqueta') : '—'}
+                  </td>
+                  <td className="text-right tabular-nums text-slate-500">{p._count.pacientes}</td>
+                  <td>{p.activo ? <Badge tono="verde">activa</Badge> : <Badge tono="rojo">inactiva</Badge>}</td>
+                  {puedeEditar && (
+                    <td>
+                      <div className="flex flex-wrap justify-end gap-1.5">
+                        <Modal
+                          titulo={`Editar ${p.nombre}`}
+                          etiquetaBoton="Editar"
+                          varianteBoton="secundario"
+                          tamanoBoton="sm"
+                          ancho="max-w-xl"
+                        >
+                          <Formulario accion={guardarPrevision} className="space-y-4">
+                            <input type="hidden" name="id" value={p.id} />
+                            {camposPrevision(p)}
+                            <div className="flex justify-end">
+                              <BotonEnviar>Guardar</BotonEnviar>
+                            </div>
+                          </Formulario>
+                        </Modal>
+                        <BotonEliminar
+                          accion={alternarActivoPrevision}
+                          id={p.id}
+                          texto={p.activo ? 'Desactivar' : 'Activar'}
+                          mensaje={`¿Confirmas ${p.activo ? 'desactivar' : 'activar'} "${p.nombre}"?`}
+                        />
+                        {p._count.pacientes === 0 && (
+                          <BotonEliminar accion={eliminarPrevision} id={p.id} variante="peligro" />
+                        )}
                       </div>
                     </td>
                   )}

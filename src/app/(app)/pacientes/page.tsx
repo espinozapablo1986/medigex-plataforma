@@ -55,6 +55,7 @@ export default async function PaginaPacientes({
       take: POR_PAGINA,
       include: {
         convenio: { select: { nombre: true } },
+        prevision: { select: { nombre: true } },
         movimientosCuenta: {
           orderBy: [{ fecha: 'desc' }, { createdAt: 'desc' }],
           take: 1,
@@ -157,7 +158,7 @@ export default async function PaginaPacientes({
                       {p.telefonoSecundario && <div>{p.telefonoSecundario}</div>}
                     </td>
                     <td className="text-xs text-slate-600">
-                      {humanizar(p.prevision)}
+                      {p.prevision?.nombre ?? '—'}
                       {p.convenio && <div className="text-brand-600">{p.convenio.nombre}</div>}
                     </td>
                     <td className="text-right tabular-nums text-slate-500">{p._count.atenciones}</td>
