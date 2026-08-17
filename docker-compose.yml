@@ -4,8 +4,7 @@
 # que ya corre en el VPS y comparte la red `nginx_default`.
 #
 #   docker compose up -d --build
-#   docker compose exec app npx prisma migrate deploy
-#   docker compose exec app npx tsx prisma/seed.ts
+#   docker compose --profile tools run --rm migrator      # migraciones + semilla
 
 services:
   db:
@@ -51,6 +50,26 @@ services:
     networks:
       - medigex
       - nginx_default # red del Nginx Proxy Manager que ya existe en el VPS
+
+  # Contenedor efímero para migraciones y semilla. No se levanta con el stack:
+  #   docker compose --profile tools run --rm migrator
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tools
+    profiles: ['tools']
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-medigex}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-medigex}?schema=public
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@medigex.cl}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Medigex2026!}
+      SEED_DEMO: ${SEED_DEMO:-1}
+      TZ: America/Santiago
+    networks:
+      - medigex
 
   # Respaldo diario de la base de datos, con rotación a 14 días.
   backup:

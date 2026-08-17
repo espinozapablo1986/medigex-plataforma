@@ -1,0 +1,118 @@
+name: Desplegar en el VPS
+
+# Cada push a main que toque código se despliega solo en medic.asdf123.cl.
+# También se puede lanzar a mano desde la pestaña Actions.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      sembrar:
+        description: 'Volver a ejecutar la semilla de datos'
+        type: boolean
+        default: false
+
+concurrency:
+  group: despliegue-produccion
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    name: Verificar tipos y build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generar cliente Prisma
+        run: npx prisma generate
+
+      - name: Revisar tipos
+        run: npx tsc --noEmit
+
+      - name: Compilar
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          AUTH_SECRET: secreto-de-integracion-continua-0123456789
+
+  desplegar:
+    name: Desplegar
+    needs: verificar
+    runs-on: ubuntu-latest
+    environment:
+      name: desarrollo
+      url: https://medic.asdf123.cl
+    steps:
+      - name: Preparar la llave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Actualizar y levantar el stack
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USUARIO: ${{ secrets.VPS_USER }}
+          SEMBRAR: ${{ inputs.sembrar }}
+        run: |
+          ssh -o BatchMode=yes "$USUARIO@$HOST" bash -s <<'REMOTO'
+            set -euo pipefail
+            cd /opt/stacks/medigex
+
+            echo "▸ Trayendo los últimos cambios…"
+            git fetch --all --prune
+            git reset --hard origin/main
+
+            echo "▸ Construyendo la imagen…"
+            docker compose build app
+
+            echo "▸ Aplicando migraciones…"
+            SEED_DEMO=0 docker compose --profile tools run --rm migrator
+
+            echo "▸ Reiniciando la aplicación…"
+            docker compose up -d --remove-orphans
+
+            echo "▸ Limpiando imágenes antiguas…"
+            docker image prune -f --filter "until=168h"
+          REMOTO
+
+      - name: Sembrar datos de demostración
+        if: ${{ inputs.sembrar }}
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USUARIO: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -o BatchMode=yes "$USUARIO@$HOST" \
+            'cd /opt/stacks/medigex && docker compose --profile tools run --rm migrator'
+
+      - name: Comprobar que responde
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USUARIO: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -o BatchMode=yes "$USUARIO@$HOST" bash -s <<'REMOTO'
+            set -euo pipefail
+            for intento in $(seq 1 20); do
+              estado=$(docker inspect --format '{{.State.Health.Status}}' medigex-app 2>/dev/null || echo "sin-datos")
+              if [ "$estado" = "healthy" ]; then
+                echo "✅ La aplicación responde correctamente."
+                exit 0
+              fi
+              echo "  intento $intento/20 — estado: $estado"
+              sleep 6
+            done
+            echo "❌ La aplicación no quedó saludable. Últimos registros:"
+            docker compose -f /opt/stacks/medigex/docker-compose.yml logs --tail 60 app
+            exit 1
+          REMOTO

@@ -21,6 +21,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx prisma generate
 RUN npm run build
 
+# ── Herramientas (migraciones y semilla) ──────────────────────
+# Reutiliza las capas del build, así que no cuesta tiempo extra.
+FROM builder AS tools
+WORKDIR /app
+ENV NODE_ENV=production
+CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/seed.ts"]
+
 # ── Runtime ───────────────────────────────────────────────────
 FROM node:22-alpine AS runner
 WORKDIR /app
@@ -34,20 +41,11 @@ ENV HOSTNAME=0.0.0.0
 
 RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs
 
-# Salida standalone de Next.js
+# Salida standalone de Next.js: incluye sólo las dependencias que la
+# aplicación realmente usa en tiempo de ejecución, cliente Prisma incluido.
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-
-# Prisma y la semilla, para poder migrar desde el contenedor
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/src/lib/permissions.ts ./src/lib/permissions.ts
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modules/bcryptjs
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/tsx ./node_modules/tsx
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin ./node_modules/.bin
 
 # Carpeta de adjuntos (se monta como volumen en producción)
 RUN mkdir -p /app/storage/uploads && chown -R nextjs:nodejs /app/storage
