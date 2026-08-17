@@ -19,7 +19,7 @@ export default async function PaginaNuevaCita({
 
   const dia = fechaTexto ? new Date(`${fechaTexto}T12:00:00`) : new Date();
 
-  const [pacientes, profesionales, servicios, boxes, pacienteSeleccionado] = await Promise.all([
+  const [pacientes, profesionales, servicios, pacienteSeleccionado] = await Promise.all([
     prisma.paciente.findMany({
       where: { activo: true },
       orderBy: [{ apellidoPaterno: 'asc' }, { nombres: 'asc' }],
@@ -42,11 +42,6 @@ export default async function PaginaNuevaCita({
       where: { activo: true },
       orderBy: { nombre: 'asc' },
       select: { id: true, nombre: true, precio: true, duracionMinutos: true, usaRayosX: true, tipoBoxRequerido: true },
-    }),
-    prisma.box.findMany({
-      where: { activo: true },
-      orderBy: { codigo: 'asc' },
-      select: { id: true, codigo: true, nombre: true, tipo: true },
     }),
     pacienteId
       ? prisma.paciente.findUnique({
@@ -86,7 +81,6 @@ export default async function PaginaNuevaCita({
             detalle: p.especialidad,
           }))}
           servicios={servicios}
-          boxes={boxes}
           pacientePreseleccionado={pacienteId}
           fechaInicial={isoFecha(dia)}
           volverA={`/agenda?fecha=${isoFecha(dia)}`}

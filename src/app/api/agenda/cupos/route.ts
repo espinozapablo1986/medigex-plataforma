@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { obtenerSesion, puede } from '@/lib/auth';
-import { boxesDisponibles, cuposDelDia } from '@/lib/agenda';
+import { cuposDelDia } from '@/lib/agenda';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,21 +48,10 @@ export async function GET(request: Request) {
     boxSugeridoId: c.boxSugeridoId ?? null,
   }));
 
-  // Boxes libres en el primer cupo disponible, para sugerir uno.
-  const primero = cupos.find((c) => c.disponible && c.inicio > ahora);
-  const boxes = primero
-    ? (await boxesDisponibles(primero.inicio, primero.fin)).map((b) => ({
-        id: b.id,
-        codigo: b.codigo,
-        nombre: b.nombre,
-        tipo: b.tipo,
-        disponible: b.disponible,
-      }))
-    : [];
-
+  // La disponibilidad de boxes se consulta aparte, cuando ya hay una hora
+  // elegida: depende del bloque exacto, no del día completo.
   return NextResponse.json({
     cupos: resultado,
-    boxes,
     excluirCitaId,
     resumen: {
       total: resultado.length,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CalendarClock, Loader2 } from 'lucide-react';
+import { AlertTriangle, CalendarClock, DoorOpen, Loader2 } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
 import { Campo, Grilla } from '@/components/ui';
@@ -25,6 +25,17 @@ interface Cupo {
   boxSugeridoId: string | null;
 }
 
+interface BoxEstado {
+  id: string;
+  codigo: string;
+  nombre: string;
+  tipo: string;
+  ubicacion: string | null;
+  disponible: boolean;
+  motivo?: string;
+  recomendado: boolean;
+}
+
 function clp(monto: number) {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(monto);
 }
@@ -45,7 +56,6 @@ export function FormularioCita({
   pacientes,
   profesionales,
   servicios,
-  boxes,
   pacientePreseleccionado,
   fechaInicial,
   volverA,
@@ -53,7 +63,6 @@ export function FormularioCita({
   pacientes: Opcion[];
   profesionales: Opcion[];
   servicios: ServicioOpcion[];
-  boxes: { id: string; codigo: string; nombre: string; tipo: string }[];
   pacientePreseleccionado?: string;
   fechaInicial: string;
   volverA: string;
@@ -65,6 +74,8 @@ export function FormularioCita({
   const [cargando, setCargando] = useState(false);
   const [inicioElegido, setInicioElegido] = useState('');
   const [boxId, setBoxId] = useState('');
+  const [boxes, setBoxes] = useState<BoxEstado[]>([]);
+  const [cargandoBoxes, setCargandoBoxes] = useState(false);
   const [sobrecupo, setSobrecupo] = useState(false);
 
   const detalle = useMemo(
@@ -75,6 +86,12 @@ export function FormularioCita({
   const duracionTotal = detalle.reduce((acc, s) => acc + s.duracionMinutos, 0);
   const precioTotal = detalle.reduce((acc, s) => acc + s.precio, 0);
   const necesitaRayosX = detalle.some((s) => s.usaRayosX);
+
+  // Si algún servicio exige un tipo de sala, ese manda para recomendar box.
+  const tipoBoxRequerido =
+    detalle.find((s) => s.usaRayosX)?.tipoBoxRequerido ??
+    detalle.find((s) => s.tipoBoxRequerido)?.tipoBoxRequerido ??
+    null;
 
   // Recarga los cupos cada vez que cambia profesional, fecha o duración.
   const cargarCupos = useCallback(async () => {
@@ -108,15 +125,51 @@ export function FormularioCita({
       return;
     }
     const sigueValido = libres.some((c) => c.inicio === inicioElegido);
-    if (!sigueValido) {
-      setInicioElegido(libres[0].inicio);
-      if (libres[0].boxSugeridoId) setBoxId(libres[0].boxSugeridoId);
-    }
+    if (!sigueValido) setInicioElegido(libres[0].inicio);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cupos]);
 
+  // Con la hora ya elegida se consulta qué boxes quedan libres en ese bloque.
+  const cargarBoxes = useCallback(async () => {
+    if (!inicioElegido) {
+      setBoxes([]);
+      return;
+    }
+    setCargandoBoxes(true);
+    try {
+      const parametros = new URLSearchParams({
+        inicio: inicioElegido,
+        duracion: String(duracionTotal > 0 ? duracionTotal : 30),
+      });
+      if (tipoBoxRequerido) parametros.set('tipo', tipoBoxRequerido);
+      const respuesta = await fetch(`/api/agenda/boxes?${parametros}`);
+      const datos = await respuesta.json();
+      setBoxes(datos.boxes ?? []);
+    } catch {
+      setBoxes([]);
+    } finally {
+      setCargandoBoxes(false);
+    }
+  }, [inicioElegido, duracionTotal, tipoBoxRequerido]);
+
+  useEffect(() => {
+    void cargarBoxes();
+  }, [cargarBoxes]);
+
+  // Propone el primer box libre que sirva para el servicio.
+  useEffect(() => {
+    if (boxes.length === 0) return;
+    const elegidoSigueLibre = boxes.some((b) => b.id === boxId && b.disponible);
+    if (elegidoSigueLibre) return;
+
+    const candidato = boxes.find((b) => b.disponible && b.recomendado) ?? boxes.find((b) => b.disponible);
+    setBoxId(candidato?.id ?? '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boxes]);
+
   const libres = cupos.filter((c) => c.disponible).length;
-  const boxesCompatibles = necesitaRayosX ? boxes.filter((b) => b.tipo === 'SALA_RAYOS_X') : boxes;
+  const boxesLibres = boxes.filter((b) => b.disponible).length;
+  const boxElegido = boxes.find((b) => b.id === boxId);
 
   return (
     <div className="grid gap-5 lg:grid-cols-3">
@@ -196,24 +249,139 @@ export function FormularioCita({
           )}
         </section>
 
+        {/* ── Boxes disponibles ── */}
         <section className="tarjeta p-4">
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Box y detalles</h2>
-          <Grilla cols={2}>
-            <Campo etiqueta="Box o sala">
-              <SelectorBuscable
-                name="boxId"
-                opciones={boxesCompatibles.map((b) => ({
-                  valor: b.id,
-                  etiqueta: `${b.codigo} — ${b.nombre}`,
-                  detalle: b.tipo.replace(/_/g, ' ').toLowerCase(),
-                }))}
-                valorInicial={boxId}
-                key={boxId} /* refleja la sugerencia automática del cupo */
-                placeholder="Sin box asignado"
-                textoVacio="Sin box asignado"
-              />
-            </Campo>
+          <div className="mb-1 flex items-center gap-1.5">
+            <DoorOpen className="h-4 w-4 text-brand-600" />
+            <h2 className="text-sm font-semibold text-slate-900">Box o sala</h2>
+          </div>
+          <p className="mb-4 text-xs text-slate-500">
+            {!inicioElegido
+              ? 'Elige primero una hora para ver qué boxes quedan libres.'
+              : cargandoBoxes
+                ? 'Consultando disponibilidad…'
+                : `${boxesLibres} de ${boxes.length} libres a las ${hhmm(inicioElegido)}`}
+            {tipoBoxRequerido && ` · el servicio requiere ${tipoBoxRequerido.replace(/_/g, ' ').toLowerCase()}`}
+          </p>
 
+          {/* Valor real que viaja en el formulario */}
+          <input type="hidden" name="boxId" value={boxId} />
+
+          {!inicioElegido ? (
+            <p className="rounded-lg bg-slate-50 px-3 py-6 text-center text-sm text-slate-400">
+              Sin hora seleccionada
+            </p>
+          ) : cargandoBoxes ? (
+            <p className="flex items-center justify-center gap-2 rounded-lg bg-slate-50 px-3 py-6 text-sm text-slate-400">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Cargando boxes…
+            </p>
+          ) : boxes.length === 0 ? (
+            <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+              No hay boxes activos configurados. Puedes agendar sin box asignado.
+            </p>
+          ) : (
+            <>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {boxes.map((box) => {
+                  const elegido = box.id === boxId;
+                  return (
+                    <button
+                      key={box.id}
+                      type="button"
+                      disabled={!box.disponible}
+                      onClick={() => setBoxId(box.id)}
+                      title={box.motivo}
+                      className={cn(
+                        'flex items-start justify-between gap-2 rounded-lg border px-3 py-2 text-left transition',
+                        !box.disponible
+                          ? 'cursor-not-allowed border-slate-200 bg-slate-100 opacity-70'
+                          : elegido
+                            ? 'border-brand-600 bg-brand-600 text-white shadow-sm'
+                            : box.recomendado
+                              ? 'border-emerald-300 bg-emerald-50 hover:bg-emerald-100'
+                              : 'border-slate-300 bg-white hover:bg-slate-50',
+                      )}
+                    >
+                      <span className="min-w-0">
+                        <span
+                          className={cn(
+                            'block text-sm font-semibold',
+                            !box.disponible ? 'text-slate-400 line-through' : elegido ? 'text-white' : 'text-slate-800',
+                          )}
+                        >
+                          {box.codigo} · {box.nombre}
+                        </span>
+                        <span
+                          className={cn(
+                            'block truncate text-xs',
+                            elegido ? 'text-brand-100' : box.disponible ? 'text-slate-500' : 'text-slate-400',
+                          )}
+                        >
+                          {box.motivo ?? box.tipo.replace(/_/g, ' ').toLowerCase()}
+                          {box.ubicacion && box.disponible && ` · ${box.ubicacion}`}
+                        </span>
+                      </span>
+
+                      {box.disponible && !box.recomendado && (
+                        <span
+                          className={cn(
+                            'shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium',
+                            elegido ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700',
+                          )}
+                        >
+                          no apto
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-2 text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded border border-emerald-300 bg-emerald-50" /> libre y apto
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded bg-brand-600" /> elegido
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded bg-slate-200" /> ocupado
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setBoxId('')}
+                  className="ml-auto text-slate-400 underline hover:text-slate-600"
+                >
+                  Agendar sin box
+                </button>
+              </div>
+
+              {tipoBoxRequerido && boxElegido && !boxElegido.recomendado && (
+                <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    El box elegido no es del tipo que pide el servicio. Se puede agendar igual, pero confirma que
+                    tenga el equipamiento necesario.
+                  </span>
+                </div>
+              )}
+
+              {boxesLibres === 0 && (
+                <div className="mt-3 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    Todos los boxes están ocupados a esa hora. Elige otro horario o agenda sin box asignado.
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+
+        <section className="tarjeta p-4">
+          <h2 className="mb-4 text-sm font-semibold text-slate-900">Detalles de la cita</h2>
+          <Grilla cols={2}>
             <Campo etiqueta="Canal de agendamiento">
               <select name="canal" defaultValue="PRESENCIAL" className="campo">
                 <option value="PRESENCIAL">Presencial</option>
@@ -373,6 +541,9 @@ export function FormularioCita({
                     month: 'long',
                   })}
                   {duracionTotal > 0 && ` · ${duracionTotal} min`}
+                </p>
+                <p className="mt-1 border-t border-brand-200 pt-1 text-xs">
+                  {boxElegido ? `Box ${boxElegido.codigo} — ${boxElegido.nombre}` : 'Sin box asignado'}
                 </p>
               </div>
             )}

@@ -280,25 +280,46 @@ export async function cuposDelDia(
   return cupos.sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
 }
 
-/**
- * Boxes libres en un rango horario, opcionalmente filtrando por tipo
- * (por ejemplo, sólo la sala de rayos X).
- */
-export async function boxesDisponibles(inicio: Date, fin: Date, tipo?: string | null) {
-  const boxes = await prisma.box.findMany({
-    where: { activo: true, ...(tipo ? { tipo: tipo as never } : {}) },
-    orderBy: { codigo: 'asc' },
-  });
+export interface BoxConEstado {
+  id: string;
+  codigo: string;
+  nombre: string;
+  tipo: string;
+  ubicacion: string | null;
+  disponible: boolean;
+  /** Por qué no está libre, para poder explicarlo en pantalla. */
+  motivo?: string;
+  /** El servicio elegido pide este tipo de sala. */
+  recomendado: boolean;
+}
 
-  const [citas, bloqueos] = await Promise.all([
+/**
+ * Estado de cada box en un rango horario: si está libre y, si no, quién lo
+ * ocupa. `tipoRequerido` no filtra la lista — marca cuáles sirven para el
+ * servicio, porque a veces conviene ver igual el resto.
+ */
+export async function boxesConEstado(
+  inicio: Date,
+  fin: Date,
+  opciones: { tipoRequerido?: string | null; excluirCitaId?: string | null } = {},
+): Promise<BoxConEstado[]> {
+  const [boxes, citas, bloqueos] = await Promise.all([
+    prisma.box.findMany({ where: { activo: true }, orderBy: { codigo: 'asc' } }),
     prisma.cita.findMany({
       where: {
         boxId: { not: null },
         estado: { in: [...ESTADOS_QUE_OCUPAN] },
+        ...(opciones.excluirCitaId ? { id: { not: opciones.excluirCitaId } } : {}),
         inicio: { lt: fin },
         fin: { gt: inicio },
       },
-      select: { boxId: true },
+      select: {
+        boxId: true,
+        inicio: true,
+        fin: true,
+        profesional: { select: { apellidos: true } },
+        paciente: { select: { nombres: true, apellidoPaterno: true } },
+      },
     }),
     prisma.excepcionAgenda.findMany({
       where: {
@@ -307,14 +328,34 @@ export async function boxesDisponibles(inicio: Date, fin: Date, tipo?: string | 
         fechaInicio: { lt: fin },
         fechaFin: { gt: inicio },
       },
-      select: { boxId: true },
+      select: { boxId: true, tipo: true, motivo: true },
     }),
   ]);
 
-  const ocupados = new Set([
-    ...citas.map((c) => c.boxId),
-    ...bloqueos.map((b) => b.boxId),
-  ]);
+  return boxes.map((box) => {
+    const cita = citas.find((c) => c.boxId === box.id);
+    const bloqueo = bloqueos.find((b) => b.boxId === box.id);
 
-  return boxes.map((box) => ({ ...box, disponible: !ocupados.has(box.id) }));
+    let motivo: string | undefined;
+    if (cita) {
+      motivo = `Ocupado ${hhmm(cita.inicio)}–${hhmm(cita.fin)} · ${cita.profesional.apellidos} con ${cita.paciente.nombres} ${cita.paciente.apellidoPaterno}`;
+    } else if (bloqueo) {
+      motivo = bloqueo.motivo ?? bloqueo.tipo.replace(/_/g, ' ').toLowerCase();
+    }
+
+    return {
+      id: box.id,
+      codigo: box.codigo,
+      nombre: box.nombre,
+      tipo: box.tipo,
+      ubicacion: box.ubicacion,
+      disponible: !cita && !bloqueo,
+      motivo,
+      recomendado: !opciones.tipoRequerido || box.tipo === opciones.tipoRequerido,
+    };
+  });
+}
+
+function hhmm(fecha: Date) {
+  return `${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')}`;
 }
