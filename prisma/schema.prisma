@@ -77,6 +77,10 @@ model Usuario {
   movimientosStock     MovimientoStock[]
   liquidacionesCreadas Liquidacion[]     @relation("LiquidacionCreadaPor")
   informesEmitidos     InformeBeneficio[] @relation("InformeEmitidoPor")
+  contactosAsignados   Contacto[]         @relation("ContactoAsignado")
+  interaccionesRegistradas Interaccion[]  @relation("InteraccionRegistradaPor")
+  seguimientosAsignados Seguimiento[]     @relation("SeguimientoAsignado")
+  seguimientosCreados  Seguimiento[]      @relation("SeguimientoCreadoPor")
   auditoria            RegistroAuditoria[]
   sesiones             Sesion[]
 
@@ -221,6 +225,9 @@ model Paciente {
   pagos        Pago[]
   movimientosCuenta MovimientoCuenta[]
   derivaciones Interconsulta[]
+  contactosCrm Contacto[]
+  interacciones Interaccion[]
+  seguimientos  Seguimiento[]
 
   @@index([rut])
   @@index([apellidoPaterno, nombres])
@@ -926,6 +933,7 @@ model Presupuesto {
   items       PresupuestoItem[]
   adjuntos    Adjunto[]
   ventas      Venta[]
+  seguimientos Seguimiento[]
 
   @@index([pacienteId])
   @@map("presupuestos")
@@ -1441,6 +1449,155 @@ model LiquidacionItem {
   liquidacion Liquidacion @relation(fields: [liquidacionId], references: [id], onDelete: Cascade)
 
   @@map("liquidacion_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CRM: contactos, interacciones y seguimientos
+// ═══════════════════════════════════════════════════════════════
+
+enum OrigenContacto {
+  RECOMENDACION
+  INSTAGRAM
+  FACEBOOK
+  GOOGLE
+  SITIO_WEB
+  WHATSAPP
+  PASABA_POR_FUERA
+  CONVENIO_EMPRESA
+  DERIVACION
+  CAMPANA
+  OTRO
+}
+
+enum EstadoContacto {
+  NUEVO
+  CONTACTADO
+  INTERESADO
+  AGENDADO
+  CONVERTIDO
+  PERDIDO
+}
+
+/// Persona interesada que todavía no es paciente. Cuando agenda y se atiende,
+/// se convierte: se crea su ficha y el contacto queda enlazado a ella.
+model Contacto {
+  id            String         @id @default(cuid())
+  nombre        String
+  telefono      String?
+  email         String?
+  rut           String?
+  origen        OrigenContacto @default(OTRO)
+  estado        EstadoContacto @default(NUEVO)
+  /// Qué vino buscando: "implante", "ortodoncia para su hija"…
+  interes       String?
+  observaciones String?
+
+  /// Ficha creada al convertirlo en paciente.
+  pacienteId  String?
+  asignadoAId String?
+  motivoPerdida String?
+  convertidoAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paciente      Paciente?     @relation(fields: [pacienteId], references: [id], onDelete: SetNull)
+  asignadoA     Usuario?      @relation("ContactoAsignado", fields: [asignadoAId], references: [id], onDelete: SetNull)
+  interacciones Interaccion[]
+  seguimientos  Seguimiento[]
+
+  @@index([estado])
+  @@index([createdAt])
+  @@map("contactos")
+}
+
+enum CanalInteraccion {
+  LLAMADA
+  WHATSAPP
+  EMAIL
+  SMS
+  PRESENCIAL
+  INSTAGRAM
+  OTRO
+}
+
+enum SentidoInteraccion {
+  ENTRANTE
+  SALIENTE
+}
+
+/// Bitácora de cada contacto con un interesado o un paciente.
+model Interaccion {
+  id         String             @id @default(cuid())
+  contactoId String?
+  pacienteId String?
+  canal      CanalInteraccion   @default(LLAMADA)
+  sentido    SentidoInteraccion @default(SALIENTE)
+  asunto     String
+  detalle    String?
+  /// Qué pasó: "no contesta", "agenda para el martes", "pide presupuesto".
+  resultado  String?
+  fecha      DateTime           @default(now())
+  usuarioId  String?
+  createdAt  DateTime           @default(now())
+
+  contacto Contacto? @relation(fields: [contactoId], references: [id], onDelete: Cascade)
+  paciente Paciente? @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  usuario  Usuario?  @relation("InteraccionRegistradaPor", fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([contactoId])
+  @@index([pacienteId, fecha])
+  @@map("interacciones")
+}
+
+enum TipoSeguimiento {
+  RECALL // paciente que no vuelve hace tiempo
+  CONTROL // control clínico vencido
+  PRESUPUESTO // presupuesto enviado sin respuesta
+  COBRANZA // saldo pendiente
+  POST_ATENCION // llamada de cortesía tras un procedimiento
+  PROSPECTO // seguimiento comercial a un interesado
+  OTRO
+}
+
+enum EstadoSeguimiento {
+  PENDIENTE
+  EN_CURSO
+  COMPLETADO
+  CANCELADO
+}
+
+/// Tarea de seguimiento con responsable y vencimiento. Es el corazón del CRM:
+/// lo que evita que un paciente o un presupuesto se pierda por olvido.
+model Seguimiento {
+  id          String            @id @default(cuid())
+  titulo      String
+  descripcion String?
+  tipo        TipoSeguimiento   @default(OTRO)
+  estado      EstadoSeguimiento @default(PENDIENTE)
+  prioridad   Prioridad         @default(NORMAL)
+  fechaVencimiento DateTime
+
+  contactoId    String?
+  pacienteId    String?
+  presupuestoId String?
+  asignadoAId   String?
+
+  resultado    String?
+  completadoAt DateTime?
+  creadoPorId  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  contacto    Contacto?    @relation(fields: [contactoId], references: [id], onDelete: Cascade)
+  paciente    Paciente?    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  presupuesto Presupuesto? @relation(fields: [presupuestoId], references: [id], onDelete: SetNull)
+  asignadoA   Usuario?     @relation("SeguimientoAsignado", fields: [asignadoAId], references: [id], onDelete: SetNull)
+  creadoPor   Usuario?     @relation("SeguimientoCreadoPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+
+  @@index([estado, fechaVencimiento])
+  @@index([asignadoAId, estado])
+  @@map("seguimientos")
 }
 
 // ═══════════════════════════════════════════════════════════════

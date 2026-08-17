@@ -30,6 +30,7 @@ export const NAVEGACION: GrupoNav[] = [
       { href: '/presupuestos', texto: 'Presupuestos', modulo: 'presupuestos', icono: 'FileText' },
       { href: '/ventas', texto: 'Ventas', modulo: 'ventas', icono: 'ShoppingCart' },
       { href: '/pagos', texto: 'Pagos', modulo: 'pagos', icono: 'CreditCard' },
+      { href: '/crm', texto: 'CRM y seguimiento', modulo: 'crm', icono: 'Target' },
       { href: '/convenios', texto: 'Convenios', modulo: 'convenios', icono: 'Handshake' },
       { href: '/informes', texto: 'Informes de beneficio', modulo: 'informes_beneficio', icono: 'FileCheck' },
     ],
