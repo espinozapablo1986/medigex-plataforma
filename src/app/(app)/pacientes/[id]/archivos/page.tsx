@@ -63,6 +63,10 @@ export default async function ArchivosPaciente({
         activo={`/pacientes/${id}/archivos`}
         puedeEditar={puede(sesion, 'pacientes', 'editar')}
         contadores={contadores}
+        modulosDentales={{
+          odontograma: puede(sesion, 'odontograma', 'ver'),
+          periodontograma: puede(sesion, 'periodontograma', 'ver'),
+        }}
       />
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">

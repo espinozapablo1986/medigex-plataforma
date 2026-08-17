@@ -66,6 +66,10 @@ export default async function ExamenesPaciente({ params }: { params: Promise<{ i
         activo={`/pacientes/${id}/examenes`}
         puedeEditar={puede(sesion, 'pacientes', 'editar')}
         contadores={contadores}
+        modulosDentales={{
+          odontograma: puede(sesion, 'odontograma', 'ver'),
+          periodontograma: puede(sesion, 'periodontograma', 'ver'),
+        }}
       />
 
       <div className="mb-4 flex justify-end">

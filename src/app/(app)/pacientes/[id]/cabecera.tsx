@@ -41,12 +41,15 @@ export function CabeceraPaciente({
   activo,
   puedeEditar,
   contadores,
+  modulosDentales,
 }: {
   paciente: PacienteCabecera;
   saldo: number;
   activo: string;
   puedeEditar: boolean;
   contadores?: { atenciones?: number; examenes?: number; archivos?: number };
+  /** El odontograma sólo aparece si el rol lo tiene habilitado. */
+  modulosDentales?: { odontograma: boolean; periodontograma: boolean };
 }) {
   const edad = calcularEdad(paciente.fechaNacimiento, paciente.edadRegistrada);
   const base = `/pacientes/${paciente.id}`;
@@ -127,6 +130,12 @@ export function CabeceraPaciente({
           { href: `${base}/historia`, texto: 'Historia clínica', contador: contadores?.atenciones },
           { href: `${base}/examenes`, texto: 'Exámenes', contador: contadores?.examenes },
           { href: `${base}/archivos`, texto: 'Archivos', contador: contadores?.archivos },
+          ...(modulosDentales?.odontograma
+            ? [{ href: `${base}/odontograma`, texto: 'Odontograma' }]
+            : []),
+          ...(modulosDentales?.periodontograma
+            ? [{ href: `${base}/periodontograma`, texto: 'Periodontograma' }]
+            : []),
           { href: `${base}/cuenta`, texto: 'Cuenta corriente' },
           { href: `${base}/recetas`, texto: 'Recetas' },
         ]}

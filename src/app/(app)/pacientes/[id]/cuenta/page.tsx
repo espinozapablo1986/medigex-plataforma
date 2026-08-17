@@ -55,6 +55,10 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
         activo={`/pacientes/${id}/cuenta`}
         puedeEditar={puede(sesion, 'pacientes', 'editar')}
         contadores={contadores}
+        modulosDentales={{
+          odontograma: puede(sesion, 'odontograma', 'ver'),
+          periodontograma: puede(sesion, 'periodontograma', 'ver'),
+        }}
       />
 
       <div className="mb-5 grid gap-4 sm:grid-cols-3">

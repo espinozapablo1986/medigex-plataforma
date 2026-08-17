@@ -30,6 +30,10 @@ export default async function RecetasPaciente({ params }: { params: Promise<{ id
         activo={`/pacientes/${id}/recetas`}
         puedeEditar={puede(sesion, 'pacientes', 'editar')}
         contadores={contadores}
+        modulosDentales={{
+          odontograma: puede(sesion, 'odontograma', 'ver'),
+          periodontograma: puede(sesion, 'periodontograma', 'ver'),
+        }}
       />
 
       <div className="mb-4 flex justify-end">

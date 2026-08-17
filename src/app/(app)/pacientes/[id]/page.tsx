@@ -61,6 +61,10 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
         activo={`/pacientes/${id}`}
         puedeEditar={puede(sesion, 'pacientes', 'editar')}
         contadores={contadores}
+        modulosDentales={{
+          odontograma: puede(sesion, 'odontograma', 'ver'),
+          periodontograma: puede(sesion, 'periodontograma', 'ver'),
+        }}
       />
 
       <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

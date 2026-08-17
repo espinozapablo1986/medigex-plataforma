@@ -228,6 +228,8 @@ model Paciente {
   contactosCrm Contacto[]
   interacciones Interaccion[]
   seguimientos  Seguimiento[]
+  registrosOdontograma RegistroOdontograma[]
+  periodontogramas     Periodontograma[]
 
   @@index([rut])
   @@index([apellidoPaterno, nombres])
@@ -286,6 +288,8 @@ model Profesional {
   interconsultasRecibidas Interconsulta[] @relation("InterconsultaDestino")
   comisionesPorServicio   ComisionServicio[]
   informesBeneficio       InformeBeneficio[]
+  registrosOdontograma    RegistroOdontograma[]
+  periodontogramas        Periodontograma[]
 
   @@index([activo])
   @@map("profesionales")
@@ -375,6 +379,7 @@ model Servicio {
   itemsVenta   VentaItem[]
   comisiones   ComisionServicio[]
   convenios    ConvenioServicio[]
+  condicionesDentales CondicionDental[]
 
   @@index([categoriaId])
   @@map("servicios")
@@ -745,6 +750,8 @@ model Atencion {
   adjuntos      Adjunto[]
   recetas       Receta[]
   ventas        Venta[]
+  registrosOdontograma RegistroOdontograma[]
+  periodontogramas     Periodontograma[]
 
   @@index([pacienteId, fecha])
   @@map("atenciones")
@@ -1626,4 +1633,184 @@ model Configuracion {
   updatedAt      DateTime @updatedAt
 
   @@map("configuracion")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ODONTOGRAMA Y PERIODONTOGRAMA
+// ═══════════════════════════════════════════════════════════════
+
+enum TipoDenticion {
+  PERMANENTE
+  TEMPORAL
+}
+
+/// Caras de una pieza. La quinta depende del tipo de diente: oclusal en
+/// molares y premolares, incisal en dientes anteriores.
+enum CaraDental {
+  VESTIBULAR
+  PALATINO_LINGUAL
+  MESIAL
+  DISTAL
+  OCLUSAL_INCISAL
+  CERVICAL
+  RAIZ
+  PIEZA_COMPLETA
+}
+
+enum CategoriaCondicion {
+  DIAGNOSTICO // hallazgo clínico: caries, fractura, movilidad…
+  PROCEDIMIENTO // lo que se hace: obturación, corona, endodoncia…
+}
+
+/// Catálogo de hallazgos y procedimientos que se pueden marcar en el
+/// odontograma. Es un mantenedor: cada centro usa su propia nomenclatura y
+/// puede agregar códigos sin tocar el sistema.
+model CondicionDental {
+  id         String             @id @default(cuid())
+  codigo     String             @unique
+  nombre     String
+  categoria  CategoriaCondicion @default(DIAGNOSTICO)
+  /// Color con que se pinta en el esquema. Por convención, los diagnósticos
+  /// van en rojo y los procedimientos ya realizados en verde.
+  color      String             @default("#B94642")
+  /// Si se marca sobre caras concretas o sobre la pieza entera.
+  porCara    Boolean            @default(true)
+  /// Servicio que corresponde cobrar, para armar el presupuesto sin volver
+  /// a escribir el tratamiento.
+  servicioId String?
+  orden      Int                @default(0)
+  activo     Boolean            @default(true)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  servicio  Servicio?            @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+  registros RegistroOdontograma[]
+
+  @@index([categoria, orden])
+  @@map("condiciones_dentales")
+}
+
+enum EstadoRegistroDental {
+  PENDIENTE
+  REALIZADO
+  ANULADO
+}
+
+/// Una marca en el odontograma: qué se encontró o se hizo, en qué pieza y
+/// sobre qué caras. La ficha odontológica del paciente es el conjunto de
+/// estos registros a lo largo del tiempo.
+model RegistroOdontograma {
+  id            String               @id @default(cuid())
+  pacienteId    String
+  atencionId    String?
+  profesionalId String?
+  condicionId   String
+
+  denticion     TipoDenticion        @default(PERMANENTE)
+  /// Notación FDI: "1.8", "2.1", "5.5"…
+  pieza         String
+  caras         CaraDental[]
+  estado        EstadoRegistroDental @default(REALIZADO)
+  observaciones String?
+  fecha         DateTime             @default(now())
+
+  /// Cuando el pendiente se ejecuta, queda enlazado al registro que lo cumple.
+  realizadoPorRegistroId String?  @unique
+  presupuestoItemId      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paciente    Paciente             @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  atencion    Atencion?            @relation(fields: [atencionId], references: [id], onDelete: SetNull)
+  profesional Profesional?         @relation(fields: [profesionalId], references: [id], onDelete: SetNull)
+  condicion   CondicionDental      @relation(fields: [condicionId], references: [id])
+  cumplidoPor RegistroOdontograma? @relation("PendienteCumplido", fields: [realizadoPorRegistroId], references: [id], onDelete: SetNull)
+  cumple      RegistroOdontograma? @relation("PendienteCumplido")
+
+  @@index([pacienteId, pieza])
+  @@index([pacienteId, estado])
+  @@map("registros_odontograma")
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Periodontograma
+// ─────────────────────────────────────────────────────────────
+
+enum CaraPeriodontal {
+  VESTIBULAR
+  PALATINO_LINGUAL
+}
+
+enum SitioPeriodontal {
+  MESIAL
+  CENTRAL
+  DISTAL
+}
+
+/// Un examen periodontal completo, con fecha. Se guardan varios por paciente
+/// para poder comparar la evolución entre controles.
+model Periodontograma {
+  id            String   @id @default(cuid())
+  pacienteId    String
+  atencionId    String?
+  profesionalId String?
+  fecha         DateTime @default(now())
+  denticion     TipoDenticion @default(PERMANENTE)
+  observaciones String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  atencion    Atencion?    @relation(fields: [atencionId], references: [id], onDelete: SetNull)
+  profesional Profesional? @relation(fields: [profesionalId], references: [id], onDelete: SetNull)
+  piezas      PeriodontogramaPieza[]
+
+  @@index([pacienteId, fecha])
+  @@map("periodontogramas")
+}
+
+model PeriodontogramaPieza {
+  id                String  @id @default(cuid())
+  periodontogramaId String
+  pieza             String
+  ausente           Boolean @default(false)
+  /// Movilidad de Miller: 0 a 3.
+  movilidad         Int?
+  /// Compromiso de furca: 0 a 3, por cara.
+  furcaVestibular   Int?
+  furcaPalatina     Int?
+  implante          Boolean @default(false)
+  notas             String?
+
+  periodontograma Periodontograma            @relation(fields: [periodontogramaId], references: [id], onDelete: Cascade)
+  sitios          PeriodontogramaSitio[]
+
+  @@unique([periodontogramaId, pieza])
+  @@index([periodontogramaId])
+  @@map("periodontograma_piezas")
+}
+
+/// Seis sitios por pieza: tres por vestibular y tres por palatino/lingual.
+/// El nivel de inserción clínica no se guarda porque es derivado
+/// (profundidad de sondaje + margen gingival): calcularlo evita que queden
+/// los tres valores en desacuerdo.
+model PeriodontogramaSitio {
+  id          String           @id @default(cuid())
+  piezaId     String
+  cara        CaraPeriodontal
+  posicion    SitioPeriodontal
+  /// Milímetros desde el margen gingival hasta el fondo del surco.
+  profundidad Int              @default(0)
+  /// Distancia del margen al límite amelocementario. Negativo si hay recesión.
+  margen      Int              @default(0)
+  placa       Boolean          @default(false)
+  sangrado    Boolean          @default(false)
+  supuracion  Boolean          @default(false)
+
+  pieza PeriodontogramaPieza @relation(fields: [piezaId], references: [id], onDelete: Cascade)
+
+  @@unique([piezaId, cara, posicion])
+  @@index([piezaId])
+  @@map("periodontograma_sitios")
 }

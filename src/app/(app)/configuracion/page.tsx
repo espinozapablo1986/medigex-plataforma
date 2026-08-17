@@ -18,6 +18,10 @@ import {
   guardarPrevision,
 } from './acciones';
 import { alternarActivoFormaPago, guardarFormaPago } from '../ventas/acciones';
+import {
+  alternarActivoCondicion,
+  guardarCondicionDental,
+} from '../pacientes/[id]/odontograma/acciones';
 
 export const metadata = { title: 'Configuración' };
 
@@ -37,12 +41,21 @@ const TIPOS_PAGO = [
 export default async function PaginaConfiguracion() {
   const sesion = await requerirPermiso('configuracion', 'ver');
 
-  const [config, formasPago, previsiones, auditoria] = await Promise.all([
+  const [config, formasPago, previsiones, condicionesDentales, serviciosDisponibles, auditoria] = await Promise.all([
     prisma.configuracion.findUnique({ where: { id: 'singleton' } }),
     prisma.formaPago.findMany({ orderBy: [{ activo: 'desc' }, { orden: 'asc' }, { nombre: 'asc' }] }),
     prisma.prevision.findMany({
       orderBy: [{ activo: 'desc' }, { orden: 'asc' }, { nombre: 'asc' }],
       include: { _count: { select: { pacientes: true } } },
+    }),
+    prisma.condicionDental.findMany({
+      orderBy: [{ activo: 'desc' }, { categoria: 'asc' }, { orden: 'asc' }],
+      include: { servicio: { select: { nombre: true } }, _count: { select: { registros: true } } },
+    }),
+    prisma.servicio.findMany({
+      where: { activo: true },
+      orderBy: { nombre: 'asc' },
+      select: { id: true, nombre: true },
     }),
     prisma.registroAuditoria.findMany({
       orderBy: { createdAt: 'desc' },
@@ -147,6 +160,51 @@ export default async function PaginaConfiguracion() {
       >
         <input name="etiquetaDetalle" defaultValue={p?.etiquetaDetalle ?? ''} className="campo" />
       </Campo>
+    </>
+  );
+
+  const camposCondicion = (c?: (typeof condicionesDentales)[number]) => (
+    <>
+      <Grilla cols={2}>
+        <Campo etiqueta="Nombre" requerido>
+          <input name="nombre" defaultValue={c?.nombre} required className="campo" placeholder="Caries" />
+        </Campo>
+        <Campo etiqueta="Código" ayuda="Se genera desde el nombre si lo dejas vacío.">
+          <input name="codigo" defaultValue={c?.codigo ?? ''} className="campo uppercase" />
+        </Campo>
+        <Campo etiqueta="Tipo" requerido>
+          <select name="categoria" defaultValue={c?.categoria ?? 'DIAGNOSTICO'} required className="campo">
+            <option value="DIAGNOSTICO">Diagnóstico — lo que se encuentra</option>
+            <option value="PROCEDIMIENTO">Procedimiento — lo que se hace</option>
+          </select>
+        </Campo>
+        <Campo etiqueta="Color en el esquema">
+          <input name="color" type="color" defaultValue={c?.color ?? '#B94642'} className="campo h-10 p-1" />
+        </Campo>
+        <Campo etiqueta="Servicio asociado" ayuda="Permite armar el presupuesto desde el odontograma.">
+          <select name="servicioId" defaultValue={c?.servicioId ?? ''} className="campo">
+            <option value="">Sin vincular</option>
+            {serviciosDisponibles.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.nombre}
+              </option>
+            ))}
+          </select>
+        </Campo>
+        <Campo etiqueta="Orden en la paleta">
+          <input name="orden" type="number" min={0} defaultValue={c?.orden ?? 50} className="campo" />
+        </Campo>
+      </Grilla>
+
+      <label className="mt-4 flex items-center gap-2 text-sm text-brand-900">
+        <input
+          type="checkbox"
+          name="porCara"
+          defaultChecked={c?.porCara ?? true}
+          className="h-4 w-4 border-tinta-300 text-brand-600"
+        />
+        Se marca sobre caras concretas (si no, cubre la pieza completa)
+      </label>
     </>
   );
 
@@ -452,6 +510,93 @@ export default async function PaginaConfiguracion() {
                         {p._count.pacientes === 0 && (
                           <BotonEliminar accion={eliminarPrevision} id={p.id} variante="peligro" />
                         )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </ContenedorTabla>
+        </Tarjeta>
+
+        <Tarjeta
+          titulo="Condiciones dentales"
+          descripcion="Diagnósticos y procedimientos que se pueden marcar en el odontograma. Vincula cada uno a un servicio para poder presupuestarlo."
+          sinPadding
+          acciones={
+            puedeEditar && (
+              <Modal titulo="Nueva condición dental" etiquetaBoton="Nueva condición" tamanoBoton="sm" ancho="max-w-xl">
+                <Formulario accion={guardarCondicionDental} className="space-y-4" reiniciarAlEnviar>
+                  {camposCondicion()}
+                  <div className="flex justify-end">
+                    <BotonEnviar>Crear</BotonEnviar>
+                  </div>
+                </Formulario>
+              </Modal>
+            )
+          }
+        >
+          <ContenedorTabla>
+            <thead>
+              <tr>
+                <th className="w-14">Color</th>
+                <th>Condición</th>
+                <th>Tipo</th>
+                <th>Se marca</th>
+                <th>Servicio para presupuestar</th>
+                <th className="text-right">Usos</th>
+                <th>Estado</th>
+                {puedeEditar && <th className="text-right">Acciones</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {condicionesDentales.map((c) => (
+                <tr key={c.id} className={c.activo ? '' : 'opacity-60'}>
+                  <td>
+                    <span
+                      className="inline-block h-5 w-5 ring-1 ring-inset ring-black/10"
+                      style={{ backgroundColor: c.color }}
+                    />
+                  </td>
+                  <td>
+                    <p className="font-medium text-brand-900">{c.nombre}</p>
+                    <p className="font-mono text-xs text-tinta-400">{c.codigo}</p>
+                  </td>
+                  <td>
+                    <Badge tono={c.categoria === 'DIAGNOSTICO' ? 'ambar' : 'verde'}>
+                      {c.categoria === 'DIAGNOSTICO' ? 'diagnóstico' : 'procedimiento'}
+                    </Badge>
+                  </td>
+                  <td className="text-xs text-tinta-600">{c.porCara ? 'Por cara' : 'Pieza completa'}</td>
+                  <td className="text-xs text-tinta-600">
+                    {c.servicio?.nombre ?? <span className="text-alerta-texto">sin vincular</span>}
+                  </td>
+                  <td className="text-right tabular-nums text-tinta-500">{c._count.registros}</td>
+                  <td>{c.activo ? <Badge tono="verde">activa</Badge> : <Badge tono="rojo">inactiva</Badge>}</td>
+                  {puedeEditar && (
+                    <td>
+                      <div className="flex flex-wrap justify-end gap-1.5">
+                        <Modal
+                          titulo={`Editar ${c.nombre}`}
+                          etiquetaBoton="Editar"
+                          varianteBoton="secundario"
+                          tamanoBoton="sm"
+                          ancho="max-w-xl"
+                        >
+                          <Formulario accion={guardarCondicionDental} className="space-y-4">
+                            <input type="hidden" name="id" value={c.id} />
+                            {camposCondicion(c)}
+                            <div className="flex justify-end">
+                              <BotonEnviar>Guardar</BotonEnviar>
+                            </div>
+                          </Formulario>
+                        </Modal>
+                        <BotonEliminar
+                          accion={alternarActivoCondicion}
+                          id={c.id}
+                          texto={c.activo ? 'Desactivar' : 'Activar'}
+                          mensaje={`¿Confirmas ${c.activo ? 'desactivar' : 'activar'} «${c.nombre}»?`}
+                        />
                       </div>
                     </td>
                   )}
