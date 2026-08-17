@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<title>MEDIGEX · Estudio de brechas y plan de implementación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --quirofano: #2A6B80;
+    --tinta:     #12343F;
+    --aqua:      #6BB8C4;
+    --marfil:    #F4F7F8;
+    --acero:     #6E8790;
+    --grafito:   #3B4247;
+    --borde:     #D5E2E7;
+    --borde2:    #BCCED5;
+
+    --exito-f: #D9EEDF; --exito-b: #A0CAAD; --exito-t: #115531;
+    --alerta-f:#FBECD9; --alerta-b:#E9C89B; --alerta-t:#724D0B;
+    --error-f: #FFE4E1; --error-b: #F5B9B4; --error-t: #8C3432;
+
+    --display: 'Geologica', sans-serif;
+    --texto:   'Source Sans 3', sans-serif;
+    --dato:    'IBM Plex Mono', monospace;
+  }
+
+  @page { size: A4; margin: 18mm 16mm 20mm; }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--texto);
+    font-size: 10pt;
+    line-height: 1.6;
+    color: var(--tinta);
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  h1, h2, h3, h4 { font-family: var(--display); margin: 0; }
+
+  /* ── Portada ── */
+  .portada {
+    height: 245mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+  }
+  .portada .marca { display: flex; align-items: center; gap: 10px; }
+  .portada .marca .nombre {
+    font-family: var(--display); font-weight: 700; font-size: 22pt;
+    letter-spacing: .14em; color: var(--quirofano); line-height: 1;
+  }
+  .portada .marca .tag {
+    font-size: 8pt; color: var(--acero); letter-spacing: .04em; margin-top: 4px;
+  }
+  .portada .centro { border-top: 3px solid var(--tinta); padding-top: 14mm; }
+  .portada h1 { font-size: 30pt; font-weight: 700; line-height: 1.08; letter-spacing: -.02em; max-width: 15em; }
+  .portada .sub { margin-top: 6mm; font-size: 12pt; color: var(--acero); max-width: 30em; line-height: 1.5; }
+  .portada .pie { font-family: var(--dato); font-size: 8pt; color: var(--acero); letter-spacing: .06em; text-transform: uppercase; }
+  .portada .pie div { margin-bottom: 3px; }
+
+  /* ── Estructura ── */
+  section { page-break-inside: auto; margin-bottom: 9mm; }
+  .nueva-pagina { page-break-before: always; }
+
+  h2 {
+    font-size: 16pt; font-weight: 700; letter-spacing: -.015em;
+    padding-bottom: 3mm; margin-bottom: 4mm;
+    border-bottom: 2px solid var(--quirofano);
+    page-break-after: avoid;
+  }
+  h3 { font-size: 11pt; font-weight: 600; margin-bottom: 1.5mm; page-break-after: avoid; }
+  p { margin: 0 0 3mm; }
+  .intro { color: var(--grafito); max-width: 42em; }
+  strong { font-weight: 600; }
+
+  .eyebrow {
+    font-family: var(--dato); font-size: 7.5pt; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--acero); margin-bottom: 2mm;
+  }
+
+  /* ── Chips ── */
+  .chip {
+    display: inline-block; font-family: var(--dato); font-size: 7pt;
+    letter-spacing: .05em; text-transform: uppercase; padding: 1px 5px;
+    border-radius: 2px; white-space: nowrap; font-weight: 500;
+  }
+  .chip.listo   { color: var(--exito-t);  background: var(--exito-f);  border: 1px solid var(--exito-b); }
+  .chip.parcial { color: var(--alerta-t); background: var(--alerta-f); border: 1px solid var(--alerta-b); }
+  .chip.falta   { color: var(--error-t);  background: var(--error-f);  border: 1px solid var(--error-b); }
+
+  /* ── Tablas ── */
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 4mm; }
+  thead { display: table-header-group; }
+  thead th {
+    text-align: left; font-family: var(--dato); font-size: 7.5pt;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--tinta);
+    font-weight: 500; padding: 2mm 2.5mm; background: var(--marfil);
+    border-bottom: 1.5px solid var(--quirofano);
+  }
+  tbody td { padding: 2mm 2.5mm; border-bottom: .5px solid var(--borde); vertical-align: top; }
+  tbody tr { page-break-inside: avoid; }
+  td.func { font-weight: 600; }
+  td.nota { color: var(--grafito); font-size: 8.5pt; }
+
+  /* ── Fichas ── */
+  .fichas { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .ficha {
+    border: 1px solid var(--borde); border-left: 3px solid var(--borde2);
+    padding: 3mm 3.5mm; page-break-inside: avoid;
+  }
+  .ficha.p1 { border-left-color: var(--error-t); }
+  .ficha.p2 { border-left-color: var(--alerta-t); }
+  .ficha.p3 { border-left-color: var(--quirofano); }
+  .ficha .top { display: flex; justify-content: space-between; align-items: baseline; gap: 3mm; margin-bottom: 1.5mm; }
+  .ficha p { font-size: 8.5pt; color: var(--grafito); margin: 0 0 1.5mm; }
+  .ficha .porque {
+    font-family: var(--dato); font-size: 7pt; color: var(--acero);
+    border-top: .5px dashed var(--borde2); padding-top: 1.5mm;
+  }
+
+  /* ── Lista de deuda ── */
+  .deuda { border: 1px solid var(--borde); }
+  .deuda .fila {
+    display: grid; grid-template-columns: 46mm 1fr; gap: 4mm;
+    padding: 2.5mm 3mm; border-bottom: .5px solid var(--borde);
+    page-break-inside: avoid;
+  }
+  .deuda .fila:last-child { border-bottom: 0; }
+  .deuda code {
+    font-family: var(--dato); font-size: 8pt; color: var(--quirofano);
+    background: var(--marfil); padding: 0 3px;
+  }
+  .deuda .fila p { margin: 0; font-size: 8.5pt; color: var(--grafito); }
+
+  /* ── Etapas del plan ── */
+  .etapa {
+    border: 1px solid var(--borde); margin-bottom: 4mm;
+    page-break-inside: avoid;
+  }
+  .etapa > header {
+    display: grid; grid-template-columns: 14mm 1fr auto; gap: 4mm; align-items: center;
+    background: var(--marfil); padding: 3mm 3.5mm; border-bottom: 1px solid var(--borde);
+  }
+  .etapa .num {
+    font-family: var(--display); font-size: 20pt; font-weight: 700;
+    color: var(--quirofano); line-height: 1; text-align: center;
+  }
+  .etapa .titulo { font-family: var(--display); font-size: 12pt; font-weight: 600; }
+  .etapa .meta { font-family: var(--dato); font-size: 7.5pt; color: var(--acero); text-transform: uppercase; letter-spacing: .06em; }
+  .etapa .obj { font-size: 8.5pt; color: var(--grafito); margin-top: 1mm; }
+  .etapa .cuerpo { padding: 3mm 3.5mm; }
+  .etapa table { margin: 0; font-size: 8.5pt; }
+  .etapa table td { padding: 1.5mm 2mm; }
+  .etapa .resultado {
+    margin-top: 2.5mm; padding: 2mm 2.5mm; background: var(--exito-f);
+    border-left: 2px solid var(--exito-t); font-size: 8.5pt; color: var(--exito-t);
+  }
+  .dep { font-family: var(--dato); font-size: 7.5pt; color: var(--acero); }
+
+  .riesgo {
+    border: 1px solid var(--alerta-b); background: var(--alerta-f);
+    padding: 3mm 3.5mm; margin-top: 3mm; page-break-inside: avoid;
+  }
+  .riesgo h3 { color: var(--alerta-t); }
+  .riesgo p { font-size: 8.5pt; color: var(--alerta-t); margin: 0; }
+
+  ul { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+
+  footer.fuentes { border-top: 1px solid var(--borde); padding-top: 3mm; font-size: 8pt; color: var(--acero); }
+  footer.fuentes ul { columns: 2; column-gap: 8mm; padding-left: 4mm; }
+  footer.fuentes li { break-inside: avoid; margin-bottom: .8mm; }
+  a { color: var(--quirofano); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- ══ PORTADA ══ -->
+<div class="portada">
+  <div class="marca">
+    <svg width="46" height="46" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="33" fill="#2A6B80"/>
+      <rect x="32" y="20" width="8" height="32" fill="#fff"/>
+      <rect x="20" y="32" width="32" height="8" fill="#fff"/>
+    </svg>
+    <div>
+      <div class="nombre">MEDIGEX</div>
+      <div class="tag">Gestión clínica integral</div>
+    </div>
+  </div>
+
+  <div class="centro">
+    <h1>Estudio de brechas y plan de implementación</h1>
+    <p class="sub">
+      Comparación con el software clínico que se usa hoy en Chile y en el extranjero, brechas ordenadas
+      por impacto, deuda técnica detectada en el propio código y un plan por etapas para cerrarlas.
+    </p>
+  </div>
+
+  <div class="pie">
+    <div>Agosto 2026 · Versión 1.0</div>
+    <div>21 módulos en producción · medic.asdf123.cl</div>
+  </div>
+</div>
+
+<!-- ══ 1. SITUACIÓN ══ -->
+<section>
+  <p class="eyebrow">01 · Punto de partida</p>
+  <h2>Dónde estamos parados</h2>
+  <p class="intro">
+    MEDIGEX ya cubre el circuito completo de un centro chico: agenda con boxes, ficha clínica,
+    presupuesto → venta → pago, inventario que se descuenta solo, gastos con IVA, liquidación de
+    honorarios y convenios con Isapres. Eso no es poco: es más de lo que ofrecen varias herramientas
+    que se venden por suscripción mensual.
+  </p>
+  <p class="intro">
+    Las brechas están en otro lado — en todo lo que ocurre <strong>fuera</strong> del mostrador: que el
+    paciente reserve solo, que le llegue un recordatorio, que la boleta salga al SII sin que nadie la
+    digite. Ahí es donde el mercado ya se movió y nosotros todavía no.
+  </p>
+</section>
+
+<!-- ══ 2. COMPARACIÓN ══ -->
+<section>
+  <p class="eyebrow">02 · Contraste con el mercado</p>
+  <h2>Comparación funcional</h2>
+  <p class="intro">
+    Funcionalidades que aparecen como estándar en Dentalink, DentalQub, Reservo y Medinet (Chile) y en
+    Dentrix, Open Dental y Curve (internacional).
+  </p>
+
+  <table>
+    <thead>
+      <tr><th style="width:27%">Funcionalidad</th><th style="width:15%">Estado</th><th>Situación</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="func">Agenda con boxes y disponibilidad</td><td><span class="chip listo">completo</span></td><td class="nota">Valida choques de profesional, box y bloqueos. Cupos y boxes libres propuestos automáticamente.</td></tr>
+      <tr><td class="func">Ficha clínica y evoluciones</td><td><span class="chip listo">completo</span></td><td class="nota">Motivo de consulta obligatorio, signos vitales, adjuntos, imprimible en PDF.</td></tr>
+      <tr><td class="func">Presupuestos, ventas y cuenta corriente</td><td><span class="chip listo">completo</span></td><td class="nota">Cartola auditable con contra-asientos; no borra registros al anular.</td></tr>
+      <tr><td class="func">Liquidación de honorarios</td><td><span class="chip listo">completo</span></td><td class="nota">Por porcentaje o monto fijo, con arriendo de box prorrateado. Más fino que varios competidores.</td></tr>
+      <tr><td class="func">Convenios Isapre y reembolsos</td><td><span class="chip listo">completo</span></td><td class="nota">Tarifas por servicio, cobertura, copago e informe de prestaciones imprimible.</td></tr>
+      <tr><td class="func">CRM y recuperación de pacientes</td><td><span class="chip listo">completo</span></td><td class="nota">Interesados, bitácora, seguimientos y seis listas de recuperación automáticas.</td></tr>
+      <tr><td class="func">Odontograma y periodontograma</td><td><span class="chip falta">falta</span></td><td class="nota">Estándar absoluto en software dental. El campo existe en la base de datos, sin interfaz.</td></tr>
+      <tr><td class="func">Recordatorios automáticos</td><td><span class="chip falta">falta</span></td><td class="nota">Lo que más reduce inasistencias según la literatura del rubro. El campo <code>recordatorioEnviado</code> nunca se usa.</td></tr>
+      <tr><td class="func">Boleta electrónica SII</td><td><span class="chip falta">falta</span></td><td class="nota">Hoy el folio se digita a mano. Requisito operativo en Chile, no un extra.</td></tr>
+      <tr><td class="func">Reserva de horas online</td><td><span class="chip falta">falta</span></td><td class="nota">El motor de cupos ya existe y está expuesto como API; falta la cara pública.</td></tr>
+      <tr><td class="func">Portal del paciente</td><td><span class="chip falta">falta</span></td><td class="nota">Ver horas, presupuestos, recetas y estado de cuenta sin llamar por teléfono.</td></tr>
+      <tr><td class="func">Cierre de caja diario</td><td><span class="chip falta">falta</span></td><td class="nota">Se registran los pagos pero no hay arqueo ni cuadratura de turno.</td></tr>
+      <tr><td class="func">Planes de tratamiento por fases</td><td><span class="chip parcial">parcial</span></td><td class="nota">El presupuesto cubre el caso simple, no un tratamiento largo con sesiones y avance.</td></tr>
+      <tr><td class="func">Exportar a Excel / CSV</td><td><span class="chip parcial">parcial</span></td><td class="nota">El permiso «exportar» está definido en los roles pero ninguna pantalla lo usa.</td></tr>
+      <tr><td class="func">Consentimientos firmados</td><td><span class="chip parcial">parcial</span></td><td class="nota">Se adjunta el papel escaneado; falta firmarlo en pantalla.</td></tr>
+      <tr><td class="func">Agenda semanal y mensual</td><td><span class="chip parcial">parcial</span></td><td class="nota">Sólo hay vista diaria, por profesional o por box.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ 3. BRECHAS ══ -->
+<section class="nueva-pagina">
+  <p class="eyebrow">03 · Prioridades</p>
+  <h2>Las cinco brechas que más importan</h2>
+  <p class="intro">Ordenadas por impacto sobre los ingresos y la operación diaria, no por dificultad técnica.</p>
+
+  <div class="fichas">
+    <article class="ficha p1">
+      <div class="top"><h3>Recordatorios automáticos</h3><span class="chip falta">prioridad 1</span></div>
+      <p>Un mensaje de WhatsApp el día anterior es la intervención más rentable del rubro. La agenda ya tiene el dato y el campo para marcarlo; falta el envío y un proceso diario.</p>
+      <div class="porque">Reduce inasistencias · recupera horas perdidas</div>
+    </article>
+
+    <article class="ficha p1">
+      <div class="top"><h3>Odontograma</h3><span class="chip falta">prioridad 2</span></div>
+      <p>Si el centro es dental, es la pantalla donde el odontólogo trabaja. Esquema de piezas con estado por cara, historial y vínculo al presupuesto.</p>
+      <div class="porque">Sin esto un odontólogo no adopta la plataforma</div>
+    </article>
+
+    <article class="ficha p2">
+      <div class="top"><h3>Boleta electrónica SII</h3><span class="chip falta">prioridad 3</span></div>
+      <p>Hoy la venta guarda un número escrito a mano. Integrar un emisor autorizado cierra el circuito y elimina la doble digitación, donde aparecen las diferencias de caja.</p>
+      <div class="porque">Requisito legal en Chile · evita descuadres</div>
+    </article>
+
+    <article class="ficha p2">
+      <div class="top"><h3>Reserva online</h3><span class="chip parcial">prioridad 4</span></div>
+      <p>El endpoint que calcula cupos ya está construido y probado. Falta una página pública sin sesión, con confirmación y un tope por persona.</p>
+      <div class="porque">Descarga a recepción · capta fuera de horario</div>
+    </article>
+
+    <article class="ficha p3">
+      <div class="top"><h3>Cierre de caja</h3><span class="chip parcial">prioridad 5</span></div>
+      <p>Apertura con monto inicial, cuadratura por forma de pago y registro de la diferencia. Lo primero que pide un administrador cuando hay más de una persona cobrando.</p>
+      <div class="porque">Control interno · responsabilidad por turno</div>
+    </article>
+  </div>
+</section>
+
+<!-- ══ 4. INTERFAZ ══ -->
+<section>
+  <p class="eyebrow">04 · Experiencia de uso</p>
+  <h2>Mejoras de interfaz</h2>
+  <p class="intro">Ninguna es cosmética: cada una resuelve un momento en que la pantalla hoy hace perder tiempo.</p>
+
+  <div class="deuda">
+    <div class="fila"><div><strong>Buscador global</strong></div><p>Atajo de teclado que busque pacientes, presupuestos y ventas desde cualquier pantalla. Hoy hay que navegar al módulo primero.</p></div>
+    <div class="fila"><div><strong>Agenda semanal y arrastrar</strong></div><p>La vista diaria sirve para operar; para planificar hace falta la semana. Reagendar debería ser mover el bloque, no abrir un formulario.</p></div>
+    <div class="fila"><div><strong>Tablas ordenables y exportables</strong></div><p>Ordenar por columna y bajar a Excel. El permiso ya existe en el sistema de roles; falta el botón.</p></div>
+    <div class="fila"><div><strong>Vista móvil con tarjetas</strong></div><p>Las tablas se desplazan de lado en el teléfono. Para el profesional que consulta entre pacientes conviene una lista de tarjetas.</p></div>
+    <div class="fila"><div><strong>Sala de espera en pantalla</strong></div><p>Quién llegó, quién está en box, cuánto lleva esperando. Recepción hoy lo infiere de los estados de la agenda.</p></div>
+    <div class="fila"><div><strong>Puesta en marcha guiada</strong></div><p>Una instalación limpia arranca vacía y sin rumbo. Una lista de pasos evita el abandono inicial.</p></div>
+  </div>
+</section>
+
+<!-- ══ 5. DEUDA TÉCNICA ══ -->
+<section>
+  <p class="eyebrow">05 · Revisión del código</p>
+  <h2>Deuda técnica detectada</h2>
+  <p class="intro">Hallazgos de revisar la plataforma, no el mercado. Conviene cerrarlos antes de cargar datos reales de pacientes.</p>
+
+  <div class="deuda">
+    <div class="fila"><div><code>exportar</code></div><p>Permiso definido en los cuatro roles y en la matriz configurable, pero ninguna pantalla lo consulta. Hoy es una casilla que no hace nada.</p></div>
+    <div class="fila"><div><code>recordatorioEnviado</code></div><p>Campo en la tabla de citas que nunca se escribe ni se lee. Quedó preparado para los recordatorios que aún no existen.</p></div>
+    <div class="fila"><div><code>odontograma</code></div><p>Columna JSON en cada atención, sin interfaz que la llene. Es la mitad de una función.</p></div>
+    <div class="fila"><div><strong>Login sin límite de intentos</strong></div><p>No hay bloqueo tras varios intentos fallidos. En un sistema con datos clínicos conviene un límite por IP y por cuenta.</p></div>
+    <div class="fila"><div><strong>Sin recuperación de contraseña</strong></div><p>Sólo un administrador puede restablecerla. Si el administrador olvida la suya, hay que entrar por la base de datos.</p></div>
+    <div class="fila"><div><strong>Respaldos en el mismo disco</strong></div><p>El respaldo diario funciona, pero queda junto a la base. Un fallo de disco se lleva ambos.</p></div>
+    <div class="fila"><div><strong>VPS sin cortafuegos</strong></div><p>Nginx Proxy Manager, Portainer y GLPI expuestos a internet. Es lo primero a cerrar antes de producción.</p></div>
+  </div>
+</section>
+
+<!-- ══ 6. PLAN ══ -->
+<section class="nueva-pagina">
+  <p class="eyebrow">06 · Ejecución</p>
+  <h2>Plan de implementación</h2>
+  <p class="intro">
+    Cinco etapas secuenciales. Cada una se apoya en la anterior y deja la plataforma utilizable al
+    terminar, sin quedar a medio camino. Las duraciones suponen una persona dedicada.
+  </p>
+
+  <!-- Etapa 0 -->
+  <article class="etapa">
+    <header>
+      <div class="num">0</div>
+      <div>
+        <div class="titulo">Endurecer antes de datos reales</div>
+        <div class="obj">Objetivo: que la plataforma pueda recibir datos clínicos sin riesgos evitables.</div>
+      </div>
+      <div class="meta">1 semana</div>
+    </header>
+    <div class="cuerpo">
+      <table>
+        <tbody>
+          <tr><td style="width:52%"><strong>Cortafuegos y acceso SSH</strong><br><span class="dep">ufw con 22/80/443; root sin contraseña; paneles por túnel</span></td><td>½ día</td><td class="dep">Sin dependencias</td></tr>
+          <tr><td><strong>Límite de intentos de login</strong><br><span class="dep">Por IP y por cuenta, con bloqueo temporal</span></td><td>1 día</td><td class="dep">Sin dependencias</td></tr>
+          <tr><td><strong>Recuperación de contraseña</strong><br><span class="dep">Enlace por correo con vencimiento; requiere servidor de correo</span></td><td>1½ días</td><td class="dep">Necesita SMTP</td></tr>
+          <tr><td><strong>Respaldos fuera del servidor</strong><br><span class="dep">Copia cifrada a almacenamiento externo, con prueba de restauración</span></td><td>1 día</td><td class="dep">Necesita cuenta de almacenamiento</td></tr>
+          <tr><td><strong>Exportación a Excel/CSV</strong><br><span class="dep">Componente reutilizable que respeta el permiso «exportar»</span></td><td>1½ días</td><td class="dep">Sin dependencias</td></tr>
+        </tbody>
+      </table>
+      <div class="resultado">Al terminar: la plataforma queda apta para cargar pacientes reales y el permiso «exportar» deja de ser una casilla vacía.</div>
+    </div>
+  </article>
+
+  <!-- Etapa 1 -->
+  <article class="etapa">
+    <header>
+      <div class="num">1</div>
+      <div>
+        <div class="titulo">Recordatorios y sala de espera</div>
+        <div class="obj">Objetivo: recuperar las horas que hoy se pierden por inasistencia.</div>
+      </div>
+      <div class="meta">2 semanas</div>
+    </header>
+    <div class="cuerpo">
+      <table>
+        <tbody>
+          <tr><td style="width:52%"><strong>Proveedor de mensajería</strong><br><span class="dep">Evaluar WhatsApp Business API frente a SMS; alta del número y plantillas</span></td><td>2 días</td><td class="dep">Trámite externo: empezar ya</td></tr>
+          <tr><td><strong>Motor de envíos</strong><br><span class="dep">Cola con reintentos, registro de entregas, uso del campo existente</span></td><td>3 días</td><td class="dep">Depende del proveedor</td></tr>
+          <tr><td><strong>Proceso diario programado</strong><br><span class="dep">Servicio en el stack que barre las citas del día siguiente</span></td><td>1 día</td><td class="dep">Depende del motor</td></tr>
+          <tr><td><strong>Confirmación del paciente</strong><br><span class="dep">Enlace único que marca la cita como confirmada o pide reagendar</span></td><td>2 días</td><td class="dep">Depende del motor</td></tr>
+          <tr><td><strong>Sala de espera</strong><br><span class="dep">Pantalla con llegadas, tiempo de espera y quién está en box</span></td><td>2 días</td><td class="dep">Sin dependencias</td></tr>
+        </tbody>
+      </table>
+      <div class="resultado">Al terminar: medir la tasa de inasistencia antes y después. Es la etapa con retorno más directo.</div>
+      <div class="riesgo">
+        <h3>Riesgo principal</h3>
+        <p>El alta de WhatsApp Business y la aprobación de plantillas dependen de un tercero y pueden tardar más que el desarrollo. Conviene iniciar ese trámite en la etapa 0, en paralelo.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Etapa 2 -->
+  <article class="etapa">
+    <header>
+      <div class="num">2</div>
+      <div>
+        <div class="titulo">Odontograma y planes de tratamiento</div>
+        <div class="obj">Objetivo: que un odontólogo pueda trabajar el día entero sin salir de MEDIGEX.</div>
+      </div>
+      <div class="meta">3 semanas</div>
+    </header>
+    <div class="cuerpo">
+      <table>
+        <tbody>
+          <tr><td style="width:52%"><strong>Modelo de piezas y hallazgos</strong><br><span class="dep">Dentición adulta y temporal, estado por cara, historial con fecha</span></td><td>3 días</td><td class="dep">Sin dependencias</td></tr>
+          <tr><td><strong>Odontograma interactivo</strong><br><span class="dep">Esquema en pantalla, clic por cara, comparación entre fechas</span></td><td>5 días</td><td class="dep">Depende del modelo</td></tr>
+          <tr><td><strong>Hallazgo → presupuesto</strong><br><span class="dep">Generar el presupuesto desde lo marcado, sin volver a escribirlo</span></td><td>2 días</td><td class="dep">Depende del odontograma</td></tr>
+          <tr><td><strong>Plan de tratamiento por fases</strong><br><span class="dep">Sesiones, avance, qué falta; distinto de un presupuesto suelto</span></td><td>4 días</td><td class="dep">Depende del presupuesto</td></tr>
+          <tr><td><strong>Consentimiento firmado en pantalla</strong><br><span class="dep">Firma del paciente en el dispositivo, adjunta a la atención</span></td><td>2 días</td><td class="dep">Sin dependencias</td></tr>
+        </tbody>
+      </table>
+      <div class="resultado">Al terminar: la plataforma deja de ser «administrativa con ficha» y pasa a ser software dental.</div>
+    </div>
+  </article>
+
+  <!-- Etapa 3 -->
+  <article class="etapa">
+    <header>
+      <div class="num">3</div>
+      <div>
+        <div class="titulo">Circuito tributario</div>
+        <div class="obj">Objetivo: que cobrar y documentar sean un solo acto.</div>
+      </div>
+      <div class="meta">3 semanas</div>
+    </header>
+    <div class="cuerpo">
+      <table>
+        <tbody>
+          <tr><td style="width:52%"><strong>Elegir emisor autorizado</strong><br><span class="dep">Comparar proveedores de documentos tributarios electrónicos: costo por documento, API y soporte</span></td><td>2 días</td><td class="dep">Decisión comercial</td></tr>
+          <tr><td><strong>Emisión de boleta y factura</strong><br><span class="dep">Al cerrar la venta, con folio real y reintento ante caída</span></td><td>5 días</td><td class="dep">Depende del emisor</td></tr>
+          <tr><td><strong>Notas de crédito</strong><br><span class="dep">Anular una venta ya documentada como corresponde</span></td><td>2 días</td><td class="dep">Depende de la emisión</td></tr>
+          <tr><td><strong>Cierre de caja</strong><br><span class="dep">Apertura, arqueo por forma de pago, diferencias y responsable del turno</span></td><td>3 días</td><td class="dep">Sin dependencias</td></tr>
+          <tr><td><strong>Libros de ventas y compras</strong><br><span class="dep">Exportables para el contador</span></td><td>2 días</td><td class="dep">Usa la exportación de la etapa 0</td></tr>
+        </tbody>
+      </table>
+      <div class="resultado">Al terminar: se acaba la doble digitación y el descuadre entre lo cobrado y lo declarado.</div>
+    </div>
+  </article>
+
+  <!-- Etapa 4 -->
+  <article class="etapa">
+    <header>
+      <div class="num">4</div>
+      <div>
+        <div class="titulo">Cara pública</div>
+        <div class="obj">Objetivo: que el paciente resuelva solo lo que hoy exige llamar por teléfono.</div>
+      </div>
+      <div class="meta">4 semanas</div>
+    </header>
+    <div class="cuerpo">
+      <table>
+        <tbody>
+          <tr><td style="width:52%"><strong>Reserva de horas online</strong><br><span class="dep">Página pública sobre el motor de cupos existente, con tope por persona y confirmación</span></td><td>5 días</td><td class="dep">Usa la API ya construida</td></tr>
+          <tr><td><strong>Portal del paciente</strong><br><span class="dep">Acceso propio para ver horas, presupuestos, recetas y estado de cuenta</span></td><td>6 días</td><td class="dep">Requiere autenticación separada</td></tr>
+          <tr><td><strong>Pagos en línea</strong><br><span class="dep">Pasarela local; conciliación automática con la cuenta del paciente</span></td><td>5 días</td><td class="dep">Trámite con la pasarela</td></tr>
+          <tr><td><strong>Encuesta de satisfacción</strong><br><span class="dep">Tras la atención, con resultado visible en reportes</span></td><td>2 días</td><td class="dep">Usa el motor de mensajería</td></tr>
+        </tbody>
+      </table>
+      <div class="resultado">Al terminar: MEDIGEX compite de igual a igual con las suites comerciales del mercado.</div>
+    </div>
+  </article>
+
+  <div class="riesgo">
+    <h3>Cómo leer las duraciones</h3>
+    <p>Son estimaciones de desarrollo con una persona dedicada, sin contar trámites con terceros ni pruebas con usuarios reales. Los trámites externos —WhatsApp Business, emisor tributario, pasarela de pagos— conviene iniciarlos una etapa antes de necesitarlos, porque no dependen de nosotros.</p>
+  </div>
+</section>
+
+<!-- ══ FUENTES ══ -->
+<footer class="fuentes">
+  <p class="eyebrow" style="margin-bottom:2mm">Fuentes consultadas</p>
+  <ul>
+    <li>Dentalink — funcionalidades y odontograma</li>
+    <li>DentalQub — software dental Chile</li>
+    <li>Reservo — boleta electrónica en centros médicos</li>
+    <li>Medinet — facturación integrada</li>
+    <li>Nimbo — facturación electrónica Chile</li>
+    <li>Dentrix vs Open Dental — SelectHub</li>
+    <li>Comparativa de software dental 2026</li>
+    <li>NexHealth — sistemas de recall</li>
+    <li>Doctible — recordatorios e inasistencias</li>
+    <li>Pabau — funcionalidades esenciales 2026</li>
+    <li>Open Dental — listas de reactivación</li>
+  </ul>
+</footer>
+
+</body>
+</html>
