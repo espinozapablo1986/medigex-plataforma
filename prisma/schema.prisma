@@ -1,0 +1,1432 @@
+// Plataforma Clínicas — modelo de datos
+// Montos monetarios en CLP se guardan como Int (el peso chileno no usa decimales).
+// Porcentajes se guardan como Float (ej. 40.5 = 40,5%).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SEGURIDAD: usuarios, roles y permisos configurables
+// ═══════════════════════════════════════════════════════════════
+
+model Rol {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  nombre      String
+  descripcion String?
+  esSistema   Boolean  @default(false) // los roles de sistema no se pueden eliminar
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  usuarios    Usuario[]
+  permisos    RolPermiso[]
+
+  @@map("roles")
+}
+
+/// Un registro por (rol, módulo, acción). Permite construir la matriz de
+/// permisos desde la UI sin tocar código.
+model RolPermiso {
+  id       String  @id @default(cuid())
+  rolId    String
+  modulo   String // ver src/lib/permissions.ts -> MODULOS
+  accion   String // ver, crear, editar, eliminar, exportar, aprobar, anular...
+  permitido Boolean @default(false)
+
+  rol Rol @relation(fields: [rolId], references: [id], onDelete: Cascade)
+
+  @@unique([rolId, modulo, accion])
+  @@index([rolId])
+  @@map("rol_permisos")
+}
+
+model Usuario {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  passwordHash       String
+  nombres            String
+  apellidos          String
+  rut                String?   @unique
+  telefono           String?
+  avatarRuta         String?
+  activo             Boolean   @default(true)
+  debeCambiarPassword Boolean  @default(false)
+  ultimoAccesoAt     DateTime?
+  rolId              String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  rol          Rol          @relation(fields: [rolId], references: [id])
+  profesional  Profesional?
+
+  pacientesCreados     Paciente[]        @relation("PacienteCreadoPor")
+  citasCreadas         Cita[]            @relation("CitaCreadaPor")
+  atencionesRegistradas Atencion[]       @relation("AtencionRegistradaPor")
+  adjuntosSubidos      Adjunto[]         @relation("AdjuntoSubidoPor")
+  presupuestosCreados  Presupuesto[]     @relation("PresupuestoCreadoPor")
+  ventasCreadas        Venta[]           @relation("VentaCreadaPor")
+  pagosRegistrados     Pago[]            @relation("PagoRegistradoPor")
+  gastosRegistrados    Gasto[]           @relation("GastoRegistradoPor")
+  movimientosStock     MovimientoStock[]
+  liquidacionesCreadas Liquidacion[]     @relation("LiquidacionCreadaPor")
+  informesEmitidos     InformeBeneficio[] @relation("InformeEmitidoPor")
+  auditoria            RegistroAuditoria[]
+  sesiones             Sesion[]
+
+  @@index([rolId])
+  @@map("usuarios")
+}
+
+model Sesion {
+  id        String   @id @default(cuid())
+  usuarioId String
+  token     String   @unique
+  ip        String?
+  userAgent String?
+  expiraAt  DateTime
+  revocada  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@map("sesiones")
+}
+
+model RegistroAuditoria {
+  id        String   @id @default(cuid())
+  usuarioId String?
+  accion    String // crear, editar, eliminar, login, anular...
+  modulo    String
+  entidad   String?
+  entidadId String?
+  detalle   Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([usuarioId])
+  @@index([modulo, createdAt])
+  @@map("registro_auditoria")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PACIENTES
+// ═══════════════════════════════════════════════════════════════
+
+enum Sexo {
+  MASCULINO
+  FEMENINO
+  OTRO
+  NO_ESPECIFICA
+}
+
+enum TipoPrevision {
+  FONASA
+  ISAPRE
+  PARTICULAR
+  SEGURO_COMPLEMENTARIO
+  OTRO
+}
+
+model Paciente {
+  id                String    @id @default(cuid())
+  numeroFicha       Int       @unique @default(autoincrement())
+  rut               String?   @unique // formato 12345678-9
+  pasaporte         String? // para pacientes extranjeros sin RUT
+  nombres           String
+  apellidoPaterno   String
+  apellidoMaterno   String?
+  fechaNacimiento   DateTime?
+  edadRegistrada    Int? // si no se conoce la fecha exacta
+  sexo              Sexo      @default(NO_ESPECIFICA)
+  telefonoPrincipal String
+  telefonoSecundario String?
+  email             String?
+  direccion         String?
+  comuna            String?
+  ciudad            String?
+  ocupacion         String?
+  prevision         TipoPrevision @default(PARTICULAR)
+  previsionDetalle  String? // nombre de la Isapre, seguro, etc.
+  convenioId        String? // convenio al que está adscrito (Isapre, empresa, seguro)
+  numeroAfiliado    String? // nº de póliza / carnet del convenio
+
+  // Procedencia / derivación desde otro centro clínico
+  vieneDeOtroCentro Boolean   @default(false)
+  centroOrigen      String?
+  profesionalOrigen String?
+  motivoDerivacion  String?
+  fechaDerivacion   DateTime?
+
+  // Antecedentes
+  alergias             String?
+  antecedentesMedicos  String?
+  medicamentosActuales String?
+  antecedentesQuirurgicos String?
+  observaciones        String?
+
+  contactoEmergenciaNombre   String?
+  contactoEmergenciaTelefono String?
+  contactoEmergenciaRelacion String?
+
+  comoNosConocio String? // referido, redes sociales, etc.
+  activo         Boolean  @default(true)
+  creadoPorId    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  creadoPor    Usuario?  @relation("PacienteCreadoPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  convenio     Convenio? @relation(fields: [convenioId], references: [id], onDelete: SetNull)
+  informes     InformeBeneficio[]
+  citas        Cita[]
+  atenciones   Atencion[]
+  examenes     Examen[]
+  adjuntos     Adjunto[]
+  recetas      Receta[]
+  presupuestos Presupuesto[]
+  ventas       Venta[]
+  pagos        Pago[]
+  movimientosCuenta MovimientoCuenta[]
+  derivaciones Interconsulta[]
+
+  @@index([rut])
+  @@index([apellidoPaterno, nombres])
+  @@map("pacientes")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PROFESIONALES E INFRAESTRUCTURA
+// ═══════════════════════════════════════════════════════════════
+
+enum ModeloPagoProfesional {
+  COMISION // % sobre lo producido
+  ARRIENDO // paga arriendo de box
+  SUELDO // sueldo fijo
+  COMISION_Y_ARRIENDO // % y además paga arriendo
+}
+
+model Profesional {
+  id                  String  @id @default(cuid())
+  usuarioId           String? @unique
+  rut                 String  @unique
+  nombres             String
+  apellidos           String
+  email               String?
+  telefono            String?
+  especialidad        String
+  subespecialidad     String?
+  registroSuperintendencia String? // Nº registro nacional de prestadores
+  colorAgenda         String  @default("#3384fb")
+
+  modeloPago          ModeloPagoProfesional @default(COMISION)
+  /// Regla por defecto del honorario, si el servicio no define una propia.
+  comisionTipo        TipoComision          @default(PORCENTAJE)
+  comisionPorcentaje  Float                 @default(0) // ej. 40 = 40%
+  comisionMontoFijo   Int                   @default(0) // CLP por prestación
+  sueldoBase          Int                   @default(0) // CLP
+
+  activo              Boolean  @default(true)
+  observaciones       String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  usuario         Usuario?              @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  disponibilidad  Disponibilidad[]
+  excepciones     ExcepcionAgenda[]
+  citas           Cita[]
+  atenciones      Atencion[]
+  recetas         Receta[]
+  examenesSolicitados Examen[]          @relation("ExamenSolicitadoPor")
+  presupuestos    Presupuesto[]
+  ventas          Venta[]
+  itemsVenta      VentaItem[]
+  arriendos       ArriendoBox[]
+  liquidaciones   Liquidacion[]
+  interconsultasEnviadas  Interconsulta[] @relation("InterconsultaOrigen")
+  interconsultasRecibidas Interconsulta[] @relation("InterconsultaDestino")
+  comisionesPorServicio   ComisionServicio[]
+  informesBeneficio       InformeBeneficio[]
+
+  @@index([activo])
+  @@map("profesionales")
+}
+
+enum TipoBox {
+  BOX_DENTAL
+  BOX_MEDICO
+  SALA_RAYOS_X
+  SALA_PROCEDIMIENTOS
+  SALA_CIRUGIA
+  OTRO
+}
+
+model Box {
+  id            String  @id @default(cuid())
+  codigo        String  @unique
+  nombre        String
+  tipo          TipoBox @default(BOX_MEDICO)
+  ubicacion     String?
+  descripcion   String?
+  equipamiento  String?
+  valorArriendoHora Int  @default(0) // CLP, referencia para cobro de arriendo
+  activo        Boolean @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  disponibilidad Disponibilidad[]
+  excepciones    ExcepcionAgenda[]
+  citas          Cita[]
+  arriendos      ArriendoBox[]
+
+  @@map("boxes")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SERVICIOS
+// ═══════════════════════════════════════════════════════════════
+
+model CategoriaServicio {
+  id          String  @id @default(cuid())
+  nombre      String  @unique
+  descripcion String?
+  color       String  @default("#64748b")
+  orden       Int     @default(0)
+  activo      Boolean @default(true)
+
+  servicios Servicio[]
+
+  @@map("categorias_servicio")
+}
+
+/// Cómo se calcula el honorario del profesional por una prestación.
+enum TipoComision {
+  PORCENTAJE // % sobre el valor cobrado
+  MONTO_FIJO // monto fijo en CLP por prestación realizada
+}
+
+model Servicio {
+  id               String  @id @default(cuid())
+  codigo           String  @unique
+  nombre           String
+  descripcion      String?
+  categoriaId      String?
+  precio           Int     @default(0) // CLP
+  costoEstimado    Int     @default(0) // CLP, para margen
+  duracionMinutos  Int     @default(30)
+  requiereBox      Boolean @default(true)
+  tipoBoxRequerido TipoBox?
+  usaRayosX        Boolean @default(false)
+  afectoIva        Boolean @default(true)
+
+  // Honorario del profesional por este servicio (sobrescribe el del profesional)
+  comisionTipo       TipoComision @default(PORCENTAJE)
+  comisionPorcentaje Float?
+  comisionMontoFijo  Int          @default(0)
+
+  requiereConsentimiento Boolean @default(false)
+  activo           Boolean @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  categoria    CategoriaServicio? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  insumos      InsumoServicio[]
+  citas        Cita[]
+  itemsPresupuesto PresupuestoItem[]
+  itemsVenta   VentaItem[]
+  comisiones   ComisionServicio[]
+  convenios    ConvenioServicio[]
+
+  @@index([categoriaId])
+  @@map("servicios")
+}
+
+/// Insumos que consume un servicio (descuenta stock al realizarlo).
+model InsumoServicio {
+  id         String @id @default(cuid())
+  servicioId String
+  productoId String
+  cantidad   Float  @default(1)
+
+  servicio Servicio @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@unique([servicioId, productoId])
+  @@map("insumos_servicio")
+}
+
+/// Honorario específico de un profesional para un servicio puntual.
+/// Es la regla de mayor prioridad al liquidar.
+model ComisionServicio {
+  id            String       @id @default(cuid())
+  profesionalId String
+  servicioId    String
+  tipo          TipoComision @default(PORCENTAJE)
+  porcentaje    Float        @default(0)
+  montoFijo     Int          @default(0)
+
+  profesional Profesional @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+  servicio    Servicio    @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+
+  @@unique([profesionalId, servicioId])
+  @@map("comisiones_servicio")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CONVENIOS (Isapres, seguros complementarios, empresas)
+// ═══════════════════════════════════════════════════════════════
+
+enum TipoConvenio {
+  ISAPRE
+  SEGURO_COMPLEMENTARIO
+  EMPRESA
+  MUTUAL
+  FONASA
+  OTRO
+}
+
+model Convenio {
+  id            String       @id @default(cuid())
+  codigo        String       @unique
+  nombre        String
+  tipo          TipoConvenio @default(ISAPRE)
+  rut           String?
+  contacto      String?
+  telefono      String?
+  email         String?
+
+  /// Descuento general sobre el precio de lista, si no hay tarifa por servicio.
+  descuentoPorcentaje Float @default(0)
+  /// Porcentaje que cubre la aseguradora; el resto lo paga el paciente.
+  coberturaPorcentaje Float @default(0)
+  /// Tope de cobertura por prestación (0 = sin tope).
+  topePorPrestacion   Int   @default(0)
+
+  requiereAutorizacion Boolean @default(false)
+  vigenteDesde  DateTime  @default(now())
+  vigenteHasta  DateTime?
+  observaciones String?
+  activo        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  servicios ConvenioServicio[]
+  pacientes Paciente[]
+  ventas    Venta[]
+  informes  InformeBeneficio[]
+
+  @@map("convenios")
+}
+
+/// Tarifa negociada de un servicio dentro de un convenio.
+model ConvenioServicio {
+  id                  String @id @default(cuid())
+  convenioId          String
+  servicioId          String
+  precioConvenio      Int    @default(0) // 0 = usar precio de lista con descuento general
+  coberturaPorcentaje Float  @default(0)
+  codigoPrestacion    String? // código Fonasa/Isapre de la prestación
+
+  convenio Convenio @relation(fields: [convenioId], references: [id], onDelete: Cascade)
+  servicio Servicio @relation(fields: [servicioId], references: [id], onDelete: Cascade)
+
+  @@unique([convenioId, servicioId])
+  @@map("convenio_servicios")
+}
+
+enum EstadoInformeBeneficio {
+  EMITIDO
+  PRESENTADO
+  APROBADO
+  RECHAZADO
+  PAGADO
+}
+
+/// Informe/certificado de prestaciones para que el paciente cobre su
+/// reembolso o bono en Isapre, Fonasa o seguro complementario.
+model InformeBeneficio {
+  id            String                 @id @default(cuid())
+  folio         Int                    @unique @default(autoincrement())
+  pacienteId    String
+  convenioId    String?
+  profesionalId String?
+  fechaEmision  DateTime               @default(now())
+  periodoDesde  DateTime
+  periodoHasta  DateTime
+  estado        EstadoInformeBeneficio @default(EMITIDO)
+
+  diagnostico     String?
+  cie10           String?
+  totalPrestaciones Int @default(0)
+  totalCobertura    Int @default(0)
+  totalPaciente     Int @default(0)
+
+  observaciones String?
+  emitidoPorId  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  convenio    Convenio?    @relation(fields: [convenioId], references: [id], onDelete: SetNull)
+  profesional Profesional? @relation(fields: [profesionalId], references: [id], onDelete: SetNull)
+  emitidoPor  Usuario?     @relation("InformeEmitidoPor", fields: [emitidoPorId], references: [id], onDelete: SetNull)
+  items       InformeBeneficioItem[]
+
+  @@index([pacienteId])
+  @@map("informes_beneficio")
+}
+
+model InformeBeneficioItem {
+  id         String   @id @default(cuid())
+  informeId  String
+  ventaItemId String?
+  fecha      DateTime
+  codigoPrestacion String?
+  descripcion String
+  profesional String?
+  cantidad   Float    @default(1)
+  montoTotal Int      @default(0)
+  montoCobertura Int  @default(0)
+  montoPaciente  Int  @default(0)
+
+  informe   InformeBeneficio @relation(fields: [informeId], references: [id], onDelete: Cascade)
+  ventaItem VentaItem?       @relation(fields: [ventaItemId], references: [id], onDelete: SetNull)
+
+  @@map("informe_beneficio_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AGENDA Y DISPONIBILIDAD
+// ═══════════════════════════════════════════════════════════════
+
+/// Bloque horario recurrente de un profesional (0=domingo ... 6=sábado).
+model Disponibilidad {
+  id            String    @id @default(cuid())
+  profesionalId String
+  boxId         String? // box preferente para ese bloque
+  diaSemana     Int // 0-6
+  horaInicio    String // "09:00"
+  horaFin       String // "13:00"
+  duracionSlot  Int       @default(30) // minutos por cupo
+  vigenteDesde  DateTime  @default(now())
+  vigenteHasta  DateTime?
+  activo        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  profesional Profesional @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+  box         Box?        @relation(fields: [boxId], references: [id], onDelete: SetNull)
+
+  @@index([profesionalId, diaSemana])
+  @@map("disponibilidad")
+}
+
+enum TipoExcepcion {
+  BLOQUEO
+  VACACIONES
+  FERIADO
+  LICENCIA
+  DISPONIBILIDAD_EXTRA
+  MANTENCION
+}
+
+/// Excepción puntual: bloquea o habilita horas fuera de la regla recurrente.
+model ExcepcionAgenda {
+  id            String        @id @default(cuid())
+  profesionalId String?
+  boxId         String?
+  tipo          TipoExcepcion @default(BLOQUEO)
+  fechaInicio   DateTime
+  fechaFin      DateTime
+  todoElDia     Boolean       @default(false)
+  motivo        String?
+  createdAt     DateTime      @default(now())
+
+  profesional Profesional? @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+  box         Box?         @relation(fields: [boxId], references: [id], onDelete: Cascade)
+
+  @@index([fechaInicio, fechaFin])
+  @@map("excepciones_agenda")
+}
+
+enum EstadoCita {
+  AGENDADA
+  CONFIRMADA
+  EN_SALA_ESPERA
+  EN_ATENCION
+  ATENDIDA
+  NO_ASISTIO
+  CANCELADA
+  REAGENDADA
+}
+
+enum CanalAgendamiento {
+  PRESENCIAL
+  TELEFONO
+  WHATSAPP
+  EMAIL
+  WEB
+  DERIVACION
+}
+
+model Cita {
+  id            String   @id @default(cuid())
+  pacienteId    String
+  profesionalId String
+  boxId         String?
+  servicioId    String?
+  inicio        DateTime
+  fin           DateTime
+  estado        EstadoCita        @default(AGENDADA)
+  canal         CanalAgendamiento @default(PRESENCIAL)
+  motivoConsulta String? // se solicita siempre al atender
+  usaRayosX     Boolean  @default(false)
+  observaciones String?
+  motivoCancelacion String?
+  confirmadaAt  DateTime?
+  llegadaAt     DateTime?
+  atendidaAt    DateTime?
+  citaOrigenId  String? // reagendamiento o derivación
+  creadoPorId   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profesional Profesional  @relation(fields: [profesionalId], references: [id])
+  box         Box?         @relation(fields: [boxId], references: [id], onDelete: SetNull)
+  servicio    Servicio?    @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+  citaOrigen  Cita?        @relation("CitaDerivada", fields: [citaOrigenId], references: [id], onDelete: SetNull)
+  citasDerivadas Cita[]    @relation("CitaDerivada")
+  creadoPor   Usuario?     @relation("CitaCreadaPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  atencion    Atencion?
+  interconsulta Interconsulta?
+
+  @@index([inicio])
+  @@index([profesionalId, inicio])
+  @@index([boxId, inicio])
+  @@index([pacienteId])
+  @@map("citas")
+}
+
+enum EstadoInterconsulta {
+  PENDIENTE
+  ACEPTADA
+  AGENDADA
+  COMPLETADA
+  RECHAZADA
+}
+
+enum Prioridad {
+  BAJA
+  NORMAL
+  ALTA
+  URGENTE
+}
+
+/// Derivación de un paciente entre profesionales del centro.
+model Interconsulta {
+  id                 String              @id @default(cuid())
+  pacienteId         String
+  profesionalOrigenId  String
+  profesionalDestinoId String
+  motivo             String
+  resumenClinico     String?
+  prioridad          Prioridad           @default(NORMAL)
+  estado             EstadoInterconsulta @default(PENDIENTE)
+  citaId             String?             @unique
+  respuesta          String?
+  respondidaAt       DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  paciente            Paciente    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profesionalOrigen   Profesional @relation("InterconsultaOrigen", fields: [profesionalOrigenId], references: [id])
+  profesionalDestino  Profesional @relation("InterconsultaDestino", fields: [profesionalDestinoId], references: [id])
+  cita                Cita?       @relation(fields: [citaId], references: [id], onDelete: SetNull)
+
+  @@index([estado])
+  @@map("interconsultas")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HISTORIA CLÍNICA
+// ═══════════════════════════════════════════════════════════════
+
+/// Una atención = un registro en la historia clínica del paciente.
+model Atencion {
+  id            String   @id @default(cuid())
+  pacienteId    String
+  profesionalId String
+  citaId        String?  @unique
+  fecha         DateTime @default(now())
+
+  motivoConsulta      String // obligatorio: siempre se pregunta al atender
+  anamnesis           String?
+  examenFisico        String?
+  diagnostico         String?
+  cie10               String?
+  tratamientoRealizado String?
+  indicaciones        String?
+  observaciones       String?
+  proximoControl      DateTime?
+
+  // Signos vitales
+  presionArterial String?
+  frecuenciaCardiaca Int?
+  temperatura     Float?
+  pesoKg          Float?
+  tallaCm         Float?
+  saturacion      Int?
+
+  odontograma  Json? // estado dental por pieza, para uso odontológico
+  registradoPorId String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  paciente      Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profesional   Profesional  @relation(fields: [profesionalId], references: [id])
+  cita          Cita?        @relation(fields: [citaId], references: [id], onDelete: SetNull)
+  registradoPor Usuario?     @relation("AtencionRegistradaPor", fields: [registradoPorId], references: [id], onDelete: SetNull)
+  examenes      Examen[]
+  adjuntos      Adjunto[]
+  recetas       Receta[]
+  ventas        Venta[]
+
+  @@index([pacienteId, fecha])
+  @@map("atenciones")
+}
+
+enum TipoExamen {
+  RADIOGRAFIA
+  LABORATORIO
+  IMAGENOLOGIA
+  BIOPSIA
+  ELECTROCARDIOGRAMA
+  OTRO
+}
+
+enum EstadoExamen {
+  SOLICITADO
+  TOMADO
+  CON_RESULTADO
+  ANULADO
+}
+
+model Examen {
+  id            String       @id @default(cuid())
+  pacienteId    String
+  atencionId    String?
+  solicitadoPorId String?
+  tipo          TipoExamen   @default(OTRO)
+  nombre        String
+  descripcion   String?
+  estado        EstadoExamen @default(SOLICITADO)
+  fechaSolicitud DateTime    @default(now())
+  fechaRealizacion DateTime?
+  fechaResultado DateTime?
+  resultado     String?
+  interpretacion String?
+  laboratorio   String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  paciente      Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  atencion      Atencion?    @relation(fields: [atencionId], references: [id], onDelete: SetNull)
+  solicitadoPor Profesional? @relation("ExamenSolicitadoPor", fields: [solicitadoPorId], references: [id], onDelete: SetNull)
+  adjuntos      Adjunto[]
+
+  @@index([pacienteId])
+  @@map("examenes")
+}
+
+enum CategoriaAdjunto {
+  FOTOGRAFIA
+  RADIOGRAFIA
+  DOCUMENTO
+  EXAMEN
+  CONSENTIMIENTO
+  COMPROBANTE_PAGO
+  DOCUMENTO_TRIBUTARIO
+  PRESUPUESTO
+  OTRO
+}
+
+model Adjunto {
+  id             String           @id @default(cuid())
+  categoria      CategoriaAdjunto @default(DOCUMENTO)
+  nombreArchivo  String // nombre en disco
+  nombreOriginal String
+  mimeType       String
+  tamanoBytes    Int
+  ruta           String
+  descripcion    String?
+
+  pacienteId    String?
+  atencionId    String?
+  examenId      String?
+  pagoId        String?
+  gastoId       String?
+  presupuestoId String?
+  subidoPorId   String?
+  createdAt     DateTime @default(now())
+
+  paciente    Paciente?    @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  atencion    Atencion?    @relation(fields: [atencionId], references: [id], onDelete: Cascade)
+  examen      Examen?      @relation(fields: [examenId], references: [id], onDelete: Cascade)
+  pago        Pago?        @relation(fields: [pagoId], references: [id], onDelete: Cascade)
+  gasto       Gasto?       @relation(fields: [gastoId], references: [id], onDelete: Cascade)
+  presupuesto Presupuesto? @relation(fields: [presupuestoId], references: [id], onDelete: Cascade)
+  subidoPor   Usuario?     @relation("AdjuntoSubidoPor", fields: [subidoPorId], references: [id], onDelete: SetNull)
+
+  @@index([pacienteId])
+  @@map("adjuntos")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RECETAS / PRESCRIPCIONES
+// ═══════════════════════════════════════════════════════════════
+
+enum TipoReceta {
+  SIMPLE
+  RETENIDA
+  CHEQUE_MEDICO
+  MAGISTRAL
+}
+
+model Receta {
+  id            String     @id @default(cuid())
+  folio         Int        @unique @default(autoincrement())
+  pacienteId    String
+  profesionalId String
+  atencionId    String?
+  tipo          TipoReceta @default(SIMPLE)
+  fecha         DateTime   @default(now())
+  diagnostico   String?
+  indicacionesGenerales String?
+  vigenteHasta  DateTime?
+  firmadaAt     DateTime?
+  anulada       Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profesional Profesional  @relation(fields: [profesionalId], references: [id])
+  atencion    Atencion?    @relation(fields: [atencionId], references: [id], onDelete: SetNull)
+  items       RecetaItem[]
+
+  @@index([pacienteId])
+  @@map("recetas")
+}
+
+model RecetaItem {
+  id             String  @id @default(cuid())
+  recetaId       String
+  medicamento    String
+  principioActivo String?
+  presentacion   String? // comprimidos 500mg, jarabe 120ml...
+  dosis          String? // 1 comprimido
+  via            String? // oral, tópica...
+  frecuencia     String? // cada 8 horas
+  duracion       String? // por 7 días
+  cantidad       String? // 21 comprimidos
+  indicaciones   String?
+  orden          Int     @default(0)
+
+  receta Receta @relation(fields: [recetaId], references: [id], onDelete: Cascade)
+
+  @@map("receta_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PRESUPUESTOS
+// ═══════════════════════════════════════════════════════════════
+
+enum EstadoPresupuesto {
+  BORRADOR
+  ENVIADO
+  ACEPTADO
+  RECHAZADO
+  VENCIDO
+  FACTURADO
+}
+
+model Presupuesto {
+  id            String            @id @default(cuid())
+  folio         Int               @unique @default(autoincrement())
+  pacienteId    String
+  profesionalId String?
+  fecha         DateTime          @default(now())
+  validoHasta   DateTime?
+  estado        EstadoPresupuesto @default(BORRADOR)
+
+  subtotal          Int @default(0)
+  descuentoPorcentaje Float @default(0)
+  descuentoMonto    Int @default(0)
+  neto              Int @default(0)
+  iva               Int @default(0)
+  total             Int @default(0)
+
+  observaciones String?
+  motivoRechazo String?
+  aceptadoAt    DateTime?
+  creadoPorId   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  paciente    Paciente          @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profesional Profesional?      @relation(fields: [profesionalId], references: [id], onDelete: SetNull)
+  creadoPor   Usuario?          @relation("PresupuestoCreadoPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  items       PresupuestoItem[]
+  adjuntos    Adjunto[]
+  ventas      Venta[]
+
+  @@index([pacienteId])
+  @@map("presupuestos")
+}
+
+enum TipoItem {
+  SERVICIO
+  PRODUCTO
+  OTRO
+}
+
+model PresupuestoItem {
+  id             String   @id @default(cuid())
+  presupuestoId  String
+  tipo           TipoItem @default(SERVICIO)
+  servicioId     String?
+  productoId     String?
+  descripcion    String
+  piezaDental    String? // ej. "1.6" para odontología
+  cantidad       Float    @default(1)
+  precioUnitario Int      @default(0)
+  descuento      Int      @default(0)
+  total          Int      @default(0)
+  afectoIva      Boolean  @default(true)
+  orden          Int      @default(0)
+
+  presupuesto Presupuesto @relation(fields: [presupuestoId], references: [id], onDelete: Cascade)
+  servicio    Servicio?   @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+  producto    Producto?   @relation(fields: [productoId], references: [id], onDelete: SetNull)
+
+  @@map("presupuesto_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  VENTAS, PAGOS Y CUENTA CORRIENTE DEL PACIENTE
+// ═══════════════════════════════════════════════════════════════
+
+enum TipoDocumento {
+  NINGUNO
+  BOLETA
+  FACTURA
+  BOLETA_EXENTA
+  NOTA_CREDITO
+}
+
+enum EstadoVenta {
+  PENDIENTE
+  PARCIAL
+  PAGADA
+  ANULADA
+}
+
+model Venta {
+  id            String        @id @default(cuid())
+  folio         Int           @unique @default(autoincrement())
+  pacienteId    String
+  profesionalId String?
+  atencionId    String?
+  presupuestoId String?
+  fecha         DateTime      @default(now())
+  tipoDocumento TipoDocumento @default(BOLETA)
+  numeroDocumento String?
+
+  subtotal  Int @default(0)
+  descuento Int @default(0)
+  neto      Int @default(0)
+  iva       Int @default(0)
+  total     Int @default(0)
+  pagado    Int @default(0)
+  saldo     Int @default(0)
+
+  // Convenio aplicado (Isapre, seguro complementario, empresa)
+  convenioId      String?
+  montoCobertura  Int     @default(0) // lo que asume el convenio
+  montoPaciente   Int     @default(0) // copago del paciente
+
+  estado        EstadoVenta @default(PENDIENTE)
+  observaciones String?
+  anuladaMotivo String?
+  creadoPorId   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  paciente    Paciente     @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  profesional Profesional? @relation(fields: [profesionalId], references: [id], onDelete: SetNull)
+  atencion    Atencion?    @relation(fields: [atencionId], references: [id], onDelete: SetNull)
+  presupuesto Presupuesto? @relation(fields: [presupuestoId], references: [id], onDelete: SetNull)
+  convenio    Convenio?    @relation(fields: [convenioId], references: [id], onDelete: SetNull)
+  creadoPor   Usuario?     @relation("VentaCreadaPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  items       VentaItem[]
+  pagos       Pago[]
+  movimientos MovimientoCuenta[]
+
+  @@index([fecha])
+  @@index([pacienteId])
+  @@map("ventas")
+}
+
+model VentaItem {
+  id             String   @id @default(cuid())
+  ventaId        String
+  tipo           TipoItem @default(SERVICIO)
+  servicioId     String?
+  productoId     String?
+  profesionalId  String? // quién ejecuta el servicio -> base de la comisión
+  descripcion    String
+  piezaDental    String?
+  cantidad       Float    @default(1)
+  precioUnitario Int      @default(0)
+  descuento      Int      @default(0)
+  total          Int      @default(0)
+  afectoIva      Boolean  @default(true)
+
+  // Honorario del profesional por esta prestación
+  comisionTipo       TipoComision @default(PORCENTAJE)
+  comisionPorcentaje Float        @default(0)
+  comisionMonto      Int          @default(0) // resultado del cálculo, en CLP
+  liquidacionId      String?
+
+  // Cobertura del convenio para esta prestación
+  codigoPrestacion String?
+  montoCobertura   Int    @default(0)
+
+  venta       Venta        @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+  servicio    Servicio?    @relation(fields: [servicioId], references: [id], onDelete: SetNull)
+  producto    Producto?    @relation(fields: [productoId], references: [id], onDelete: SetNull)
+  profesional Profesional? @relation(fields: [profesionalId], references: [id], onDelete: SetNull)
+  liquidacion Liquidacion? @relation(fields: [liquidacionId], references: [id], onDelete: SetNull)
+  itemsInforme InformeBeneficioItem[]
+
+  @@index([ventaId])
+  @@index([liquidacionId])
+  @@map("venta_items")
+}
+
+enum TipoFormaPago {
+  EFECTIVO
+  DEBITO
+  CREDITO
+  TRANSFERENCIA
+  CHEQUE
+  CONVENIO
+  ISAPRE
+  FONASA
+  GIFTCARD
+  OTRO
+}
+
+model FormaPago {
+  id                 String        @id @default(cuid())
+  nombre             String        @unique
+  tipo               TipoFormaPago @default(EFECTIVO)
+  requiereComprobante Boolean      @default(false)
+  requiereReferencia Boolean       @default(false)
+  comisionPorcentaje Float         @default(0) // costo de transacción (ej. 1.5% tarjeta)
+  cuentaContable     String?
+  activo             Boolean       @default(true)
+  orden              Int           @default(0)
+
+  pagos         Pago[]
+  gastos        Gasto[]
+  liquidaciones Liquidacion[]
+
+  @@map("formas_pago")
+}
+
+enum EstadoPago {
+  CONFIRMADO
+  PENDIENTE
+  ANULADO
+  RECHAZADO
+}
+
+model Pago {
+  id           String     @id @default(cuid())
+  folio        Int        @unique @default(autoincrement())
+  pacienteId   String
+  ventaId      String?
+  formaPagoId  String
+  monto        Int
+  fecha        DateTime   @default(now())
+  estado       EstadoPago @default(CONFIRMADO)
+  referencia   String? // nº operación, nº cheque, últimos 4 dígitos
+  banco        String?
+  cuotas       Int        @default(1)
+  observaciones String?
+  anuladoMotivo String?
+  registradoPorId String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  paciente     Paciente  @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  venta        Venta?    @relation(fields: [ventaId], references: [id], onDelete: SetNull)
+  formaPago    FormaPago @relation(fields: [formaPagoId], references: [id])
+  registradoPor Usuario? @relation("PagoRegistradoPor", fields: [registradoPorId], references: [id], onDelete: SetNull)
+  adjuntos     Adjunto[] // comprobante de pago
+  movimientos  MovimientoCuenta[]
+
+  @@index([fecha])
+  @@index([pacienteId])
+  @@map("pagos")
+}
+
+enum TipoMovimientoCuenta {
+  CARGO // venta / servicio realizado
+  ABONO // pago recibido
+  AJUSTE
+  NOTA_CREDITO
+}
+
+/// Libro mayor de la cuenta corriente de cada paciente.
+model MovimientoCuenta {
+  id          String               @id @default(cuid())
+  pacienteId  String
+  tipo        TipoMovimientoCuenta
+  fecha       DateTime             @default(now())
+  descripcion String
+  monto       Int // positivo = cargo, negativo = abono
+  saldoResultante Int
+  ventaId     String?
+  pagoId      String?
+  createdAt   DateTime             @default(now())
+
+  paciente Paciente @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  venta    Venta?   @relation(fields: [ventaId], references: [id], onDelete: SetNull)
+  pago     Pago?    @relation(fields: [pagoId], references: [id], onDelete: SetNull)
+
+  @@index([pacienteId, fecha])
+  @@map("movimientos_cuenta")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INVENTARIO
+// ═══════════════════════════════════════════════════════════════
+
+model CategoriaProducto {
+  id          String  @id @default(cuid())
+  nombre      String  @unique
+  descripcion String?
+  activo      Boolean @default(true)
+
+  productos Producto[]
+
+  @@map("categorias_producto")
+}
+
+model Proveedor {
+  id          String  @id @default(cuid())
+  rut         String? @unique
+  razonSocial String
+  nombreFantasia String?
+  giro        String?
+  contacto    String?
+  telefono    String?
+  email       String?
+  direccion   String?
+  comuna      String?
+  observaciones String?
+  activo      Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  productos Producto[]
+  gastos    Gasto[]
+
+  @@map("proveedores")
+}
+
+enum UnidadMedida {
+  UNIDAD
+  CAJA
+  PAQUETE
+  ML
+  LITRO
+  GRAMO
+  KILO
+  METRO
+  PAR
+  SET
+}
+
+model Producto {
+  id            String       @id @default(cuid())
+  sku           String       @unique
+  nombre        String
+  descripcion   String?
+  categoriaId   String?
+  proveedorId   String?
+  unidadMedida  UnidadMedida @default(UNIDAD)
+  stockActual   Float        @default(0)
+  stockMinimo   Float        @default(0)
+  stockMaximo   Float        @default(0)
+  costoPromedio Int          @default(0) // CLP
+  precioVenta   Int          @default(0) // CLP
+  esVendible    Boolean      @default(false)
+  esInsumo      Boolean      @default(true)
+  afectoIva     Boolean      @default(true)
+  controlaLote  Boolean      @default(false)
+  ubicacion     String?
+  activo        Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  categoria   CategoriaProducto? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  proveedor   Proveedor?         @relation(fields: [proveedorId], references: [id], onDelete: SetNull)
+  movimientos MovimientoStock[]
+  insumoDe    InsumoServicio[]
+  itemsPresupuesto PresupuestoItem[]
+  itemsVenta  VentaItem[]
+
+  @@index([categoriaId])
+  @@map("productos")
+}
+
+enum TipoMovimientoStock {
+  ENTRADA
+  SALIDA
+  AJUSTE
+  MERMA
+  DEVOLUCION
+  CONSUMO_SERVICIO
+  VENTA
+  INVENTARIO_INICIAL
+}
+
+model MovimientoStock {
+  id              String              @id @default(cuid())
+  productoId      String
+  tipo            TipoMovimientoStock
+  cantidad        Float // siempre positiva; el tipo define el signo
+  costoUnitario   Int                 @default(0)
+  stockAnterior   Float               @default(0)
+  stockResultante Float               @default(0)
+  motivo          String?
+  referenciaTipo  String? // venta, gasto, atencion...
+  referenciaId    String?
+  lote            String?
+  fechaVencimiento DateTime?
+  usuarioId       String?
+  fecha           DateTime            @default(now())
+
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  usuario  Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([productoId, fecha])
+  @@map("movimientos_stock")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GASTOS Y COMPRAS
+// ═══════════════════════════════════════════════════════════════
+
+enum TipoGasto {
+  OPERACIONAL
+  ADMINISTRATIVO
+  INSUMOS
+  ARRIENDO
+  SERVICIOS_BASICOS
+  REMUNERACIONES
+  MARKETING
+  EQUIPAMIENTO
+  MANTENCION
+  IMPUESTOS
+  HONORARIOS
+  OTRO
+}
+
+model CategoriaGasto {
+  id        String    @id @default(cuid())
+  nombre    String    @unique
+  tipo      TipoGasto @default(OPERACIONAL)
+  deducible Boolean   @default(true)
+  activo    Boolean   @default(true)
+
+  gastos Gasto[]
+
+  @@map("categorias_gasto")
+}
+
+enum EstadoGasto {
+  PENDIENTE
+  PAGADO
+  ANULADO
+}
+
+enum Periodicidad {
+  UNICA
+  DIARIA
+  SEMANAL
+  QUINCENAL
+  MENSUAL
+  BIMESTRAL
+  TRIMESTRAL
+  SEMESTRAL
+  ANUAL
+}
+
+model Gasto {
+  id            String        @id @default(cuid())
+  folio         Int           @unique @default(autoincrement())
+  categoriaId   String?
+  proveedorId   String?
+  formaPagoId   String?
+  fecha         DateTime      @default(now())
+  descripcion   String
+  tipoDocumento TipoDocumento @default(NINGUNO)
+  numeroDocumento String?
+
+  neto            Int     @default(0)
+  iva             Int     @default(0)
+  total           Int     @default(0)
+  ivaRecuperable  Boolean @default(true) // suma al IVA crédito fiscal
+
+  estado        EstadoGasto  @default(PAGADO)
+  fechaPago     DateTime?
+  esRecurrente  Boolean      @default(false)
+  periodicidad  Periodicidad @default(UNICA)
+  observaciones String?
+  registradoPorId String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  categoria     CategoriaGasto? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  proveedor     Proveedor?      @relation(fields: [proveedorId], references: [id], onDelete: SetNull)
+  formaPago     FormaPago?      @relation(fields: [formaPagoId], references: [id], onDelete: SetNull)
+  registradoPor Usuario?        @relation("GastoRegistradoPor", fields: [registradoPorId], references: [id], onDelete: SetNull)
+  adjuntos      Adjunto[]
+
+  @@index([fecha])
+  @@map("gastos")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ARRIENDO DE BOX Y LIQUIDACIONES A PROFESIONALES
+// ═══════════════════════════════════════════════════════════════
+
+/// Contrato de arriendo de box de un profesional.
+model ArriendoBox {
+  id            String       @id @default(cuid())
+  profesionalId String
+  boxId         String
+  monto         Int // CLP por período
+  periodicidad  Periodicidad @default(MENSUAL)
+  vigenteDesde  DateTime     @default(now())
+  vigenteHasta  DateTime?
+  activo        Boolean      @default(true)
+  observaciones String?
+  createdAt     DateTime     @default(now())
+
+  profesional Profesional @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+  box         Box         @relation(fields: [boxId], references: [id], onDelete: Cascade)
+
+  @@index([profesionalId])
+  @@map("arriendos_box")
+}
+
+enum EstadoLiquidacion {
+  BORRADOR
+  APROBADA
+  PAGADA
+  ANULADA
+}
+
+model Liquidacion {
+  id            String            @id @default(cuid())
+  folio         Int               @unique @default(autoincrement())
+  profesionalId String
+  periodoDesde  DateTime
+  periodoHasta  DateTime
+  estado        EstadoLiquidacion @default(BORRADOR)
+
+  totalProducido Int @default(0) // total facturado por sus servicios
+  totalComision  Int @default(0) // lo que se le paga
+  totalArriendo  Int @default(0) // lo que se le cobra por el box
+  totalOtrosDescuentos Int @default(0)
+  totalBonos     Int @default(0)
+  totalAPagar    Int @default(0) // comision + bonos - arriendo - descuentos
+
+  observaciones String?
+  aprobadaAt    DateTime?
+  fechaPago     DateTime?
+  formaPagoId   String?
+  creadoPorId   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profesional Profesional        @relation(fields: [profesionalId], references: [id], onDelete: Cascade)
+  formaPago   FormaPago?         @relation(fields: [formaPagoId], references: [id], onDelete: SetNull)
+  creadoPor   Usuario?           @relation("LiquidacionCreadaPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
+  items       LiquidacionItem[]
+  ventaItems  VentaItem[]
+
+  @@index([profesionalId, periodoDesde])
+  @@map("liquidaciones")
+}
+
+enum TipoItemLiquidacion {
+  COMISION
+  ARRIENDO_BOX
+  DESCUENTO
+  BONO
+  AJUSTE
+}
+
+model LiquidacionItem {
+  id            String              @id @default(cuid())
+  liquidacionId String
+  tipo          TipoItemLiquidacion
+  descripcion   String
+  monto         Int // positivo suma, negativo resta
+  referenciaId  String?
+
+  liquidacion Liquidacion @relation(fields: [liquidacionId], references: [id], onDelete: Cascade)
+
+  @@map("liquidacion_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ═══════════════════════════════════════════════════════════════
+
+model Configuracion {
+  id             String  @id @default("singleton")
+  nombreClinica  String  @default("Centro Clínico")
+  rut            String?
+  giro           String?
+  direccion      String?
+  comuna         String?
+  ciudad         String?
+  telefono       String?
+  email          String?
+  sitioWeb       String?
+  logoRuta       String?
+  ivaPorcentaje  Float   @default(19)
+  moneda         String  @default("CLP")
+  zonaHoraria    String  @default("America/Santiago")
+  horaApertura   String  @default("08:00")
+  horaCierre     String  @default("20:00")
+  diasHabiles    String  @default("1,2,3,4,5,6") // 0=domingo
+  duracionSlotDefecto Int @default(30)
+  updatedAt      DateTime @updatedAt
+
+  @@map("configuracion")
+}

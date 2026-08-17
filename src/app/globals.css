@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --fondo: 248 250 252;
+    --superficie: 255 255 255;
+    --borde: 226 232 240;
+    --texto: 15 23 42;
+    --texto-suave: 100 116 139;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  /* Los inputs de fecha/hora nativos se ven mejor con el cursor de puntero */
+  input[type='date'],
+  input[type='time'],
+  input[type='datetime-local'] {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .campo {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
+           placeholder:text-slate-400 shadow-sm transition
+           focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20
+           disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
+  }
+
+  .etiqueta {
+    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500;
+  }
+
+  .tarjeta {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .tabla {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .tabla thead th {
+    @apply border-b border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-xs font-semibold
+           uppercase tracking-wide text-slate-500;
+  }
+
+  .tabla tbody td {
+    @apply border-b border-slate-100 px-3 py-2.5 align-middle text-slate-700;
+  }
+
+  .tabla tbody tr:hover {
+    @apply bg-slate-50/70;
+  }
+
+  /* Oculta elementos al imprimir recetas, presupuestos, etc. */
+  @media print {
+    .no-imprimir {
+      display: none !important;
+    }
+    .solo-imprimir {
+      display: block !important;
+    }
+    body {
+      @apply bg-white;
+    }
+  }
+}
+
+.solo-imprimir {
+  display: none;
+}
+
+/* Scrollbar discreto para las vistas de agenda */
+.scroll-fino::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-fino::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300;
+}
+.scroll-fino::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
