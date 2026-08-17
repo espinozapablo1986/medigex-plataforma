@@ -160,6 +160,35 @@ async function main() {
   }
   log(`${categoriasGasto.length} categorías de gasto.`);
 
+  // ── Condiciones dentales ─────────────────────────────────────
+  // Nomenclatura habitual en Chile. Es dato base, no de demostración: sin
+  // catálogo el odontograma no se puede usar. Cada centro puede agregar las
+  // suyas desde Configuración.
+  const condiciones = [
+    // Diagnósticos: en rojo, siguiendo la convención del odontograma
+    { codigo: 'CARIES', nombre: 'Caries', categoria: 'DIAGNOSTICO' as const, color: '#B94642', porCara: true, orden: 1, servicio: null },
+    { codigo: 'FRACTURA', nombre: 'Fractura', categoria: 'DIAGNOSTICO' as const, color: '#8C3432', porCara: true, orden: 2, servicio: null },
+    { codigo: 'DESGASTE', nombre: 'Desgaste / atrición', categoria: 'DIAGNOSTICO' as const, color: '#CA933E', porCara: true, orden: 3, servicio: null },
+    { codigo: 'RECIDIVA', nombre: 'Caries recidivante', categoria: 'DIAGNOSTICO' as const, color: '#9F1239', porCara: true, orden: 4, servicio: null },
+    { codigo: 'AUSENTE', nombre: 'Pieza ausente', categoria: 'DIAGNOSTICO' as const, color: '#6E8790', porCara: false, orden: 10, servicio: null },
+    { codigo: 'EXTRACCION_IND', nombre: 'Indicación de extracción', categoria: 'DIAGNOSTICO' as const, color: '#8C3432', porCara: false, orden: 11, servicio: null },
+    { codigo: 'MOVILIDAD', nombre: 'Movilidad', categoria: 'DIAGNOSTICO' as const, color: '#CA933E', porCara: false, orden: 12, servicio: null },
+    // Procedimientos: en verde cuando ya están hechos
+    { codigo: 'OBTURACION', nombre: 'Obturación', categoria: 'PROCEDIMIENTO' as const, color: '#318454', porCara: true, orden: 20, servicio: 'OD-003' },
+    { codigo: 'SELLANTE', nombre: 'Sellante', categoria: 'PROCEDIMIENTO' as const, color: '#5EC8B8', porCara: true, orden: 21, servicio: null },
+    { codigo: 'CORONA', nombre: 'Corona', categoria: 'PROCEDIMIENTO' as const, color: '#2A6B80', porCara: false, orden: 22, servicio: null },
+    { codigo: 'ENDODONCIA', nombre: 'Endodoncia', categoria: 'PROCEDIMIENTO' as const, color: '#155265', porCara: false, orden: 23, servicio: 'EN-001' },
+    { codigo: 'EXTRACCION', nombre: 'Extracción realizada', categoria: 'PROCEDIMIENTO' as const, color: '#385863', porCara: false, orden: 24, servicio: 'OD-004' },
+    { codigo: 'IMPLANTE', nombre: 'Implante', categoria: 'PROCEDIMIENTO' as const, color: '#6BB8C4', porCara: false, orden: 25, servicio: null },
+    { codigo: 'PROTESIS', nombre: 'Prótesis', categoria: 'PROCEDIMIENTO' as const, color: '#95AEB7', porCara: false, orden: 26, servicio: null },
+    { codigo: 'DESTARTRAJE', nombre: 'Destartraje', categoria: 'PROCEDIMIENTO' as const, color: '#318454', porCara: false, orden: 27, servicio: 'OD-002' },
+  ];
+
+  for (const { servicio, ...datos } of condiciones) {
+    await prisma.condicionDental.upsert({ where: { codigo: datos.codigo }, create: datos, update: {} });
+  }
+  log(`${condiciones.length} condiciones dentales.`);
+
   if (!CON_DEMO) {
     console.log('\n✅ Semilla base lista (sin datos de demostración).\n');
     return;
@@ -228,6 +257,18 @@ async function main() {
     await prisma.servicio.upsert({ where: { codigo: servicio.codigo }, create: servicio, update: {} });
   }
   log(`${servicios.length} servicios en el catálogo.`);
+
+  // Ahora que existen los servicios, se vinculan a las condiciones que
+  // corresponde cobrar, para poder presupuestar desde el odontograma.
+  let vinculadas = 0;
+  for (const { codigo, servicio } of condiciones) {
+    if (!servicio) continue;
+    const asociado = await prisma.servicio.findUnique({ where: { codigo: servicio } });
+    if (!asociado) continue;
+    await prisma.condicionDental.update({ where: { codigo }, data: { servicioId: asociado.id } });
+    vinculadas++;
+  }
+  log(`${vinculadas} condiciones vinculadas a un servicio.`);
 
   // ── Proveedores ──────────────────────────────────────────────
   const proveedores = [
@@ -649,39 +690,7 @@ async function main() {
     log(`${gastos.length} gastos de ejemplo.`);
   }
 
-  // ── Condiciones dentales ─────────────────────────────────────
-  // Nomenclatura habitual en Chile. Es un mantenedor: cada centro puede
-  // agregar las suyas desde Configuración.
-  const condiciones = [
-    // Diagnósticos: en rojo, siguiendo la convención del odontograma
-    { codigo: 'CARIES', nombre: 'Caries', categoria: 'DIAGNOSTICO' as const, color: '#B94642', porCara: true, orden: 1 },
-    { codigo: 'FRACTURA', nombre: 'Fractura', categoria: 'DIAGNOSTICO' as const, color: '#8C3432', porCara: true, orden: 2 },
-    { codigo: 'DESGASTE', nombre: 'Desgaste / atrición', categoria: 'DIAGNOSTICO' as const, color: '#CA933E', porCara: true, orden: 3 },
-    { codigo: 'RECIDIVA', nombre: 'Caries recidivante', categoria: 'DIAGNOSTICO' as const, color: '#9F1239', porCara: true, orden: 4 },
-    { codigo: 'AUSENTE', nombre: 'Pieza ausente', categoria: 'DIAGNOSTICO' as const, color: '#6E8790', porCara: false, orden: 10 },
-    { codigo: 'EXTRACCION_IND', nombre: 'Indicación de extracción', categoria: 'DIAGNOSTICO' as const, color: '#8C3432', porCara: false, orden: 11 },
-    { codigo: 'MOVILIDAD', nombre: 'Movilidad', categoria: 'DIAGNOSTICO' as const, color: '#CA933E', porCara: false, orden: 12 },
-    // Procedimientos: en verde cuando ya están hechos
-    { codigo: 'OBTURACION', nombre: 'Obturación', categoria: 'PROCEDIMIENTO' as const, color: '#318454', porCara: true, orden: 20, servicio: 'OD-003' },
-    { codigo: 'SELLANTE', nombre: 'Sellante', categoria: 'PROCEDIMIENTO' as const, color: '#5EC8B8', porCara: true, orden: 21 },
-    { codigo: 'CORONA', nombre: 'Corona', categoria: 'PROCEDIMIENTO' as const, color: '#2A6B80', porCara: false, orden: 22 },
-    { codigo: 'ENDODONCIA', nombre: 'Endodoncia', categoria: 'PROCEDIMIENTO' as const, color: '#155265', porCara: false, orden: 23, servicio: 'EN-001' },
-    { codigo: 'EXTRACCION', nombre: 'Extracción realizada', categoria: 'PROCEDIMIENTO' as const, color: '#385863', porCara: false, orden: 24, servicio: 'OD-004' },
-    { codigo: 'IMPLANTE', nombre: 'Implante', categoria: 'PROCEDIMIENTO' as const, color: '#6BB8C4', porCara: false, orden: 25 },
-    { codigo: 'PROTESIS', nombre: 'Prótesis', categoria: 'PROCEDIMIENTO' as const, color: '#95AEB7', porCara: false, orden: 26 },
-    { codigo: 'DESTARTRAJE', nombre: 'Destartraje', categoria: 'PROCEDIMIENTO' as const, color: '#318454', porCara: false, orden: 27, servicio: 'OD-002' },
-  ];
 
-  for (const c of condiciones) {
-    const { servicio, ...datos } = c;
-    const asociado = servicio ? await prisma.servicio.findUnique({ where: { codigo: servicio } }) : null;
-    await prisma.condicionDental.upsert({
-      where: { codigo: c.codigo },
-      create: { ...datos, servicioId: asociado?.id ?? null },
-      update: {},
-    });
-  }
-  log(`${condiciones.length} condiciones dentales.`);
 
   console.log('\n✅ Semilla completa.\n');
   console.log('   ──────────────────────────────────────────');
