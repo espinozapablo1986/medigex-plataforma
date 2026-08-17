@@ -1,0 +1,86 @@
+# MEDIGEX — stack de aplicación + base de datos.
+#
+# La app no publica puertos al host: se expone a través de Nginx Proxy Manager,
+# que ya corre en el VPS y comparte la red `nginx_default`.
+#
+#   docker compose up -d --build
+#   docker compose exec app npx prisma migrate deploy
+#   docker compose exec app npx tsx prisma/seed.ts
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: medigex-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-medigex}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?define POSTGRES_PASSWORD en el archivo .env}
+      POSTGRES_DB: ${POSTGRES_DB:-medigex}
+      TZ: America/Santiago
+    volumes:
+      - medigex-db:/var/lib/postgresql/data
+    networks:
+      - medigex
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-medigex} -d ${POSTGRES_DB:-medigex}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medigex-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-medigex}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-medigex}?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:?define AUTH_SECRET en el archivo .env}
+      SESSION_MAX_AGE_HOURS: ${SESSION_MAX_AGE_HOURS:-12}
+      UPLOAD_DIR: /app/storage/uploads
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-20}
+      APP_NAME: MEDIGEX
+      APP_URL: ${APP_URL:-https://medic.asdf123.cl}
+      TZ: America/Santiago
+      NODE_ENV: production
+    volumes:
+      - medigex-uploads:/app/storage/uploads
+    networks:
+      - medigex
+      - nginx_default # red del Nginx Proxy Manager que ya existe en el VPS
+
+  # Respaldo diario de la base de datos, con rotación a 14 días.
+  backup:
+    image: postgres:16-alpine
+    container_name: medigex-backup
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      TZ: America/Santiago
+    volumes:
+      - ./respaldos:/respaldos
+    networks:
+      - medigex
+    entrypoint: >
+      sh -c 'while true; do
+        sleep 86400;
+        archivo="/respaldos/medigex-$$(date +%Y%m%d-%H%M).sql.gz";
+        pg_dump -h db -U ${POSTGRES_USER:-medigex} ${POSTGRES_DB:-medigex} | gzip > "$$archivo" &&
+          echo "Respaldo generado: $$archivo";
+        find /respaldos -name "medigex-*.sql.gz" -mtime +14 -delete;
+      done'
+
+volumes:
+  medigex-db:
+  medigex-uploads:
+
+networks:
+  medigex:
+  nginx_default:
+    external: true
