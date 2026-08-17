@@ -137,8 +137,8 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
                 </Campo>
               </Grilla>
 
-              <fieldset className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <fieldset className="rounded-lg border border-tinta-200 bg-tinta-50 p-4">
+                <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-tinta-500">
                   Signos vitales
                 </legend>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -217,7 +217,7 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
                     {cita.servicios.map((s) => (
                       <li key={s.id} className="flex justify-between gap-2">
                         <span>{s.servicio.nombre}</span>
-                        <span className="tabular-nums text-slate-500">{clp(s.servicio.precio)}</span>
+                        <span className="tabular-nums text-tinta-500">{clp(s.servicio.precio)}</span>
                       </li>
                     ))}
                   </ul>
@@ -233,16 +233,16 @@ export default async function PaginaAtender({ params }: { params: Promise<{ id: 
 
           <Tarjeta titulo="Últimas atenciones">
             {paciente.atenciones.length === 0 ? (
-              <p className="text-sm text-slate-500">Primera atención de este paciente.</p>
+              <p className="text-sm text-tinta-500">Primera atención de este paciente.</p>
             ) : (
               <ul className="space-y-3">
                 {paciente.atenciones.map((a) => (
-                  <li key={a.id} className="border-l-2 border-slate-200 pl-3">
-                    <p className="text-xs text-slate-400">
+                  <li key={a.id} className="border-l-2 border-tinta-200 pl-3">
+                    <p className="text-xs text-tinta-400">
                       {fechaCorta(a.fecha)} · {a.profesional.apellidos} ({a.profesional.especialidad})
                     </p>
-                    <p className="text-sm text-slate-700">{a.motivoConsulta}</p>
-                    {a.diagnostico && <p className="text-xs text-slate-500">Dg: {a.diagnostico}</p>}
+                    <p className="text-sm text-tinta-700">{a.motivoConsulta}</p>
+                    {a.diagnostico && <p className="text-xs text-tinta-500">Dg: {a.diagnostico}</p>}
                   </li>
                 ))}
               </ul>

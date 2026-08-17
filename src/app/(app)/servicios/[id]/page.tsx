@@ -93,8 +93,8 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
                   {servicio.insumos.map((insumo) => (
                     <tr key={insumo.id}>
                       <td>
-                        <p className="font-medium text-slate-800">{insumo.producto.nombre}</p>
-                        <p className="text-xs text-slate-400">{insumo.producto.sku}</p>
+                        <p className="font-medium text-tinta-800">{insumo.producto.nombre}</p>
+                        <p className="text-xs text-tinta-400">{insumo.producto.sku}</p>
                       </td>
                       <td className="text-right tabular-nums">
                         {numero(insumo.cantidad, 2)} {humanizar(insumo.producto.unidadMedida).toLowerCase()}
@@ -104,7 +104,7 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
                           {numero(insumo.producto.stockActual, 2)}
                         </span>
                       </td>
-                      <td className="text-right tabular-nums text-slate-500">
+                      <td className="text-right tabular-nums text-tinta-500">
                         {clp(Math.round(insumo.cantidad * insumo.producto.costoPromedio))}
                       </td>
                       {puedeEditar && (
@@ -114,8 +114,8 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
                       )}
                     </tr>
                   ))}
-                  <tr className="bg-slate-50 font-medium">
-                    <td colSpan={3} className="text-right text-xs uppercase tracking-wide text-slate-500">
+                  <tr className="bg-tinta-50 font-medium">
+                    <td colSpan={3} className="text-right text-xs uppercase tracking-wide text-tinta-500">
                       Costo total de insumos
                     </td>
                     <td className="text-right tabular-nums">{clp(costoInsumos)}</td>
@@ -126,7 +126,7 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
             )}
 
             {puedeEditar && (
-              <Formulario accion={agregarInsumo} className="mt-4 border-t border-slate-200 pt-4" reiniciarAlEnviar>
+              <Formulario accion={agregarInsumo} className="mt-4 border-t border-tinta-200 pt-4" reiniciarAlEnviar>
                 <input type="hidden" name="servicioId" value={servicio.id} />
                 <div className="flex flex-wrap items-end gap-3">
                   <Campo etiqueta="Producto" className="min-w-[16rem] flex-1">
@@ -153,7 +153,7 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
             descripcion="Sobrescriben la comisión general del profesional sólo para este servicio."
           >
             {servicio.comisiones.length === 0 ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-tinta-500">
                 Ningún profesional tiene comisión especial para este servicio. Se aplica{' '}
                 {servicio.comisionPorcentaje !== null
                   ? `el ${porcentaje(servicio.comisionPorcentaje)} definido en el servicio`
@@ -172,9 +172,9 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
                 <tbody>
                   {servicio.comisiones.map((c) => (
                     <tr key={c.id}>
-                      <td className="font-medium text-slate-800">
+                      <td className="font-medium text-tinta-800">
                         {c.profesional.apellidos}, {c.profesional.nombres}
-                        <span className="ml-1 text-xs text-slate-400">{c.profesional.especialidad}</span>
+                        <span className="ml-1 text-xs text-tinta-400">{c.profesional.especialidad}</span>
                       </td>
                       <td className="text-right tabular-nums">{porcentaje(c.porcentaje)}</td>
                       {puedeEditar && (
@@ -189,7 +189,7 @@ export default async function PaginaServicio({ params }: { params: Promise<{ id:
             )}
 
             {puedeEditar && (
-              <Formulario accion={guardarComisionServicio} className="mt-4 border-t border-slate-200 pt-4" reiniciarAlEnviar>
+              <Formulario accion={guardarComisionServicio} className="mt-4 border-t border-tinta-200 pt-4" reiniciarAlEnviar>
                 <input type="hidden" name="servicioId" value={servicio.id} />
                 <div className="flex flex-wrap items-end gap-3">
                   <Campo etiqueta="Profesional" className="min-w-[16rem] flex-1">

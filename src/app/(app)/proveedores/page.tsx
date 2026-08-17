@@ -108,17 +108,17 @@ export default async function PaginaProveedores() {
               {proveedores.map((p) => (
                 <tr key={p.id} className={p.activo ? '' : 'opacity-60'}>
                   <td>
-                    <p className="font-medium text-slate-800">{p.razonSocial}</p>
-                    {p.nombreFantasia && <p className="text-xs text-slate-400">{p.nombreFantasia}</p>}
+                    <p className="font-medium text-tinta-800">{p.razonSocial}</p>
+                    {p.nombreFantasia && <p className="text-xs text-tinta-400">{p.nombreFantasia}</p>}
                   </td>
-                  <td className="text-slate-600">{formatearRut(p.rut) || '—'}</td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-tinta-600">{formatearRut(p.rut) || '—'}</td>
+                  <td className="text-xs text-tinta-500">
                     {p.contacto ?? '—'}
                     {p.telefono && <div>{p.telefono}</div>}
                     {p.email && <div>{p.email}</div>}
                   </td>
-                  <td className="text-right tabular-nums text-slate-500">{p._count.productos}</td>
-                  <td className="text-right tabular-nums text-slate-500">{p._count.gastos}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{p._count.productos}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{p._count.gastos}</td>
                   <td className="text-right font-medium tabular-nums">
                     {clp(p.gastos.reduce((acc, g) => acc + g.total, 0))}
                   </td>

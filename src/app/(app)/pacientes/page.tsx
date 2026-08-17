@@ -93,15 +93,15 @@ export default async function PaginaPacientes({
             className="campo"
           />
         </Campo>
-        <label className="flex h-10 items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" name="derivados" value="1" defaultChecked={derivados === '1'} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex h-10 items-center gap-2 text-sm text-tinta-600">
+          <input type="checkbox" name="derivados" value="1" defaultChecked={derivados === '1'} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Sólo derivados
         </label>
-        <label className="flex h-10 items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" name="inactivos" value="1" defaultChecked={inactivos === '1'} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex h-10 items-center gap-2 text-sm text-tinta-600">
+          <input type="checkbox" name="inactivos" value="1" defaultChecked={inactivos === '1'} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Incluir inactivos
         </label>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Buscar
         </button>
       </form>
@@ -140,7 +140,7 @@ export default async function PaginaPacientes({
                 const edad = calcularEdad(p.fechaNacimiento, p.edadRegistrada);
                 return (
                   <tr key={p.id} className={p.activo ? '' : 'opacity-60'}>
-                    <td className="font-mono text-xs text-slate-500">Nº {p.numeroFicha}</td>
+                    <td className="font-mono text-xs text-tinta-500">Nº {p.numeroFicha}</td>
                     <td>
                       <Link href={`/pacientes/${p.id}`} className="font-medium text-brand-700 hover:underline">
                         {p.apellidoPaterno} {p.apellidoMaterno ?? ''}, {p.nombres}
@@ -151,24 +151,24 @@ export default async function PaginaPacientes({
                         {!p.activo && <Badge tono="gris">inactivo</Badge>}
                       </div>
                     </td>
-                    <td className="text-slate-600">{formatearRut(p.rut) || p.pasaporte || '—'}</td>
-                    <td className="text-right tabular-nums text-slate-600">{edad ?? '—'}</td>
-                    <td className="text-xs text-slate-500">
+                    <td className="text-tinta-600">{formatearRut(p.rut) || p.pasaporte || '—'}</td>
+                    <td className="text-right tabular-nums text-tinta-600">{edad ?? '—'}</td>
+                    <td className="text-xs text-tinta-500">
                       <div>{p.telefonoPrincipal}</div>
                       {p.telefonoSecundario && <div>{p.telefonoSecundario}</div>}
                     </td>
-                    <td className="text-xs text-slate-600">
+                    <td className="text-xs text-tinta-600">
                       {p.prevision?.nombre ?? '—'}
                       {p.convenio && <div className="text-brand-600">{p.convenio.nombre}</div>}
                     </td>
-                    <td className="text-right tabular-nums text-slate-500">{p._count.atenciones}</td>
+                    <td className="text-right tabular-nums text-tinta-500">{p._count.atenciones}</td>
                     <td className="text-right font-medium tabular-nums">
                       {saldo > 0 ? (
                         <span className="text-rose-600">{clp(saldo)}</span>
                       ) : saldo < 0 ? (
                         <span className="text-emerald-600">{clp(Math.abs(saldo))} a favor</span>
                       ) : (
-                        <span className="text-slate-400">{clp(0)}</span>
+                        <span className="text-tinta-400">{clp(0)}</span>
                       )}
                     </td>
                     <td className="text-right">

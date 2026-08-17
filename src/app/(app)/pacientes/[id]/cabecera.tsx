@@ -53,7 +53,7 @@ export function CabeceraPaciente({
 
   return (
     <div className="mb-5">
-      <Link href="/pacientes" className="mb-2 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-brand-600">
+      <Link href="/pacientes" className="mb-2 inline-flex items-center gap-1 text-sm text-tinta-500 hover:text-brand-600">
         ← Pacientes
       </Link>
 
@@ -61,7 +61,7 @@ export function CabeceraPaciente({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-xl font-semibold tracking-tight text-slate-900">{nombreCompleto(paciente)}</h1>
+              <h1 className="text-xl font-semibold tracking-tight text-tinta-900">{nombreCompleto(paciente)}</h1>
               <Badge tono="gris">Ficha Nº {paciente.numeroFicha}</Badge>
               {!paciente.activo && <Badge tono="rojo">inactivo</Badge>}
               {paciente.vieneDeOtroCentro && (
@@ -70,7 +70,7 @@ export function CabeceraPaciente({
               {paciente.convenio && <Badge tono="azul">{paciente.convenio.nombre}</Badge>}
             </div>
 
-            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-600">
+            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-tinta-600">
               <span>{formatearRut(paciente.rut) || paciente.pasaporte || 'Sin identificación'}</span>
               {edad !== null && <span>{edad} años</span>}
               <span>{humanizar(paciente.sexo)}</span>
@@ -86,10 +86,10 @@ export function CabeceraPaciente({
 
           <div className="flex flex-col items-end gap-2">
             <div className="text-right">
-              <p className="text-xs uppercase tracking-wide text-slate-400">Saldo en cuenta</p>
+              <p className="text-xs uppercase tracking-wide text-tinta-400">Saldo en cuenta</p>
               <p
                 className={`text-lg font-semibold tabular-nums ${
-                  saldo > 0 ? 'text-rose-600' : saldo < 0 ? 'text-emerald-600' : 'text-slate-700'
+                  saldo > 0 ? 'text-rose-600' : saldo < 0 ? 'text-emerald-600' : 'text-tinta-700'
                 }`}
               >
                 {saldo < 0 ? `${clp(Math.abs(saldo))} a favor` : clp(saldo)}

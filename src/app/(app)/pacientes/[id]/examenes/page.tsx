@@ -147,8 +147,8 @@ export default async function ExamenesPaciente({ params }: { params: Promise<{ i
               {examenes.map((e) => (
                 <tr key={e.id}>
                   <td>
-                    <p className="font-medium text-slate-800">{e.nombre}</p>
-                    {e.laboratorio && <p className="text-xs text-slate-400">{e.laboratorio}</p>}
+                    <p className="font-medium text-tinta-800">{e.nombre}</p>
+                    {e.laboratorio && <p className="text-xs text-tinta-400">{e.laboratorio}</p>}
                     {e.adjuntos.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {e.adjuntos.map((ad) => (
@@ -157,7 +157,7 @@ export default async function ExamenesPaciente({ params }: { params: Promise<{ i
                             href={`/api/adjuntos/${ad.id}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded border border-slate-200 px-1.5 py-0.5 text-xs text-brand-700 hover:bg-slate-50"
+                            className="rounded border border-tinta-200 px-1.5 py-0.5 text-xs text-brand-700 hover:bg-tinta-50"
                           >
                             {ad.nombreOriginal} ({tamanoLegible(ad.tamanoBytes)})
                           </a>
@@ -168,21 +168,21 @@ export default async function ExamenesPaciente({ params }: { params: Promise<{ i
                   <td>
                     <Badge tono={e.tipo === 'RADIOGRAFIA' ? 'morado' : 'gris'}>{humanizar(e.tipo)}</Badge>
                   </td>
-                  <td className="text-slate-600">{fechaCorta(e.fechaSolicitud)}</td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-tinta-600">{fechaCorta(e.fechaSolicitud)}</td>
+                  <td className="text-xs text-tinta-500">
                     {e.solicitadoPor ? `${e.solicitadoPor.nombres} ${e.solicitadoPor.apellidos}` : '—'}
                   </td>
                   <td>
                     <BadgeEstado estado={e.estado} />
                   </td>
-                  <td className="max-w-sm text-xs text-slate-600">
+                  <td className="max-w-sm text-xs text-tinta-600">
                     {e.resultado ? (
                       <>
                         <p className="whitespace-pre-wrap">{e.resultado}</p>
-                        {e.interpretacion && <p className="mt-1 italic text-slate-500">{e.interpretacion}</p>}
+                        {e.interpretacion && <p className="mt-1 italic text-tinta-500">{e.interpretacion}</p>}
                       </>
                     ) : (
-                      <span className="text-slate-400">Pendiente</span>
+                      <span className="text-tinta-400">Pendiente</span>
                     )}
                   </td>
                   <td>

@@ -41,7 +41,7 @@ export default async function PaginaEditarPaciente({ params }: { params: Promise
         <input type="hidden" name="id" value={paciente.id} />
         <CamposPaciente valores={paciente} convenios={convenios} previsiones={previsiones} />
         <div className="sticky bottom-4 mt-5 flex justify-end">
-          <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+          <div className="rounded-xl border border-tinta-200 bg-white p-2 shadow-lg">
             <BotonEnviar tamano="lg">Guardar cambios</BotonEnviar>
           </div>
         </div>

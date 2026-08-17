@@ -119,7 +119,7 @@ export default async function PaginaVentas({
             ))}
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -151,23 +151,23 @@ export default async function PaginaVentas({
             <tbody>
               {ventas.map((v) => (
                 <tr key={v.id} className={v.estado === 'ANULADA' ? 'opacity-50' : ''}>
-                  <td className="font-mono text-xs text-slate-500">{v.folio}</td>
-                  <td className="whitespace-nowrap text-slate-600">{fechaCorta(v.fecha)}</td>
+                  <td className="font-mono text-xs text-tinta-500">{v.folio}</td>
+                  <td className="whitespace-nowrap text-tinta-600">{fechaCorta(v.fecha)}</td>
                   <td>
                     <Link href={`/pacientes/${v.paciente.id}`} className="font-medium text-brand-700 hover:underline">
                       {v.paciente.nombres} {v.paciente.apellidoPaterno}
                     </Link>
                     {v.convenio && <p className="text-xs text-brand-600">{v.convenio.nombre}</p>}
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {v.profesional ? `${v.profesional.nombres} ${v.profesional.apellidos}` : '—'}
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {humanizar(v.tipoDocumento)}
-                    {v.numeroDocumento && <p className="text-slate-400">{v.numeroDocumento}</p>}
+                    {v.numeroDocumento && <p className="text-tinta-400">{v.numeroDocumento}</p>}
                   </td>
-                  <td className="text-right tabular-nums text-slate-600">{clp(v.neto)}</td>
-                  <td className="text-right tabular-nums text-slate-500">{clp(v.iva)}</td>
+                  <td className="text-right tabular-nums text-tinta-600">{clp(v.neto)}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{clp(v.iva)}</td>
                   <td className="text-right font-medium tabular-nums">{clp(v.total)}</td>
                   <td className="text-right tabular-nums">
                     {v.saldo > 0 ? <span className="text-rose-600">{clp(v.saldo)}</span> : clp(0)}

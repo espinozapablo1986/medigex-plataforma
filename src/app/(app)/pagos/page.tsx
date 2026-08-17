@@ -91,7 +91,7 @@ export default async function PaginaPagos({
           puede(sesion, 'pagos', 'crear') && (
             <Modal titulo="Registrar pago libre" etiquetaBoton="Registrar pago" ancho="max-w-lg">
               <Formulario accion={registrarPago} className="space-y-4">
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-tinta-500">
                   Pago no asociado a una venta específica (abono a cuenta). Para pagar una venta concreta, hazlo desde
                   el detalle de esa venta.
                 </p>
@@ -185,7 +185,7 @@ export default async function PaginaPagos({
             ))}
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -211,15 +211,15 @@ export default async function PaginaPagos({
             <tbody>
               {pagos.map((p) => (
                 <tr key={p.id} className={p.estado === 'ANULADO' ? 'opacity-50' : ''}>
-                  <td className="font-mono text-xs text-slate-500">{p.folio}</td>
-                  <td className="whitespace-nowrap text-slate-600">{fechaCorta(p.fecha)}</td>
+                  <td className="font-mono text-xs text-tinta-500">{p.folio}</td>
+                  <td className="whitespace-nowrap text-tinta-600">{fechaCorta(p.fecha)}</td>
                   <td>
                     <Link href={`/pacientes/${p.paciente.id}/cuenta`} className="font-medium text-brand-700 hover:underline">
                       {p.paciente.nombres} {p.paciente.apellidoPaterno}
                     </Link>
                   </td>
-                  <td className="text-slate-700">{p.formaPago.nombre}</td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-tinta-700">{p.formaPago.nombre}</td>
+                  <td className="text-xs text-tinta-500">
                     {p.referencia ?? '—'}
                     {p.banco && <p>{p.banco}</p>}
                   </td>
@@ -229,7 +229,7 @@ export default async function PaginaPagos({
                         Nº {p.venta.folio}
                       </Link>
                     ) : (
-                      <span className="text-slate-400">Abono a cuenta</span>
+                      <span className="text-tinta-400">Abono a cuenta</span>
                     )}
                   </td>
                   <td className="text-right font-medium tabular-nums">{clp(p.monto)}</td>
@@ -244,7 +244,7 @@ export default async function PaginaPagos({
                         Ver
                       </a>
                     ) : (
-                      <span className="text-xs text-slate-400">—</span>
+                      <span className="text-xs text-tinta-400">—</span>
                     )}
                   </td>
                   <td>

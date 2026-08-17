@@ -124,13 +124,13 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
                         {DIAS_SEMANA.map((dia, indice) => (
                           <label
                             key={dia}
-                            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                            className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-tinta-300 px-3 py-1.5 text-sm hover:bg-tinta-50"
                           >
                             <input
                               type="checkbox"
                               name="diaSemana"
                               value={indice}
-                              className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                              className="h-4 w-4 rounded border-tinta-300 text-brand-600"
                             />
                             {dia}
                           </label>
@@ -186,16 +186,16 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
                   if (bloques.length === 0) return null;
                   return (
                     <div key={dia} className="flex flex-wrap items-center gap-2">
-                      <span className="w-24 shrink-0 text-sm font-medium text-slate-700">{dia}</span>
+                      <span className="w-24 shrink-0 text-sm font-medium text-tinta-700">{dia}</span>
                       {bloques.map((b) => (
                         <span
                           key={b.id}
-                          className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-sm"
+                          className="inline-flex items-center gap-2 rounded-lg border border-tinta-200 bg-tinta-50 px-2.5 py-1 text-sm"
                         >
-                          <span className="tabular-nums text-slate-700">
+                          <span className="tabular-nums text-tinta-700">
                             {b.horaInicio}–{b.horaFin}
                           </span>
-                          <span className="text-xs text-slate-400">{b.duracionSlot} min</span>
+                          <span className="text-xs text-tinta-400">{b.duracionSlot} min</span>
                           {b.box && <Badge tono="azul">{b.box.codigo}</Badge>}
                           {b.vigenteHasta && (
                             <span className="text-xs text-amber-600">hasta {fechaCorta(b.vigenteHasta)}</span>
@@ -244,8 +244,8 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
                         <input name="fechaFin" type="datetime-local" required className="campo" />
                       </Campo>
                     </Grilla>
-                    <label className="flex items-center gap-2 text-sm text-slate-700">
-                      <input type="checkbox" name="todoElDia" className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+                    <label className="flex items-center gap-2 text-sm text-tinta-700">
+                      <input type="checkbox" name="todoElDia" className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
                       Todo el día
                     </label>
                     <Campo etiqueta="Motivo">
@@ -260,7 +260,7 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
             }
           >
             {profesional.excepciones.length === 0 ? (
-              <p className="text-sm text-slate-500">No hay bloqueos registrados.</p>
+              <p className="text-sm text-tinta-500">No hay bloqueos registrados.</p>
             ) : (
               <ContenedorTabla>
                 <thead>
@@ -278,9 +278,9 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
                       <td>
                         <Badge tono={e.tipo === 'DISPONIBILIDAD_EXTRA' ? 'verde' : 'ambar'}>{humanizar(e.tipo)}</Badge>
                       </td>
-                      <td className="text-slate-600">{fechaCorta(e.fechaInicio)}</td>
-                      <td className="text-slate-600">{fechaCorta(e.fechaFin)}</td>
-                      <td className="text-slate-500">{e.motivo ?? '—'}</td>
+                      <td className="text-tinta-600">{fechaCorta(e.fechaInicio)}</td>
+                      <td className="text-tinta-600">{fechaCorta(e.fechaFin)}</td>
+                      <td className="text-tinta-500">{e.motivo ?? '—'}</td>
                       {puedeEditar && (
                         <td className="text-right">
                           <BotonEliminar accion={eliminarExcepcion} id={e.id} texto="Eliminar" />
@@ -344,7 +344,7 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
             }
           >
             {profesional.arriendos.length === 0 ? (
-              <p className="text-sm text-slate-500">Este profesional no paga arriendo de box.</p>
+              <p className="text-sm text-tinta-500">Este profesional no paga arriendo de box.</p>
             ) : (
               <ContenedorTabla>
                 <thead>
@@ -360,12 +360,12 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
                 <tbody>
                   {profesional.arriendos.map((a) => (
                     <tr key={a.id}>
-                      <td className="font-medium text-slate-800">
+                      <td className="font-medium text-tinta-800">
                         {a.box.codigo} — {a.box.nombre}
                       </td>
                       <td className="text-right font-medium tabular-nums">{clp(a.monto)}</td>
-                      <td className="text-slate-600">{humanizar(a.periodicidad)}</td>
-                      <td className="text-xs text-slate-500">
+                      <td className="text-tinta-600">{humanizar(a.periodicidad)}</td>
+                      <td className="text-xs text-tinta-500">
                         {fechaCorta(a.vigenteDesde)} → {a.vigenteHasta ? fechaCorta(a.vigenteHasta) : 'indefinido'}
                       </td>
                       <td>{a.activo ? <Badge tono="verde">vigente</Badge> : <Badge tono="gris">terminado</Badge>}</td>
@@ -393,7 +393,7 @@ export default async function PaginaProfesional({ params }: { params: Promise<{ 
               {profesional.usuario ? (
                 <Badge tono="verde">vinculada</Badge>
               ) : (
-                <span className="text-slate-500">sin cuenta de usuario</span>
+                <span className="text-tinta-500">sin cuenta de usuario</span>
               )}
             </Definicion>
             <Definicion termino="Modelo de pago">{humanizar(profesional.modeloPago)}</Definicion>

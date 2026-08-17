@@ -35,7 +35,7 @@ export default async function PaginaNuevoPaciente() {
       <Formulario accion={crearPaciente} className="mx-auto max-w-4xl">
         <CamposPaciente convenios={convenios} previsiones={previsiones} />
         <div className="sticky bottom-4 mt-5 flex justify-end">
-          <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+          <div className="rounded-xl border border-tinta-200 bg-white p-2 shadow-lg">
             <BotonEnviar tamano="lg">Crear ficha del paciente</BotonEnviar>
           </div>
         </div>

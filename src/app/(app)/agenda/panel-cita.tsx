@@ -28,8 +28,8 @@ const COLORES_ESTADO: Record<string, string> = {
   EN_ATENCION: 'border-violet-300 bg-violet-50',
   ATENDIDA: 'border-emerald-400 bg-emerald-100',
   NO_ASISTIO: 'border-rose-300 bg-rose-50',
-  CANCELADA: 'border-slate-300 bg-slate-100',
-  REAGENDADA: 'border-slate-300 bg-slate-100',
+  CANCELADA: 'border-tinta-300 bg-tinta-100',
+  REAGENDADA: 'border-tinta-300 bg-tinta-100',
 };
 
 const TRANSICIONES: { estado: string; texto: string }[] = [
@@ -64,20 +64,20 @@ export function PanelCita({
         onClick={() => setAbierto(true)}
         className={cn(
           'h-full w-full overflow-hidden rounded-md border-l-4 px-2 py-1 text-left text-xs transition hover:shadow-md',
-          COLORES_ESTADO[cita.estado] ?? 'border-slate-300 bg-white',
+          COLORES_ESTADO[cita.estado] ?? 'border-tinta-300 bg-white',
           anulada && 'opacity-60',
         )}
         style={{ borderLeftColor: cita.profesional.colorAgenda }}
       >
-        <p className={cn('truncate font-semibold text-slate-800', anulada && 'line-through')}>
+        <p className={cn('truncate font-semibold text-tinta-800', anulada && 'line-through')}>
           {cita.paciente.nombres} {cita.paciente.apellidoPaterno}
         </p>
-        <p className="truncate text-[11px] text-slate-500">
+        <p className="truncate text-[11px] text-tinta-500">
           {hhmm(cita.inicio)}–{hhmm(cita.fin)}
           {cita.box && ` · ${cita.box.codigo}`}
         </p>
         {cita.servicios.length > 0 && (
-          <p className="truncate text-[11px] text-slate-500">
+          <p className="truncate text-[11px] text-tinta-500">
             {cita.servicios.map((s) => s.servicio.nombre).join(' + ')}
           </p>
         )}
@@ -88,18 +88,18 @@ export function PanelCita({
       </button>
 
       {abierto && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-tinta-900/50 p-4">
           <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
-            <header className="flex items-start justify-between border-b border-slate-200 px-5 py-3">
+            <header className="flex items-start justify-between border-b border-tinta-200 px-5 py-3">
               <div>
-                <h2 className="text-sm font-semibold text-slate-900">
+                <h2 className="text-sm font-semibold text-tinta-900">
                   {cita.paciente.nombres} {cita.paciente.apellidoPaterno}
                 </h2>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-tinta-500">
                   {hhmm(cita.inicio)}–{hhmm(cita.fin)} · {cita.profesional.nombres} {cita.profesional.apellidos}
                 </p>
               </div>
-              <button onClick={() => setAbierto(false)} className="rounded p-1 text-slate-400 hover:bg-slate-100">
+              <button onClick={() => setAbierto(false)} className="rounded p-1 text-tinta-400 hover:bg-tinta-100">
                 ✕
               </button>
             </header>
@@ -124,11 +124,11 @@ export function PanelCita({
               )}
             </div>
 
-            <footer className="space-y-3 border-t border-slate-200 px-5 py-3">
+            <footer className="space-y-3 border-t border-tinta-200 px-5 py-3">
               <div className="flex flex-wrap gap-2">
                 <Link
                   href={`/pacientes/${cita.paciente.id}`}
-                  className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-tinta-300 px-3 py-1.5 text-xs font-medium text-tinta-700 hover:bg-tinta-50"
                 >
                   Ver ficha
                 </Link>
@@ -165,7 +165,7 @@ export function PanelCita({
                             e.preventDefault();
                           }
                         }}
-                        className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50"
+                        className="rounded-lg border border-tinta-300 px-2.5 py-1 text-xs text-tinta-600 hover:bg-tinta-50"
                       >
                         {t.texto}
                       </button>
@@ -184,8 +184,8 @@ export function PanelCita({
 function Fila({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
     <div className="flex gap-2">
-      <span className="w-28 shrink-0 text-xs uppercase tracking-wide text-slate-400">{etiqueta}</span>
-      <span className="text-slate-700">{valor}</span>
+      <span className="w-28 shrink-0 text-xs uppercase tracking-wide text-tinta-400">{etiqueta}</span>
+      <span className="text-tinta-700">{valor}</span>
     </div>
   );
 }

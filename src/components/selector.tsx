@@ -144,7 +144,7 @@ export function SelectorBuscable({
         onClick={() => setAbierto((a) => !a)}
         className={cn(
           'campo flex items-center justify-between gap-2 text-left',
-          !seleccionada && 'text-slate-400',
+          !seleccionada && 'text-tinta-400',
         )}
       >
         <span className="truncate">
@@ -152,20 +152,20 @@ export function SelectorBuscable({
             <>
               {seleccionada.etiqueta}
               {seleccionada.detalle && (
-                <span className="ml-1.5 text-xs text-slate-400">{seleccionada.detalle}</span>
+                <span className="ml-1.5 text-xs text-tinta-400">{seleccionada.detalle}</span>
               )}
             </>
           ) : (
             placeholder
           )}
         </span>
-        <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
+        <ChevronDown className="h-4 w-4 shrink-0 text-tinta-400" />
       </button>
 
       {abierto && (
-        <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-          <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
-            <Search className="h-4 w-4 shrink-0 text-slate-400" />
+        <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-tinta-200 bg-white shadow-lg">
+          <div className="flex items-center gap-2 border-b border-tinta-100 px-3 py-2">
+            <Search className="h-4 w-4 shrink-0 text-tinta-400" />
             <input
               ref={entrada}
               value={consulta}
@@ -175,10 +175,10 @@ export function SelectorBuscable({
               }}
               onKeyDown={alTeclear}
               placeholder="Escribe para filtrar…"
-              className="w-full border-0 p-0 text-sm outline-none placeholder:text-slate-400"
+              className="w-full border-0 p-0 text-sm outline-none placeholder:text-tinta-400"
             />
             {consulta && (
-              <button type="button" onClick={() => setConsulta('')} className="text-slate-400 hover:text-slate-600">
+              <button type="button" onClick={() => setConsulta('')} className="text-tinta-400 hover:text-tinta-600">
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
@@ -190,7 +190,7 @@ export function SelectorBuscable({
                 <button
                   type="button"
                   onClick={() => elegir(null)}
-                  className="flex w-full items-center px-3 py-1.5 text-left text-sm text-slate-500 hover:bg-slate-50"
+                  className="flex w-full items-center px-3 py-1.5 text-left text-sm text-tinta-500 hover:bg-tinta-50"
                 >
                   {textoVacio}
                 </button>
@@ -198,7 +198,7 @@ export function SelectorBuscable({
             )}
 
             {filtradas.length === 0 ? (
-              <li className="px-3 py-4 text-center text-sm text-slate-400">
+              <li className="px-3 py-4 text-center text-sm text-tinta-400">
                 Sin resultados para “{consulta}”
               </li>
             ) : (
@@ -211,14 +211,14 @@ export function SelectorBuscable({
                     onMouseEnter={() => setResaltado(indice)}
                     className={cn(
                       'flex w-full items-start justify-between gap-2 px-3 py-1.5 text-left text-sm',
-                      indice === resaltado ? 'bg-brand-50' : 'hover:bg-slate-50',
+                      indice === resaltado ? 'bg-brand-50' : 'hover:bg-tinta-50',
                       opcion.deshabilitada && 'cursor-not-allowed opacity-40',
                     )}
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-slate-800">{opcion.etiqueta}</span>
+                      <span className="block truncate text-tinta-800">{opcion.etiqueta}</span>
                       {opcion.detalle && (
-                        <span className="block truncate text-xs text-slate-400">{opcion.detalle}</span>
+                        <span className="block truncate text-xs text-tinta-400">{opcion.detalle}</span>
                       )}
                     </span>
                     {opcion.valor === valor && <Check className="h-4 w-4 shrink-0 text-brand-600" />}
@@ -229,7 +229,7 @@ export function SelectorBuscable({
           </ul>
 
           {opciones.length > 12 && (
-            <p className="border-t border-slate-100 px-3 py-1.5 text-xs text-slate-400">
+            <p className="border-t border-tinta-100 px-3 py-1.5 text-xs text-tinta-400">
               {filtradas.length} de {opciones.length}
             </p>
           )}
@@ -330,16 +330,16 @@ export function SelectorMultiple({
         <button
           type="button"
           onClick={() => setAbierto((a) => !a)}
-          className="text-sm text-slate-400 hover:text-brand-600"
+          className="text-sm text-tinta-400 hover:text-brand-600"
         >
           {elegidas.length === 0 ? placeholder : '+ agregar'}
         </button>
       </div>
 
       {abierto && (
-        <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-          <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
-            <Search className="h-4 w-4 shrink-0 text-slate-400" />
+        <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-tinta-200 bg-white shadow-lg">
+          <div className="flex items-center gap-2 border-b border-tinta-100 px-3 py-2">
+            <Search className="h-4 w-4 shrink-0 text-tinta-400" />
             <input
               ref={entrada}
               value={consulta}
@@ -353,13 +353,13 @@ export function SelectorMultiple({
                 }
               }}
               placeholder="Escribe para filtrar…"
-              className="w-full border-0 p-0 text-sm outline-none placeholder:text-slate-400"
+              className="w-full border-0 p-0 text-sm outline-none placeholder:text-tinta-400"
             />
           </div>
 
           <ul className="scroll-fino max-h-64 overflow-y-auto py-1">
             {disponibles.length === 0 ? (
-              <li className="px-3 py-4 text-center text-sm text-slate-400">
+              <li className="px-3 py-4 text-center text-sm text-tinta-400">
                 {consulta ? `Sin resultados para “${consulta}”` : 'No queda nada por agregar'}
               </li>
             ) : (
@@ -368,10 +368,10 @@ export function SelectorMultiple({
                   <button
                     type="button"
                     onClick={() => agregar(opcion.valor)}
-                    className="flex w-full flex-col items-start px-3 py-1.5 text-left text-sm hover:bg-slate-50"
+                    className="flex w-full flex-col items-start px-3 py-1.5 text-left text-sm hover:bg-tinta-50"
                   >
-                    <span className="truncate text-slate-800">{opcion.etiqueta}</span>
-                    {opcion.detalle && <span className="truncate text-xs text-slate-400">{opcion.detalle}</span>}
+                    <span className="truncate text-tinta-800">{opcion.etiqueta}</span>
+                    {opcion.detalle && <span className="truncate text-xs text-tinta-400">{opcion.detalle}</span>}
                   </button>
                 </li>
               ))

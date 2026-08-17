@@ -45,15 +45,15 @@ export function EditorMedicamentos() {
       <input type="hidden" name="medicamentos" value={JSON.stringify(validos)} />
 
       {items.map((item, indice) => (
-        <fieldset key={indice} className="rounded-xl border border-slate-200 p-4">
+        <fieldset key={indice} className="rounded-xl border border-tinta-200 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <legend className="text-xs font-semibold uppercase tracking-wide text-tinta-500">
               Medicamento {indice + 1}
             </legend>
             <button
               type="button"
               onClick={() => setItems((p) => (p.length === 1 ? [vacio()] : p.filter((_, i) => i !== indice)))}
-              className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+              className="rounded p-1 text-tinta-400 hover:bg-rose-50 hover:text-rose-600"
               aria-label="Quitar medicamento"
             >
               <Trash2 className="h-4 w-4" />
@@ -160,7 +160,7 @@ export function EditorMedicamentos() {
         <button
           type="button"
           onClick={() => setItems((p) => [...p, vacio()])}
-          className="rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 hover:border-brand-400 hover:text-brand-600"
+          className="rounded-lg border border-dashed border-tinta-300 px-3 py-2 text-sm font-medium text-tinta-600 hover:border-brand-400 hover:text-brand-600"
         >
           + Agregar medicamento
         </button>

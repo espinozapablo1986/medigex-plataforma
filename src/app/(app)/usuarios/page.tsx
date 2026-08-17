@@ -142,21 +142,21 @@ export default async function PaginaUsuarios() {
               {usuarios.map((usuario) => (
                 <tr key={usuario.id}>
                   <td>
-                    <p className="font-medium text-slate-800">
+                    <p className="font-medium text-tinta-800">
                       {usuario.apellidos}, {usuario.nombres}
-                      {usuario.id === sesion.usuarioId && <span className="ml-1 text-xs text-slate-400">(tú)</span>}
+                      {usuario.id === sesion.usuarioId && <span className="ml-1 text-xs text-tinta-400">(tú)</span>}
                     </p>
-                    <p className="text-xs text-slate-500">{usuario.email}</p>
+                    <p className="text-xs text-tinta-500">{usuario.email}</p>
                   </td>
                   <td>
                     <Badge tono="azul">{usuario.rol.nombre}</Badge>
                   </td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-xs text-tinta-500">
                     {formatearRut(usuario.rut) || '—'}
                     {usuario.telefono && <div>{usuario.telefono}</div>}
                   </td>
-                  <td className="text-xs text-slate-500">{usuario.profesional?.especialidad ?? '—'}</td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-xs text-tinta-500">{usuario.profesional?.especialidad ?? '—'}</td>
+                  <td className="text-xs text-tinta-500">
                     {usuario.ultimoAccesoAt ? fechaHora(usuario.ultimoAccesoAt) : 'Nunca'}
                   </td>
                   <td>{usuario.activo ? <Badge tono="verde">activo</Badge> : <Badge tono="rojo">inactivo</Badge>}</td>
@@ -196,7 +196,7 @@ export default async function PaginaUsuarios() {
                           >
                             <Formulario accion={cambiarPassword} className="space-y-4">
                               <input type="hidden" name="id" value={usuario.id} />
-                              <p className="text-sm text-slate-600">
+                              <p className="text-sm text-tinta-600">
                                 Se cerrarán las sesiones activas de <strong>{usuario.email}</strong>.
                               </p>
                               <Campo etiqueta="Nueva contraseña" requerido>

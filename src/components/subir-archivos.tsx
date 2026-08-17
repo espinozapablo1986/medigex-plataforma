@@ -163,26 +163,26 @@ export function SubirArchivos({
           type="button"
           disabled={procesando}
           onClick={() => entradaGaleria.current?.click()}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-tinta-300 bg-white px-3.5 py-2 text-sm font-medium text-tinta-700 hover:bg-tinta-50 disabled:opacity-50"
         >
           <FileUp className="h-4 w-4" />
           {etiquetaArchivo}
         </button>
 
         {procesando && (
-          <span className="inline-flex items-center gap-1.5 text-sm text-slate-500">
+          <span className="inline-flex items-center gap-1.5 text-sm text-tinta-500">
             <Loader2 className="h-4 w-4 animate-spin" />
             Optimizando…
           </span>
         )}
       </div>
 
-      <label className="flex items-center gap-2 text-xs text-slate-600">
+      <label className="flex items-center gap-2 text-xs text-tinta-600">
         <input
           type="checkbox"
           checked={altaFidelidad}
           onChange={(e) => setAltaFidelidad(e.target.checked)}
-          className="h-3.5 w-3.5 rounded border-slate-300 text-brand-600"
+          className="h-3.5 w-3.5 rounded border-tinta-300 text-brand-600"
         />
         Alta fidelidad — para radiografías o fotos donde importa el detalle fino (archivos más pesados)
       </label>
@@ -197,7 +197,7 @@ export function SubirArchivos({
             {archivos.map((a) => (
               <li
                 key={a.clave}
-                className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white p-2"
+                className="flex items-center gap-2.5 rounded-lg border border-tinta-200 bg-white p-2"
               >
                 {a.vistaPrevia ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -207,14 +207,14 @@ export function SubirArchivos({
                     className="h-12 w-12 shrink-0 rounded object-cover"
                   />
                 ) : (
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-slate-100 text-slate-400">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-tinta-100 text-tinta-400">
                     <ImageIcon className="h-5 w-5" />
                   </span>
                 )}
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-medium text-slate-800">{a.archivo.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="truncate text-xs font-medium text-tinta-800">{a.archivo.name}</p>
+                  <p className="text-xs text-tinta-500">
                     {tamanoLegible(a.archivo.size)}
                     {a.seComprimio && (
                       <span className="text-emerald-600">
@@ -228,7 +228,7 @@ export function SubirArchivos({
                 <button
                   type="button"
                   onClick={() => quitar(a.clave)}
-                  className="shrink-0 rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                  className="shrink-0 rounded p-1 text-tinta-400 hover:bg-rose-50 hover:text-rose-600"
                   aria-label={`Quitar ${a.archivo.name}`}
                 >
                   <X className="h-4 w-4" />
@@ -237,7 +237,7 @@ export function SubirArchivos({
             ))}
           </ul>
 
-          <p className={cn('text-xs', ahorro > 0 ? 'text-emerald-700' : 'text-slate-500')}>
+          <p className={cn('text-xs', ahorro > 0 ? 'text-emerald-700' : 'text-tinta-500')}>
             {archivos.length} archivo(s) · {tamanoLegible(totalFinal)}
             {ahorro > 0 && ` — ${ahorro}% menos que los ${tamanoLegible(totalOriginal)} originales`}
           </p>

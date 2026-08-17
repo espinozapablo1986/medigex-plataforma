@@ -78,8 +78,8 @@ export function MatrizPermisos({
 
         return (
           <section key={grupo} className="tarjeta overflow-hidden">
-            <header className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
-              <h3 className="text-sm font-semibold text-slate-900">{grupo}</h3>
+            <header className="flex items-center justify-between border-b border-tinta-200 bg-tinta-50 px-4 py-2.5">
+              <h3 className="text-sm font-semibold text-tinta-900">{grupo}</h3>
               {!soloLectura && (
                 <button
                   type="button"
@@ -94,7 +94,7 @@ export function MatrizPermisos({
             <div className="scroll-fino overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                  <tr className="border-b border-tinta-200 text-xs uppercase tracking-wide text-tinta-500">
                     <th className="px-4 py-2 text-left font-semibold">Módulo</th>
                     {acciones.map((accion) => (
                       <th key={accion} className="w-20 px-2 py-2 text-center font-semibold">
@@ -106,10 +106,10 @@ export function MatrizPermisos({
                 </thead>
                 <tbody>
                   {delGrupo.map((modulo) => (
-                    <tr key={modulo.slug} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60">
+                    <tr key={modulo.slug} className="border-b border-tinta-100 last:border-0 hover:bg-tinta-50/60">
                       <td className="px-4 py-2.5">
-                        <p className="font-medium text-slate-800">{modulo.nombre}</p>
-                        <p className="text-xs text-slate-400">{modulo.descripcion}</p>
+                        <p className="font-medium text-tinta-800">{modulo.nombre}</p>
+                        <p className="text-xs text-tinta-400">{modulo.descripcion}</p>
                       </td>
 
                       {acciones.map((accion) => {
@@ -117,7 +117,7 @@ export function MatrizPermisos({
                         const clave = `${modulo.slug}.${accion}`;
                         if (!aplica) {
                           return (
-                            <td key={accion} className="px-2 py-2.5 text-center text-slate-200">
+                            <td key={accion} className="px-2 py-2.5 text-center text-tinta-200">
                               ·
                             </td>
                           );
@@ -131,7 +131,7 @@ export function MatrizPermisos({
                               disabled={soloLectura}
                               aria-label={`${etiquetas[accion] ?? accion} en ${modulo.nombre}`}
                               className={cn(
-                                'h-4 w-4 rounded border-slate-300 text-brand-600',
+                                'h-4 w-4 rounded border-tinta-300 text-brand-600',
                                 'focus:ring-2 focus:ring-brand-500/30',
                                 soloLectura && 'cursor-not-allowed opacity-60',
                               )}
@@ -145,7 +145,7 @@ export function MatrizPermisos({
                           <button
                             type="button"
                             onClick={() => alternarFila(modulo)}
-                            className="text-xs text-slate-400 hover:text-brand-600"
+                            className="text-xs text-tinta-400 hover:text-brand-600"
                           >
                             todo
                           </button>

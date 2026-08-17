@@ -151,20 +151,20 @@ export default async function PaginaInventario({
 
       <fieldset className="mt-4 space-y-2">
         <legend className="etiqueta">Opciones</legend>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" name="esInsumo" defaultChecked={p?.esInsumo ?? true} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
+          <input type="checkbox" name="esInsumo" defaultChecked={p?.esInsumo ?? true} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Es insumo clínico (se puede asociar a servicios y se descuenta al atender)
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" name="esVendible" defaultChecked={p?.esVendible ?? false} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
+          <input type="checkbox" name="esVendible" defaultChecked={p?.esVendible ?? false} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Se puede vender directamente al paciente
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" name="afectoIva" defaultChecked={p?.afectoIva ?? true} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
+          <input type="checkbox" name="afectoIva" defaultChecked={p?.afectoIva ?? true} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Afecto a IVA
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input type="checkbox" name="controlaLote" defaultChecked={p?.controlaLote ?? false} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
+          <input type="checkbox" name="controlaLote" defaultChecked={p?.controlaLote ?? false} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Controla lote y fecha de vencimiento
         </label>
       </fieldset>
@@ -245,15 +245,15 @@ export default async function PaginaInventario({
             ))}
           </select>
         </Campo>
-        <label className="flex h-10 items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" name="alerta" value="1" defaultChecked={alerta === '1'} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex h-10 items-center gap-2 text-sm text-tinta-600">
+          <input type="checkbox" name="alerta" value="1" defaultChecked={alerta === '1'} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Sólo bajo stock
         </label>
-        <label className="flex h-10 items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" name="inactivos" value="1" defaultChecked={inactivos === '1'} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex h-10 items-center gap-2 text-sm text-tinta-600">
+          <input type="checkbox" name="inactivos" value="1" defaultChecked={inactivos === '1'} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Incluir inactivos
         </label>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -284,23 +284,23 @@ export default async function PaginaInventario({
                 const critico = p.stockMinimo > 0 && p.stockActual <= p.stockMinimo;
                 return (
                   <tr key={p.id} className={p.activo ? '' : 'opacity-60'}>
-                    <td className="font-mono text-xs text-slate-500">{p.sku}</td>
+                    <td className="font-mono text-xs text-tinta-500">{p.sku}</td>
                     <td>
                       <Link href={`/inventario/${p.id}`} className="font-medium text-brand-700 hover:underline">
                         {p.nombre}
                       </Link>
-                      {p.ubicacion && <p className="text-xs text-slate-400">{p.ubicacion}</p>}
+                      {p.ubicacion && <p className="text-xs text-tinta-400">{p.ubicacion}</p>}
                     </td>
-                    <td className="text-xs text-slate-600">{p.categoria?.nombre ?? '—'}</td>
+                    <td className="text-xs text-tinta-600">{p.categoria?.nombre ?? '—'}</td>
                     <td className="text-right font-medium tabular-nums">
                       <span className={p.stockActual < 0 ? 'text-rose-600' : critico ? 'text-amber-600' : ''}>
                         {numero(p.stockActual, p.stockActual % 1 === 0 ? 0 : 2)}
                       </span>
-                      <span className="ml-1 text-xs text-slate-400">{humanizar(p.unidadMedida).toLowerCase()}</span>
+                      <span className="ml-1 text-xs text-tinta-400">{humanizar(p.unidadMedida).toLowerCase()}</span>
                     </td>
-                    <td className="text-right tabular-nums text-slate-500">{numero(p.stockMinimo, 0)}</td>
-                    <td className="text-right tabular-nums text-slate-600">{clp(p.costoPromedio)}</td>
-                    <td className="text-right tabular-nums text-slate-700">
+                    <td className="text-right tabular-nums text-tinta-500">{numero(p.stockMinimo, 0)}</td>
+                    <td className="text-right tabular-nums text-tinta-600">{clp(p.costoPromedio)}</td>
+                    <td className="text-right tabular-nums text-tinta-700">
                       {clp(Math.round(p.stockActual * p.costoPromedio))}
                     </td>
                     <td>
@@ -323,7 +323,7 @@ export default async function PaginaInventario({
                             >
                               <Formulario accion={registrarMovimiento} className="space-y-4">
                                 <input type="hidden" name="productoId" value={p.id} />
-                                <div className="rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                                <div className="rounded-lg bg-tinta-50 px-3 py-2 text-sm">
                                   Stock actual: <strong>{numero(p.stockActual, 2)}</strong>{' '}
                                   {humanizar(p.unidadMedida).toLowerCase()}
                                 </div>

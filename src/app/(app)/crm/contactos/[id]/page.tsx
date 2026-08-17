@@ -204,7 +204,7 @@ export default async function DetalleContacto({ params }: { params: Promise<{ id
                   className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
                     contacto.estado === e
                       ? 'cursor-default bg-brand-600 text-white'
-                      : 'border border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                      : 'border border-tinta-300 bg-white text-tinta-600 hover:bg-tinta-50'
                   }`}
                 >
                   {humanizar(e)}
@@ -287,18 +287,18 @@ export default async function DetalleContacto({ params }: { params: Promise<{ id
             ) : (
               <ol className="space-y-3">
                 {contacto.interacciones.map((i) => (
-                  <li key={i.id} className="border-l-2 border-slate-200 pl-4">
+                  <li key={i.id} className="border-l-2 border-tinta-200 pl-4">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <p className="text-sm font-medium text-slate-800">{i.asunto}</p>
-                      <span className="text-xs text-slate-400">{fechaHora(i.fecha)}</span>
+                      <p className="text-sm font-medium text-tinta-800">{i.asunto}</p>
+                      <span className="text-xs text-tinta-400">{fechaHora(i.fecha)}</span>
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-500">
                       <Badge tono="gris">{humanizar(i.canal)}</Badge>{' '}
                       {i.sentido === 'ENTRANTE' ? 'nos contactaron' : 'contactamos'}
                       {i.usuario && ` · ${i.usuario.nombres} ${i.usuario.apellidos}`}
                     </p>
-                    {i.resultado && <p className="mt-1 text-sm text-slate-700">{i.resultado}</p>}
-                    {i.detalle && <p className="mt-0.5 whitespace-pre-wrap text-xs text-slate-500">{i.detalle}</p>}
+                    {i.resultado && <p className="mt-1 text-sm text-tinta-700">{i.resultado}</p>}
+                    {i.detalle && <p className="mt-0.5 whitespace-pre-wrap text-xs text-tinta-500">{i.detalle}</p>}
                   </li>
                 ))}
               </ol>
@@ -362,14 +362,14 @@ export default async function DetalleContacto({ params }: { params: Promise<{ id
             }
           >
             {contacto.seguimientos.length === 0 ? (
-              <p className="text-sm text-slate-500">Sin seguimientos agendados.</p>
+              <p className="text-sm text-tinta-500">Sin seguimientos agendados.</p>
             ) : (
               <ul className="space-y-2">
                 {contacto.seguimientos.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-3 py-2">
+                  <li key={s.id} className="flex items-center justify-between gap-2 rounded-lg border border-tinta-200 px-3 py-2">
                     <div>
-                      <p className="text-sm text-slate-800">{s.titulo}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm text-tinta-800">{s.titulo}</p>
+                      <p className="text-xs text-tinta-500">
                         {fechaCorta(s.fechaVencimiento)}
                         {s.asignadoA && ` · ${s.asignadoA.nombres} ${s.asignadoA.apellidos}`}
                         {s.resultado && ` · ${s.resultado}`}

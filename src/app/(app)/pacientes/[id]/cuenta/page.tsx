@@ -101,13 +101,13 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
               <tbody>
                 {movimientos.map((m) => (
                   <tr key={m.id}>
-                    <td className="whitespace-nowrap text-slate-600">{fechaCorta(m.fecha)}</td>
+                    <td className="whitespace-nowrap text-tinta-600">{fechaCorta(m.fecha)}</td>
                     <td>
                       <Badge tono={m.tipo === 'CARGO' ? 'ambar' : m.tipo === 'ABONO' ? 'verde' : 'gris'}>
                         {humanizar(m.tipo)}
                       </Badge>
                     </td>
-                    <td className="text-slate-700">{m.descripcion}</td>
+                    <td className="text-tinta-700">{m.descripcion}</td>
                     <td className="text-xs">
                       {m.venta && (
                         <Link href={`/ventas/${m.venta.id}`} className="text-brand-700 hover:underline">
@@ -115,7 +115,7 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
                         </Link>
                       )}
                       {m.pago && (
-                        <span className="text-slate-500">
+                        <span className="text-tinta-500">
                           Pago Nº {m.pago.folio} · {m.pago.formaPago.nombre}
                         </span>
                       )}
@@ -135,7 +135,7 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
         <div className="grid gap-5 lg:grid-cols-2">
           <Tarjeta titulo="Ventas" sinPadding>
             {ventas.length === 0 ? (
-              <p className="p-4 text-sm text-slate-500">Sin ventas registradas.</p>
+              <p className="p-4 text-sm text-tinta-500">Sin ventas registradas.</p>
             ) : (
               <ContenedorTabla>
                 <thead>
@@ -155,7 +155,7 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
                           {v.folio}
                         </Link>
                       </td>
-                      <td className="text-slate-600">{fechaCorta(v.fecha)}</td>
+                      <td className="text-tinta-600">{fechaCorta(v.fecha)}</td>
                       <td className="text-right font-medium tabular-nums">{clp(v.total)}</td>
                       <td className="text-right tabular-nums">
                         {v.saldo > 0 ? <span className="text-rose-600">{clp(v.saldo)}</span> : clp(0)}
@@ -173,7 +173,7 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
           {puedeVerPagos && (
             <Tarjeta titulo="Pagos recibidos" sinPadding>
               {pagos.length === 0 ? (
-                <p className="p-4 text-sm text-slate-500">Sin pagos registrados.</p>
+                <p className="p-4 text-sm text-tinta-500">Sin pagos registrados.</p>
               ) : (
                 <ContenedorTabla>
                   <thead>
@@ -188,11 +188,11 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
                   <tbody>
                     {pagos.map((p) => (
                       <tr key={p.id} className={p.estado === 'ANULADO' ? 'opacity-50 line-through' : ''}>
-                        <td className="text-slate-600">{p.folio}</td>
-                        <td className="text-slate-600">{fechaCorta(p.fecha)}</td>
-                        <td className="text-slate-700">
+                        <td className="text-tinta-600">{p.folio}</td>
+                        <td className="text-tinta-600">{fechaCorta(p.fecha)}</td>
+                        <td className="text-tinta-700">
                           {p.formaPago.nombre}
-                          {p.referencia && <p className="text-xs text-slate-400">{p.referencia}</p>}
+                          {p.referencia && <p className="text-xs text-tinta-400">{p.referencia}</p>}
                         </td>
                         <td className="text-right font-medium tabular-nums">{clp(p.monto)}</td>
                         <td>
@@ -206,7 +206,7 @@ export default async function CuentaPaciente({ params }: { params: Promise<{ id:
                               Ver
                             </a>
                           ) : (
-                            <span className="text-xs text-slate-400">—</span>
+                            <span className="text-xs text-tinta-400">—</span>
                           )}
                         </td>
                       </tr>

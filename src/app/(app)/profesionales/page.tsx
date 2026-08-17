@@ -83,25 +83,25 @@ export default async function PaginaProfesionales() {
                         <Link href={`/profesionales/${p.id}`} className="font-medium text-brand-700 hover:underline">
                           {p.apellidos}, {p.nombres}
                         </Link>
-                        <p className="text-xs text-slate-400">{formatearRut(p.rut)}</p>
+                        <p className="text-xs text-tinta-400">{formatearRut(p.rut)}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="text-slate-600">
+                  <td className="text-tinta-600">
                     {p.especialidad}
-                    {p.subespecialidad && <p className="text-xs text-slate-400">{p.subespecialidad}</p>}
+                    {p.subespecialidad && <p className="text-xs text-tinta-400">{p.subespecialidad}</p>}
                   </td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-xs text-tinta-500">
                     {p.email ?? p.usuario?.email ?? '—'}
                     {p.telefono && <div>{p.telefono}</div>}
                   </td>
                   <td>
                     <Badge tono="azul">{humanizar(p.modeloPago)}</Badge>
                     {p.comisionPorcentaje > 0 && (
-                      <p className="mt-0.5 text-xs text-slate-500">{porcentaje(p.comisionPorcentaje)} de comisión</p>
+                      <p className="mt-0.5 text-xs text-tinta-500">{porcentaje(p.comisionPorcentaje)} de comisión</p>
                     )}
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {p.arriendos.length === 0
                       ? '—'
                       : p.arriendos.map((a) => (
@@ -110,7 +110,7 @@ export default async function PaginaProfesionales() {
                           </div>
                         ))}
                   </td>
-                  <td className="text-right tabular-nums text-slate-500">{p._count.disponibilidad}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{p._count.disponibilidad}</td>
                   <td>{p.activo ? <Badge tono="verde">activo</Badge> : <Badge tono="rojo">inactivo</Badge>}</td>
                   <td>
                     <div className="flex flex-wrap justify-end gap-1.5">

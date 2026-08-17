@@ -113,11 +113,11 @@ export default async function PaginaServicios({
             ))}
           </select>
         </Campo>
-        <label className="flex h-10 items-center gap-2 text-sm text-slate-600">
-          <input type="checkbox" name="inactivos" value="1" defaultChecked={inactivos === '1'} className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+        <label className="flex h-10 items-center gap-2 text-sm text-tinta-600">
+          <input type="checkbox" name="inactivos" value="1" defaultChecked={inactivos === '1'} className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
           Incluir inactivos
         </label>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -147,28 +147,28 @@ export default async function PaginaServicios({
                 const margen = s.precio > 0 ? Math.round(((s.precio - s.costoEstimado) / s.precio) * 100) : 0;
                 return (
                   <tr key={s.id} className={s.activo ? '' : 'opacity-60'}>
-                    <td className="font-mono text-xs text-slate-600">{s.codigo}</td>
+                    <td className="font-mono text-xs text-tinta-600">{s.codigo}</td>
                     <td>
                       <Link href={`/servicios/${s.id}`} className="font-medium text-brand-700 hover:underline">
                         {s.nombre}
                       </Link>
                       {s._count.insumos > 0 && (
-                        <span className="ml-1.5 text-xs text-slate-400">{s._count.insumos} insumo(s)</span>
+                        <span className="ml-1.5 text-xs text-tinta-400">{s._count.insumos} insumo(s)</span>
                       )}
                     </td>
                     <td>
                       {s.categoria ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-slate-600">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-tinta-600">
                           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.categoria.color }} />
                           {s.categoria.nombre}
                         </span>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-tinta-400">—</span>
                       )}
                     </td>
-                    <td className="text-right tabular-nums text-slate-600">{s.duracionMinutos} min</td>
+                    <td className="text-right tabular-nums text-tinta-600">{s.duracionMinutos} min</td>
                     <td className="text-right font-medium tabular-nums">{clp(s.precio)}</td>
-                    <td className="text-right tabular-nums text-slate-500">
+                    <td className="text-right tabular-nums text-tinta-500">
                       {s.costoEstimado > 0 ? `${margen}%` : '—'}
                     </td>
                     <td>

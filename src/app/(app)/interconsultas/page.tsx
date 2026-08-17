@@ -157,7 +157,7 @@ export default async function PaginaInterconsultas({
             <option value="RECHAZADA">Rechazadas</option>
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -177,13 +177,13 @@ export default async function PaginaInterconsultas({
                     <Link href={`/pacientes/${i.paciente.id}`} className="text-sm font-semibold text-brand-700 hover:underline">
                       {i.paciente.nombres} {i.paciente.apellidoPaterno}
                     </Link>
-                    <span className="text-xs text-slate-400">Ficha Nº {i.paciente.numeroFicha}</span>
+                    <span className="text-xs text-tinta-400">Ficha Nº {i.paciente.numeroFicha}</span>
                     <BadgeEstado estado={i.estado} />
                     {i.prioridad !== 'NORMAL' && <Badge tono={i.prioridad === 'URGENTE' ? 'rojo' : 'ambar'}>{humanizar(i.prioridad)}</Badge>}
                   </div>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-tinta-500">
                     {i.profesionalOrigen.apellidos} ({i.profesionalOrigen.especialidad}) →{' '}
-                    <strong className="text-slate-700">
+                    <strong className="text-tinta-700">
                       {i.profesionalDestino.apellidos} ({i.profesionalDestino.especialidad})
                     </strong>
                     {' · '}
@@ -217,7 +217,7 @@ export default async function PaginaInterconsultas({
                     <Modal titulo="Agendar hora de la interconsulta" etiquetaBoton="Agendar hora" tamanoBoton="sm" ancho="max-w-lg">
                       <Formulario accion={agendarDesdeInterconsulta} className="space-y-4">
                         <input type="hidden" name="interconsultaId" value={i.id} />
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-tinta-600">
                           Se agendará con <strong>{i.profesionalDestino.nombres} {i.profesionalDestino.apellidos}</strong>.
                         </p>
                         <Campo etiqueta="Fecha y hora" requerido>
@@ -245,8 +245,8 @@ export default async function PaginaInterconsultas({
                             textoVacio="Sin box"
                           />
                         </Campo>
-                        <label className="flex items-center gap-2 text-sm text-slate-700">
-                          <input type="checkbox" name="sobrecupo" className="h-4 w-4 rounded border-slate-300 text-amber-600" />
+                        <label className="flex items-center gap-2 text-sm text-tinta-700">
+                          <input type="checkbox" name="sobrecupo" className="h-4 w-4 rounded border-tinta-300 text-amber-600" />
                           Permitir sobrecupo fuera del horario habitual
                         </label>
                         <div className="flex justify-end">
@@ -267,23 +267,23 @@ export default async function PaginaInterconsultas({
                 </div>
               </div>
 
-              <div className="mt-3 space-y-2 border-t border-slate-100 pt-3 text-sm">
+              <div className="mt-3 space-y-2 border-t border-tinta-100 pt-3 text-sm">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Motivo</p>
-                  <p className="text-slate-700">{i.motivo}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">Motivo</p>
+                  <p className="text-tinta-700">{i.motivo}</p>
                 </div>
                 {i.resumenClinico && (
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Resumen clínico</p>
-                    <p className="whitespace-pre-wrap text-slate-700">{i.resumenClinico}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">Resumen clínico</p>
+                    <p className="whitespace-pre-wrap text-tinta-700">{i.resumenClinico}</p>
                   </div>
                 )}
                 {i.respuesta && (
-                  <div className="rounded-lg bg-slate-50 px-3 py-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  <div className="rounded-lg bg-tinta-50 px-3 py-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">
                       Respuesta {i.respondidaAt && `· ${fechaCorta(i.respondidaAt)}`}
                     </p>
-                    <p className="whitespace-pre-wrap text-slate-700">{i.respuesta}</p>
+                    <p className="whitespace-pre-wrap text-tinta-700">{i.respuesta}</p>
                   </div>
                 )}
               </div>

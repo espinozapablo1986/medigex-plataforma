@@ -129,7 +129,7 @@ export default async function PaginaNuevoPresupuesto({
         </Tarjeta>
 
         <div className="sticky bottom-4 flex justify-end">
-          <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+          <div className="rounded-xl border border-tinta-200 bg-white p-2 shadow-lg">
             <BotonEnviar tamano="lg">Crear presupuesto</BotonEnviar>
           </div>
         </div>

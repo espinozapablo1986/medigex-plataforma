@@ -85,21 +85,21 @@ export default async function PaginaConfiguracion() {
         </Campo>
       </Grilla>
       <fieldset className="mt-4 space-y-2">
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="requiereComprobante"
             defaultChecked={f?.requiereComprobante ?? false}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Exigir adjuntar comprobante al registrar el pago
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="requiereReferencia"
             defaultChecked={f?.requiereReferencia ?? false}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Exigir número de operación o referencia
         </label>
@@ -130,12 +130,12 @@ export default async function PaginaConfiguracion() {
         </Campo>
       </Grilla>
 
-      <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
+      <label className="mt-4 flex items-center gap-2 text-sm text-tinta-700">
         <input
           type="checkbox"
           name="requiereDetalle"
           defaultChecked={p?.requiereDetalle ?? false}
-          className="h-4 w-4 rounded border-slate-300 text-brand-600"
+          className="h-4 w-4 rounded border-tinta-300 text-brand-600"
         />
         Pedir un dato adicional al elegirla
       </label>
@@ -265,7 +265,7 @@ export default async function PaginaConfiguracion() {
                 {DIAS_SEMANA.map((dia, indice) => (
                   <label
                     key={dia}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                    className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-tinta-300 px-3 py-1.5 text-sm hover:bg-tinta-50"
                   >
                     <input
                       type="checkbox"
@@ -273,7 +273,7 @@ export default async function PaginaConfiguracion() {
                       value={indice}
                       defaultChecked={diasActivos.includes(String(indice))}
                       disabled={!puedeEditar}
-                      className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                      className="h-4 w-4 rounded border-tinta-300 text-brand-600"
                     />
                     {dia}
                   </label>
@@ -320,9 +320,9 @@ export default async function PaginaConfiguracion() {
             <tbody>
               {formasPago.map((f) => (
                 <tr key={f.id} className={f.activo ? '' : 'opacity-60'}>
-                  <td className="font-medium text-slate-800">{f.nombre}</td>
-                  <td className="text-slate-600">{humanizar(f.tipo)}</td>
-                  <td className="text-right tabular-nums text-slate-600">
+                  <td className="font-medium text-tinta-800">{f.nombre}</td>
+                  <td className="text-tinta-600">{humanizar(f.tipo)}</td>
+                  <td className="text-right tabular-nums text-tinta-600">
                     {f.comisionPorcentaje > 0 ? porcentaje(f.comisionPorcentaje) : '—'}
                   </td>
                   <td>
@@ -330,7 +330,7 @@ export default async function PaginaConfiguracion() {
                       {f.requiereComprobante && <Badge tono="ambar">comprobante</Badge>}
                       {f.requiereReferencia && <Badge tono="azul">referencia</Badge>}
                       {!f.requiereComprobante && !f.requiereReferencia && (
-                        <span className="text-xs text-slate-400">—</span>
+                        <span className="text-xs text-tinta-400">—</span>
                       )}
                     </div>
                   </td>
@@ -400,10 +400,10 @@ export default async function PaginaConfiguracion() {
             <tbody>
               {previsiones.map((p) => (
                 <tr key={p.id} className={p.activo ? '' : 'opacity-60'}>
-                  <td className="text-right tabular-nums text-slate-400">{p.orden}</td>
+                  <td className="text-right tabular-nums text-tinta-400">{p.orden}</td>
                   <td>
-                    <p className="font-medium text-slate-800">{p.nombre}</p>
-                    <p className="font-mono text-xs text-slate-400">{p.codigo}</p>
+                    <p className="font-medium text-tinta-800">{p.nombre}</p>
+                    <p className="font-mono text-xs text-tinta-400">{p.codigo}</p>
                   </td>
                   <td>
                     <Badge
@@ -420,10 +420,10 @@ export default async function PaginaConfiguracion() {
                       {humanizar(p.tipo)}
                     </Badge>
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {p.requiereDetalle ? (p.etiquetaDetalle ?? 'Sí, sin etiqueta') : '—'}
                   </td>
-                  <td className="text-right tabular-nums text-slate-500">{p._count.pacientes}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{p._count.pacientes}</td>
                   <td>{p.activo ? <Badge tono="verde">activa</Badge> : <Badge tono="rojo">inactiva</Badge>}</td>
                   {puedeEditar && (
                     <td>
@@ -475,15 +475,15 @@ export default async function PaginaConfiguracion() {
             <tbody>
               {auditoria.map((a) => (
                 <tr key={a.id}>
-                  <td className="whitespace-nowrap text-xs text-slate-500">{fechaHora(a.createdAt)}</td>
-                  <td className="text-xs text-slate-700">
+                  <td className="whitespace-nowrap text-xs text-tinta-500">{fechaHora(a.createdAt)}</td>
+                  <td className="text-xs text-tinta-700">
                     {a.usuario ? `${a.usuario.nombres} ${a.usuario.apellidos}` : 'sistema'}
                   </td>
                   <td className="text-xs">
                     <Badge tono="gris">{a.modulo}</Badge>
                   </td>
-                  <td className="text-xs text-slate-600">{humanizar(a.accion)}</td>
-                  <td className="text-xs text-slate-400">{a.entidad ?? '—'}</td>
+                  <td className="text-xs text-tinta-600">{humanizar(a.accion)}</td>
+                  <td className="text-xs text-tinta-400">{a.entidad ?? '—'}</td>
                 </tr>
               ))}
             </tbody>

@@ -143,10 +143,10 @@ export function EditorItems({
       <input type="hidden" name="items" value={JSON.stringify(lineasValidas)} />
       <input type="hidden" name="descuentoPorcentaje" value={descuentoPorcentaje} />
 
-      <div className="scroll-fino overflow-x-auto rounded-xl border border-slate-200">
+      <div className="scroll-fino overflow-x-auto rounded-xl border border-tinta-200">
         <table className="w-full min-w-[900px] text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr className="border-b border-tinta-200 bg-tinta-50 text-xs uppercase tracking-wide text-tinta-500">
               <th className="px-3 py-2 text-left font-semibold">Ítem</th>
               {mostrarPiezaDental && <th className="w-20 px-2 py-2 text-left font-semibold">Pieza</th>}
               {mostrarProfesional && profesionales && (
@@ -161,7 +161,7 @@ export function EditorItems({
           </thead>
           <tbody>
             {lineas.map((linea, indice) => (
-              <tr key={indice} className="border-b border-slate-100 last:border-0">
+              <tr key={indice} className="border-b border-tinta-100 last:border-0">
                 <td className="px-3 py-2">
                   <div className="space-y-1.5">
                     <div className="flex gap-1.5">
@@ -213,12 +213,12 @@ export function EditorItems({
                       className="campo py-1 text-xs"
                     />
 
-                    <label className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <label className="flex items-center gap-1.5 text-xs text-tinta-500">
                       <input
                         type="checkbox"
                         checked={linea.afectoIva}
                         onChange={(e) => actualizar(indice, { afectoIva: e.target.checked })}
-                        className="h-3.5 w-3.5 rounded border-slate-300 text-brand-600"
+                        className="h-3.5 w-3.5 rounded border-tinta-300 text-brand-600"
                       />
                       Afecto a IVA
                     </label>
@@ -286,7 +286,7 @@ export function EditorItems({
                   />
                 </td>
 
-                <td className="px-2 py-2 text-right align-top font-medium tabular-nums text-slate-800">
+                <td className="px-2 py-2 text-right align-top font-medium tabular-nums text-tinta-800">
                   {clp(Math.max(0, linea.cantidad * linea.precioUnitario - linea.descuento))}
                 </td>
 
@@ -294,7 +294,7 @@ export function EditorItems({
                   <button
                     type="button"
                     onClick={() => setLineas((p) => (p.length === 1 ? [lineaVacia()] : p.filter((_, i) => i !== indice)))}
-                    className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                    className="rounded p-1 text-tinta-400 hover:bg-rose-50 hover:text-rose-600"
                     aria-label="Quitar línea"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -310,15 +310,15 @@ export function EditorItems({
         <button
           type="button"
           onClick={() => setLineas((p) => [...p, lineaVacia()])}
-          className="rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 hover:border-brand-400 hover:text-brand-600"
+          className="rounded-lg border border-dashed border-tinta-300 px-3 py-2 text-sm font-medium text-tinta-600 hover:border-brand-400 hover:text-brand-600"
         >
           + Agregar línea
         </button>
 
-        <div className="w-full max-w-sm space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="w-full max-w-sm space-y-2 rounded-xl border border-tinta-200 bg-tinta-50 p-4">
           <Fila etiqueta="Subtotal" valor={clp(totales.subtotal)} />
           <div className="flex items-center justify-between gap-3 text-sm">
-            <label className="flex items-center gap-2 text-slate-600">
+            <label className="flex items-center gap-2 text-tinta-600">
               Descuento global
               <input
                 type="number"
@@ -335,7 +335,7 @@ export function EditorItems({
           </div>
           <Fila etiqueta="Neto" valor={clp(totales.neto)} />
           <Fila etiqueta={`IVA (${ivaPorcentaje}%)`} valor={clp(totales.iva)} />
-          <div className="flex items-center justify-between border-t border-slate-300 pt-2 text-base font-semibold">
+          <div className="flex items-center justify-between border-t border-tinta-300 pt-2 text-base font-semibold">
             <span>Total</span>
             <span className="tabular-nums">{clp(totales.total)}</span>
           </div>
@@ -350,7 +350,7 @@ export function EditorItems({
 
 function Fila({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
-    <div className={cn('flex items-center justify-between text-sm text-slate-600')}>
+    <div className={cn('flex items-center justify-between text-sm text-tinta-600')}>
       <span>{etiqueta}</span>
       <span className="tabular-nums">{valor}</span>
     </div>

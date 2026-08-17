@@ -14,6 +14,7 @@ import {
   numero,
 } from '@/lib/format';
 
+import { Simbolo } from '@/components/marca';
 import { BotonImprimir } from './boton-imprimir';
 
 export const metadata = { title: 'Ficha del paciente' };
@@ -85,15 +86,15 @@ export default async function FichaImprimible({
       <div className="no-imprimir mb-5">
         <Link
           href={`/pacientes/${id}`}
-          className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-brand-600"
+          className="mb-3 inline-flex items-center gap-1 text-sm text-tinta-500 hover:text-brand-600"
         >
           ← Volver a la ficha
         </Link>
 
         <div className="tarjeta flex flex-wrap items-end justify-between gap-4 p-4">
           <div>
-            <h1 className="text-lg font-semibold text-slate-900">Ficha para imprimir</h1>
-            <p className="text-sm text-slate-500">
+            <h1 className="text-lg font-semibold text-tinta-900">Ficha para imprimir</h1>
+            <p className="text-sm text-tinta-500">
               Elige qué secciones incluir y usa el botón para imprimir o guardar como PDF.
             </p>
           </div>
@@ -107,13 +108,13 @@ export default async function FichaImprimible({
             ]
               .filter((o) => o.visible)
               .map((o) => (
-                <label key={o.campo} className="flex items-center gap-1.5 text-sm text-slate-600">
+                <label key={o.campo} className="flex items-center gap-1.5 text-sm text-tinta-600">
                   <input
                     type="checkbox"
                     name={o.campo}
                     value="1"
                     defaultChecked={incluir[o.campo as keyof typeof incluir]}
-                    className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                    className="h-4 w-4 rounded border-tinta-300 text-brand-600"
                   />
                   {o.texto}
                 </label>
@@ -122,7 +123,7 @@ export default async function FichaImprimible({
             <input type="hidden" name="ajustado" value="1" />
             <button
               type="submit"
-              className="h-9 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="h-9 rounded-lg border border-tinta-300 bg-white px-3 text-sm font-medium text-tinta-700 hover:bg-tinta-50"
             >
               Aplicar
             </button>
@@ -133,19 +134,19 @@ export default async function FichaImprimible({
 
       {/* ── Documento ── */}
       <article className="tarjeta mx-auto max-w-4xl p-10 print:border-0 print:p-0 print:shadow-none">
-        <header className="mb-6 flex items-start justify-between gap-6 border-b-2 border-slate-800 pb-4">
+        <header className="mb-6 flex items-start justify-between gap-6 border-b-2 border-tinta-800 pb-4">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">{config?.nombreClinica ?? 'MEDIGEX'}</h1>
-            {config?.rut && <p className="text-sm text-slate-600">RUT {formatearRut(config.rut)}</p>}
-            <p className="text-sm text-slate-600">
+            <h1 className="flex items-center gap-2 font-display text-lg font-bold text-brand-900"><Simbolo tamano={26} />{config?.nombreClinica ?? 'MEDIGEX'}</h1>
+            {config?.rut && <p className="text-sm text-tinta-600">RUT {formatearRut(config.rut)}</p>}
+            <p className="text-sm text-tinta-600">
               {[config?.direccion, config?.comuna, config?.ciudad].filter(Boolean).join(', ')}
             </p>
-            {config?.telefono && <p className="text-sm text-slate-600">Teléfono {config.telefono}</p>}
+            {config?.telefono && <p className="text-sm text-tinta-600">Teléfono {config.telefono}</p>}
           </div>
           <div className="text-right">
-            <p className="text-xs uppercase tracking-widest text-slate-400">Ficha clínica</p>
-            <p className="text-2xl font-bold text-slate-900">Nº {paciente.numeroFicha}</p>
-            <p className="text-xs text-slate-500">Emitida el {fechaLarga(emitida)}</p>
+            <p className="text-xs uppercase tracking-widest text-tinta-400">Ficha clínica</p>
+            <p className="text-2xl font-bold text-tinta-900">Nº {paciente.numeroFicha}</p>
+            <p className="text-xs text-tinta-500">Emitida el {fechaLarga(emitida)}</p>
           </div>
         </header>
 
@@ -222,7 +223,7 @@ export default async function FichaImprimible({
             !paciente.medicamentosActuales &&
             !paciente.antecedentesMedicos &&
             !paciente.antecedentesQuirurgicos && (
-              <p className="text-sm text-slate-500">Sin antecedentes registrados.</p>
+              <p className="text-sm text-tinta-500">Sin antecedentes registrados.</p>
             )}
         </Seccion>
 
@@ -230,14 +231,14 @@ export default async function FichaImprimible({
         {incluir.historia && (
           <Seccion titulo={`Historia clínica (${paciente.atenciones.length} atenciones)`} saltoDePagina>
             {paciente.atenciones.length === 0 ? (
-              <p className="text-sm text-slate-500">Sin atenciones registradas.</p>
+              <p className="text-sm text-tinta-500">Sin atenciones registradas.</p>
             ) : (
               <div className="space-y-4">
                 {paciente.atenciones.map((a) => (
-                  <div key={a.id} className="break-inside-avoid border-l-2 border-slate-300 pl-4">
+                  <div key={a.id} className="break-inside-avoid border-l-2 border-tinta-300 pl-4">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <p className="text-sm font-semibold text-slate-900">{fechaHora(a.fecha)}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm font-semibold text-tinta-900">{fechaHora(a.fecha)}</p>
+                      <p className="text-xs text-tinta-500">
                         {a.profesional.nombres} {a.profesional.apellidos} · {a.profesional.especialidad}
                       </p>
                     </div>
@@ -254,8 +255,8 @@ export default async function FichaImprimible({
                     <Parrafo titulo="Observaciones" texto={a.observaciones} />
 
                     {(a.presionArterial || a.frecuenciaCardiaca || a.temperatura || a.pesoKg || a.tallaCm) && (
-                      <p className="mt-1 text-xs text-slate-600">
-                        <span className="font-semibold uppercase tracking-wide text-slate-400">Signos vitales: </span>
+                      <p className="mt-1 text-xs text-tinta-600">
+                        <span className="font-semibold uppercase tracking-wide text-tinta-400">Signos vitales: </span>
                         {[
                           a.presionArterial && `PA ${a.presionArterial}`,
                           a.frecuenciaCardiaca && `FC ${a.frecuenciaCardiaca}`,
@@ -270,7 +271,7 @@ export default async function FichaImprimible({
                     )}
 
                     {a.proximoControl && (
-                      <p className="mt-1 text-xs text-slate-600">
+                      <p className="mt-1 text-xs text-tinta-600">
                         Próximo control: {fechaCorta(a.proximoControl)}
                       </p>
                     )}
@@ -286,7 +287,7 @@ export default async function FichaImprimible({
           <Seccion titulo={`Exámenes (${paciente.examenes.length})`} saltoDePagina>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-300 text-left text-xs uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-tinta-300 text-left text-xs uppercase tracking-wide text-tinta-500">
                   <th className="py-1.5">Fecha</th>
                   <th>Examen</th>
                   <th>Tipo</th>
@@ -296,19 +297,19 @@ export default async function FichaImprimible({
               </thead>
               <tbody>
                 {paciente.examenes.map((e) => (
-                  <tr key={e.id} className="break-inside-avoid border-b border-slate-100 align-top">
-                    <td className="whitespace-nowrap py-1.5 text-slate-600">{fechaCorta(e.fechaSolicitud)}</td>
-                    <td className="text-slate-800">
+                  <tr key={e.id} className="break-inside-avoid border-b border-tinta-100 align-top">
+                    <td className="whitespace-nowrap py-1.5 text-tinta-600">{fechaCorta(e.fechaSolicitud)}</td>
+                    <td className="text-tinta-800">
                       {e.nombre}
                       {e.solicitadoPor && (
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-tinta-400">
                           {e.solicitadoPor.nombres} {e.solicitadoPor.apellidos}
                         </p>
                       )}
                     </td>
-                    <td className="text-slate-600">{humanizar(e.tipo)}</td>
-                    <td className="text-slate-600">{humanizar(e.estado)}</td>
-                    <td className="text-slate-700">{e.resultado ?? 'Pendiente'}</td>
+                    <td className="text-tinta-600">{humanizar(e.tipo)}</td>
+                    <td className="text-tinta-600">{humanizar(e.estado)}</td>
+                    <td className="text-tinta-700">{e.resultado ?? 'Pendiente'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -321,15 +322,15 @@ export default async function FichaImprimible({
           <Seccion titulo={`Recetas emitidas (${paciente.recetas.length})`} saltoDePagina>
             <div className="space-y-3">
               {paciente.recetas.map((r) => (
-                <div key={r.id} className="break-inside-avoid border-l-2 border-slate-300 pl-4">
-                  <p className="text-sm font-semibold text-slate-900">
+                <div key={r.id} className="break-inside-avoid border-l-2 border-tinta-300 pl-4">
+                  <p className="text-sm font-semibold text-tinta-900">
                     Nº {r.folio} · {fechaCorta(r.fecha)}
                     {r.anulada && <span className="ml-2 text-rose-600">(anulada)</span>}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-tinta-500">
                     {humanizar(r.tipo)} · {r.profesional.nombres} {r.profesional.apellidos}
                   </p>
-                  <ul className="mt-1 space-y-0.5 text-sm text-slate-700">
+                  <ul className="mt-1 space-y-0.5 text-sm text-tinta-700">
                     {r.items.map((i) => (
                       <li key={i.id}>
                         <strong>{i.medicamento}</strong>
@@ -355,11 +356,11 @@ export default async function FichaImprimible({
             </p>
 
             {paciente.movimientosCuenta.length === 0 ? (
-              <p className="text-sm text-slate-500">Sin movimientos registrados.</p>
+              <p className="text-sm text-tinta-500">Sin movimientos registrados.</p>
             ) : (
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-300 text-left text-xs uppercase tracking-wide text-slate-500">
+                  <tr className="border-b border-tinta-300 text-left text-xs uppercase tracking-wide text-tinta-500">
                     <th className="py-1.5">Fecha</th>
                     <th>Descripción</th>
                     <th className="text-right">Cargo</th>
@@ -369,9 +370,9 @@ export default async function FichaImprimible({
                 </thead>
                 <tbody>
                   {paciente.movimientosCuenta.map((m) => (
-                    <tr key={m.id} className="border-b border-slate-100">
-                      <td className="whitespace-nowrap py-1.5 text-slate-600">{fechaCorta(m.fecha)}</td>
-                      <td className="text-slate-700">{m.descripcion}</td>
+                    <tr key={m.id} className="border-b border-tinta-100">
+                      <td className="whitespace-nowrap py-1.5 text-tinta-600">{fechaCorta(m.fecha)}</td>
+                      <td className="text-tinta-700">{m.descripcion}</td>
                       <td className="text-right tabular-nums text-rose-700">{m.monto > 0 ? clp(m.monto) : ''}</td>
                       <td className="text-right tabular-nums text-emerald-700">
                         {m.monto < 0 ? clp(Math.abs(m.monto)) : ''}
@@ -385,7 +386,7 @@ export default async function FichaImprimible({
           </Seccion>
         )}
 
-        <footer className="mt-8 border-t border-slate-200 pt-4 text-xs text-slate-400">
+        <footer className="mt-8 border-t border-tinta-200 pt-4 text-xs text-tinta-400">
           <p>
             Ficha Nº {paciente.numeroFicha} · creada el {fechaCorta(paciente.createdAt)}
             {paciente.creadoPor && ` por ${paciente.creadoPor.nombres} ${paciente.creadoPor.apellidos}`} ·{' '}
@@ -416,7 +417,7 @@ function Seccion({
 }) {
   return (
     <section className={`mb-6 ${saltoDePagina ? 'break-before-page' : ''}`}>
-      <h2 className="mb-2 border-b border-slate-300 pb-1 text-sm font-bold uppercase tracking-widest text-slate-600">
+      <h2 className="mb-2 border-b border-tinta-300 pb-1 text-sm font-bold uppercase tracking-widest text-tinta-600">
         {titulo}
       </h2>
       {children}
@@ -431,8 +432,8 @@ function Rejilla({ children }: { children: React.ReactNode }) {
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
     <div className="flex gap-2 text-sm">
-      <span className="shrink-0 font-semibold text-slate-500">{etiqueta}:</span>
-      <span className="text-slate-800">{valor}</span>
+      <span className="shrink-0 font-semibold text-tinta-500">{etiqueta}:</span>
+      <span className="text-tinta-800">{valor}</span>
     </div>
   );
 }
@@ -441,8 +442,8 @@ function Parrafo({ titulo, texto }: { titulo: string; texto?: string | null }) {
   if (!texto) return null;
   return (
     <div className="mt-1.5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{titulo}</p>
-      <p className="whitespace-pre-wrap text-sm text-slate-700">{texto}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">{titulo}</p>
+      <p className="whitespace-pre-wrap text-sm text-tinta-700">{texto}</p>
     </div>
   );
 }

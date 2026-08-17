@@ -159,7 +159,7 @@ export default async function PaginaInformes({
             <option value="RECHAZADO">Rechazado</option>
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -189,22 +189,22 @@ export default async function PaginaInformes({
             <tbody>
               {informes.map((i) => (
                 <tr key={i.id}>
-                  <td className="font-mono text-xs text-slate-500">{i.folio}</td>
-                  <td className="whitespace-nowrap text-slate-600">{fechaCorta(i.fechaEmision)}</td>
+                  <td className="font-mono text-xs text-tinta-500">{i.folio}</td>
+                  <td className="whitespace-nowrap text-tinta-600">{fechaCorta(i.fechaEmision)}</td>
                   <td>
                     <Link href={`/pacientes/${i.paciente.id}`} className="font-medium text-brand-700 hover:underline">
                       {i.paciente.nombres} {i.paciente.apellidoPaterno}
                     </Link>
-                    <p className="text-xs text-slate-400">{i.paciente.rut}</p>
+                    <p className="text-xs text-tinta-400">{i.paciente.rut}</p>
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {i.convenio?.nombre ?? '—'}
-                    {i.convenio && <p className="text-slate-400">{humanizar(i.convenio.tipo)}</p>}
+                    {i.convenio && <p className="text-tinta-400">{humanizar(i.convenio.tipo)}</p>}
                   </td>
-                  <td className="whitespace-nowrap text-xs text-slate-600">
+                  <td className="whitespace-nowrap text-xs text-tinta-600">
                     {fechaCorta(i.periodoDesde)} → {fechaCorta(i.periodoHasta)}
                   </td>
-                  <td className="text-right tabular-nums text-slate-500">{i._count.items}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{i._count.items}</td>
                   <td className="text-right font-medium tabular-nums">{clp(i.totalPrestaciones)}</td>
                   <td className="text-right tabular-nums text-emerald-600">{clp(i.totalCobertura)}</td>
                   <td>

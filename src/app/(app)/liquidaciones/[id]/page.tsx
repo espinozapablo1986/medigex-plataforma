@@ -14,6 +14,7 @@ import {
   Metrica,
   Tarjeta,
 } from '@/components/ui';
+import { Simbolo } from '@/components/marca';
 import { BotonEliminar, BotonEnviar, Formulario, Modal } from '@/components/formulario';
 
 import { agregarAjuste, cambiarEstadoLiquidacion, eliminarLiquidacion } from '../acciones';
@@ -103,7 +104,7 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
                   <form action={cambiarEstadoLiquidacion} className="space-y-4">
                     <input type="hidden" name="id" value={id} />
                     <input type="hidden" name="estado" value="PAGADA" />
-                    <div className="rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                    <div className="rounded-lg bg-tinta-50 px-3 py-2 text-sm">
                       Monto a pagar: <strong className="tabular-nums">{clp(liquidacion.totalAPagar)}</strong>
                     </div>
                     <Campo etiqueta="Forma de pago">
@@ -155,31 +156,31 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
       </div>
 
       <div className="tarjeta mx-auto max-w-4xl p-8">
-        <header className="mb-6 flex items-start justify-between gap-4 border-b border-slate-200 pb-6">
+        <header className="mb-6 flex items-start justify-between gap-4 border-b border-tinta-200 pb-6">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">{config?.nombreClinica ?? 'MEDIGEX'}</h2>
-            {config?.rut && <p className="text-sm text-slate-600">RUT {formatearRut(config.rut)}</p>}
-            <p className="text-sm text-slate-600">
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold text-brand-900"><Simbolo tamano={26} />{config?.nombreClinica ?? 'MEDIGEX'}</h2>
+            {config?.rut && <p className="text-sm text-tinta-600">RUT {formatearRut(config.rut)}</p>}
+            <p className="text-sm text-tinta-600">
               {[config?.direccion, config?.comuna].filter(Boolean).join(', ')}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs uppercase tracking-wide text-slate-400">Liquidación de honorarios</p>
-            <p className="text-2xl font-bold text-slate-900">Nº {liquidacion.folio}</p>
-            <p className="text-sm text-slate-600">
+            <p className="text-xs uppercase tracking-wide text-tinta-400">Liquidación de honorarios</p>
+            <p className="text-2xl font-bold text-tinta-900">Nº {liquidacion.folio}</p>
+            <p className="text-sm text-tinta-600">
               {fechaCorta(liquidacion.periodoDesde)} — {fechaCorta(liquidacion.periodoHasta)}
             </p>
           </div>
         </header>
 
         <section className="mb-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Profesional</p>
-          <p className="font-medium text-slate-900">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tinta-400">Profesional</p>
+          <p className="font-medium text-tinta-900">
             {liquidacion.profesional.nombres} {liquidacion.profesional.apellidos}
           </p>
-          <p className="text-sm text-slate-600">{formatearRut(liquidacion.profesional.rut)}</p>
-          <p className="text-sm text-slate-600">{liquidacion.profesional.especialidad}</p>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-tinta-600">{formatearRut(liquidacion.profesional.rut)}</p>
+          <p className="text-sm text-tinta-600">{liquidacion.profesional.especialidad}</p>
+          <p className="text-sm text-tinta-600">
             {humanizar(liquidacion.profesional.modeloPago)} ·{' '}
             {liquidacion.profesional.comisionTipo === 'PORCENTAJE'
               ? `${liquidacion.profesional.comisionPorcentaje}% general`
@@ -187,9 +188,9 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
           </p>
         </section>
 
-        <h3 className="mb-2 text-sm font-semibold text-slate-900">Prestaciones realizadas</h3>
+        <h3 className="mb-2 text-sm font-semibold text-tinta-900">Prestaciones realizadas</h3>
         {comisiones.length === 0 ? (
-          <p className="mb-6 text-sm text-slate-500">Sin prestaciones en el período.</p>
+          <p className="mb-6 text-sm text-tinta-500">Sin prestaciones en el período.</p>
         ) : (
           <div className="mb-6">
             <ContenedorTabla>
@@ -202,7 +203,7 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
               <tbody>
                 {comisiones.map((item) => (
                   <tr key={item.id}>
-                    <td className="text-slate-700">{item.descripcion}</td>
+                    <td className="text-tinta-700">{item.descripcion}</td>
                     <td className="text-right font-medium tabular-nums text-emerald-700">{clp(item.monto)}</td>
                   </tr>
                 ))}
@@ -213,7 +214,7 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
 
         {otros.length > 0 && (
           <>
-            <h3 className="mb-2 text-sm font-semibold text-slate-900">Descuentos y otros conceptos</h3>
+            <h3 className="mb-2 text-sm font-semibold text-tinta-900">Descuentos y otros conceptos</h3>
             <div className="mb-6">
               <ContenedorTabla>
                 <thead>
@@ -226,7 +227,7 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
                 <tbody>
                   {otros.map((item) => (
                     <tr key={item.id}>
-                      <td className="text-slate-700">{item.descripcion}</td>
+                      <td className="text-tinta-700">{item.descripcion}</td>
                       <td>
                         <Badge tono={TONO_ITEM[item.tipo] ?? 'gris'}>{humanizar(item.tipo)}</Badge>
                       </td>
@@ -252,7 +253,7 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
             {liquidacion.totalOtrosDescuentos > 0 && (
               <Fila etiqueta="Otros descuentos" valor={`−${clp(liquidacion.totalOtrosDescuentos)}`} tono="rose" />
             )}
-            <div className="flex justify-between border-t-2 border-slate-800 pt-2 text-lg font-bold">
+            <div className="flex justify-between border-t-2 border-tinta-800 pt-2 text-lg font-bold">
               <dt>Total a pagar</dt>
               <dd className="tabular-nums">{clp(liquidacion.totalAPagar)}</dd>
             </div>
@@ -260,28 +261,28 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
         </div>
 
         {liquidacion.observaciones && (
-          <section className="mt-6 rounded-lg bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Observaciones</p>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{liquidacion.observaciones}</p>
+          <section className="mt-6 rounded-lg bg-tinta-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">Observaciones</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-tinta-700">{liquidacion.observaciones}</p>
           </section>
         )}
 
-        <footer className="mt-10 grid gap-8 border-t border-slate-200 pt-8 sm:grid-cols-2">
+        <footer className="mt-10 grid gap-8 border-t border-tinta-200 pt-8 sm:grid-cols-2">
           <div className="text-center">
-            <div className="mb-1 border-t border-slate-400 pt-1 text-sm text-slate-600">
+            <div className="mb-1 border-t border-tinta-400 pt-1 text-sm text-tinta-600">
               {liquidacion.profesional.nombres} {liquidacion.profesional.apellidos}
             </div>
-            <p className="text-xs text-slate-400">Recibí conforme</p>
+            <p className="text-xs text-tinta-400">Recibí conforme</p>
           </div>
           <div className="text-center">
-            <div className="mb-1 border-t border-slate-400 pt-1 text-sm text-slate-600">
+            <div className="mb-1 border-t border-tinta-400 pt-1 text-sm text-tinta-600">
               {config?.nombreClinica ?? 'MEDIGEX'}
             </div>
-            <p className="text-xs text-slate-400">Administración</p>
+            <p className="text-xs text-tinta-400">Administración</p>
           </div>
         </footer>
 
-        <p className="mt-6 text-xs text-slate-400">
+        <p className="mt-6 text-xs text-tinta-400">
           Generada por{' '}
           {liquidacion.creadoPor ? `${liquidacion.creadoPor.nombres} ${liquidacion.creadoPor.apellidos}` : 'el sistema'}
           {' · '}
@@ -295,10 +296,10 @@ export default async function DetalleLiquidacion({ params }: { params: Promise<{
 }
 
 function Fila({ etiqueta, valor, tono }: { etiqueta: string; valor: string; tono?: 'rose' | 'emerald' }) {
-  const color = tono === 'rose' ? 'text-rose-600' : tono === 'emerald' ? 'text-emerald-600' : 'text-slate-800';
+  const color = tono === 'rose' ? 'text-rose-600' : tono === 'emerald' ? 'text-emerald-600' : 'text-tinta-800';
   return (
     <div className="flex justify-between">
-      <dt className="text-slate-600">{etiqueta}</dt>
+      <dt className="text-tinta-600">{etiqueta}</dt>
       <dd className={`tabular-nums ${color}`}>{valor}</dd>
     </div>
   );

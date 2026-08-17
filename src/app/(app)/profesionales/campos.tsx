@@ -59,8 +59,8 @@ export function CamposProfesional({ valores }: { valores?: ValoresProfesional })
         </Campo>
       </Grilla>
 
-      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Condiciones económicas</p>
+      <div className="mt-4 rounded-lg border border-tinta-200 bg-tinta-50 p-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tinta-500">Condiciones económicas</p>
         <Grilla cols={3}>
           <Campo etiqueta="Modelo de pago" requerido>
             <select name="modeloPago" defaultValue={valores?.modeloPago ?? 'COMISION'} required className="campo">
@@ -86,7 +86,7 @@ export function CamposProfesional({ valores }: { valores?: ValoresProfesional })
             <input name="sueldoBase" type="number" min={0} step={1000} defaultValue={valores?.sueldoBase ?? 0} className="campo" />
           </Campo>
         </Grilla>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-tinta-500">
           El arriendo de box se configura en la ficha del profesional, después de crearlo.
         </p>
       </div>

@@ -180,7 +180,7 @@ export default async function PaginaReportes({
         <Campo etiqueta="Hasta" className="w-40">
           <input name="hasta" type="date" defaultValue={isoFecha(fechaHasta)} className="campo" />
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Aplicar
         </button>
       </form>
@@ -228,14 +228,14 @@ export default async function PaginaReportes({
               <tbody>
                 {rankingServicios.map((s, i) => (
                   <tr key={s.nombre}>
-                    <td className="text-slate-400">{i + 1}</td>
-                    <td className="font-medium text-slate-800">{s.nombre}</td>
+                    <td className="text-tinta-400">{i + 1}</td>
+                    <td className="font-medium text-tinta-800">{s.nombre}</td>
                     <td className="text-right tabular-nums">{numero(s.cantidad, 0)}</td>
                     <td className="text-right font-medium tabular-nums">{clp(s.monto)}</td>
-                    <td className="text-right tabular-nums text-slate-600">
+                    <td className="text-right tabular-nums text-tinta-600">
                       {clp(s.cantidad > 0 ? Math.round(s.monto / s.cantidad) : 0)}
                     </td>
-                    <td className="text-right tabular-nums text-slate-500">
+                    <td className="text-right tabular-nums text-tinta-500">
                       {totalVendido > 0 ? porcentaje((s.monto / totalVendido) * 100, 1) : '—'}
                     </td>
                   </tr>
@@ -280,12 +280,12 @@ export default async function PaginaReportes({
               <tbody>
                 {rankingProfesionales.map((p, i) => (
                   <tr key={p.nombre}>
-                    <td className="text-slate-400">{i + 1}</td>
-                    <td className="font-medium text-slate-800">{p.nombre}</td>
-                    <td className="text-xs text-slate-600">{p.especialidad}</td>
+                    <td className="text-tinta-400">{i + 1}</td>
+                    <td className="font-medium text-tinta-800">{p.nombre}</td>
+                    <td className="text-xs text-tinta-600">{p.especialidad}</td>
                     <td className="text-right tabular-nums">{p.prestaciones}</td>
                     <td className="text-right font-medium tabular-nums">{clp(p.monto)}</td>
-                    <td className="text-right tabular-nums text-slate-600">
+                    <td className="text-right tabular-nums text-tinta-600">
                       {clp(p.prestaciones > 0 ? Math.round(p.monto / p.prestaciones) : 0)}
                     </td>
                     <td className="text-right tabular-nums text-amber-600">{clp(p.comision)}</td>
@@ -300,7 +300,7 @@ export default async function PaginaReportes({
         <div className="grid gap-5 lg:grid-cols-2">
           <Tarjeta titulo="Recaudación por forma de pago" sinPadding>
             {porFormaPago.length === 0 ? (
-              <p className="p-4 text-sm text-slate-500">Sin pagos en el período.</p>
+              <p className="p-4 text-sm text-tinta-500">Sin pagos en el período.</p>
             ) : (
               <ContenedorTabla>
                 <thead>
@@ -315,8 +315,8 @@ export default async function PaginaReportes({
                     .sort((a, b) => (b._sum.monto ?? 0) - (a._sum.monto ?? 0))
                     .map((f) => (
                       <tr key={f.formaPagoId}>
-                        <td className="font-medium text-slate-800">{nombreForma(f.formaPagoId)}</td>
-                        <td className="text-right tabular-nums text-slate-600">{f._count}</td>
+                        <td className="font-medium text-tinta-800">{nombreForma(f.formaPagoId)}</td>
+                        <td className="text-right tabular-nums text-tinta-600">{f._count}</td>
                         <td className="text-right font-medium tabular-nums">{clp(f._sum.monto ?? 0)}</td>
                       </tr>
                     ))}
@@ -327,7 +327,7 @@ export default async function PaginaReportes({
 
           <Tarjeta titulo="Estados de la agenda" sinPadding>
             {citas.length === 0 ? (
-              <p className="p-4 text-sm text-slate-500">Sin citas en el período.</p>
+              <p className="p-4 text-sm text-tinta-500">Sin citas en el período.</p>
             ) : (
               <ContenedorTabla>
                 <thead>
@@ -346,7 +346,7 @@ export default async function PaginaReportes({
                           <Badge tono="gris">{humanizar(c.estado)}</Badge>
                         </td>
                         <td className="text-right tabular-nums">{c._count}</td>
-                        <td className="text-right tabular-nums text-slate-500">
+                        <td className="text-right tabular-nums text-tinta-500">
                           {porcentaje((c._count / totalCitas) * 100, 1)}
                         </td>
                       </tr>
@@ -371,8 +371,8 @@ export default async function PaginaReportes({
               <tbody>
                 {rankingProductos.map((p, i) => (
                   <tr key={p.nombre}>
-                    <td className="text-slate-400">{i + 1}</td>
-                    <td className="font-medium text-slate-800">{p.nombre}</td>
+                    <td className="text-tinta-400">{i + 1}</td>
+                    <td className="font-medium text-tinta-800">{p.nombre}</td>
                     <td className="text-right tabular-nums">{numero(p.cantidad, 0)}</td>
                     <td className="text-right font-medium tabular-nums">{clp(p.monto)}</td>
                   </tr>

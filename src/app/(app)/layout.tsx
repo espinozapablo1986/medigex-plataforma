@@ -9,7 +9,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   const config = await prisma.configuracion.findUnique({ where: { id: 'singleton' } });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-tinta-50">
       <BarraLateral
         grupos={navegacionVisible(sesion)}
         nombreClinica={config?.nombreClinica ?? 'MEDIGEX'}

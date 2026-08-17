@@ -98,7 +98,7 @@ export function GraficoLinea({
 /** Distribución por categoría. */
 export function GraficoTorta({ datos }: { datos: { nombre: string; valor: number }[] }) {
   if (datos.length === 0) {
-    return <p className="py-12 text-center text-sm text-slate-400">Sin datos en el período.</p>;
+    return <p className="py-12 text-center text-sm text-tinta-400">Sin datos en el período.</p>;
   }
 
   return (
@@ -136,7 +136,7 @@ export function GraficoBarrasHorizontal({
   formatoMoneda?: boolean;
 }) {
   if (datos.length === 0) {
-    return <p className="py-12 text-center text-sm text-slate-400">Sin datos en el período.</p>;
+    return <p className="py-12 text-center text-sm text-tinta-400">Sin datos en el período.</p>;
   }
 
   return (

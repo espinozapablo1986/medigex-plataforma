@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { puede, requerirPermiso } from '@/lib/auth';
 import { calcularEdad, fechaCorta, fechaLarga, formatearRut, humanizar } from '@/lib/format';
+import { Simbolo } from '@/components/marca';
 import { Aviso, Badge, Campo, EncabezadoPagina, Tarjeta } from '@/components/ui';
 import { BotonEnviar, Formulario, Modal } from '@/components/formulario';
 
@@ -75,19 +76,19 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
 
       {/* ── Documento imprimible ── */}
       <article className="tarjeta mx-auto max-w-3xl p-10">
-        <header className="mb-8 flex items-start justify-between gap-6 border-b-2 border-slate-800 pb-4">
+        <header className="mb-8 flex items-start justify-between gap-6 border-b-2 border-tinta-800 pb-4">
           <div>
-            <h1 className="text-xl font-bold text-slate-900">{config?.nombreClinica ?? 'MEDIGEX'}</h1>
-            {config?.giro && <p className="text-sm text-slate-600">{config.giro}</p>}
-            <p className="text-sm text-slate-600">
+            <h1 className="flex items-center gap-2 font-display text-lg font-bold text-brand-900"><Simbolo tamano={26} />{config?.nombreClinica ?? 'MEDIGEX'}</h1>
+            {config?.giro && <p className="text-sm text-tinta-600">{config.giro}</p>}
+            <p className="text-sm text-tinta-600">
               {[config?.direccion, config?.comuna, config?.ciudad].filter(Boolean).join(', ')}
             </p>
-            {config?.telefono && <p className="text-sm text-slate-600">Teléfono {config.telefono}</p>}
+            {config?.telefono && <p className="text-sm text-tinta-600">Teléfono {config.telefono}</p>}
           </div>
           <div className="text-right">
-            <p className="text-xs uppercase tracking-widest text-slate-400">{humanizar(receta.tipo)}</p>
-            <p className="text-2xl font-bold text-slate-900">Nº {receta.folio}</p>
-            <p className="text-sm text-slate-600">{fechaLarga(receta.fecha)}</p>
+            <p className="text-xs uppercase tracking-widest text-tinta-400">{humanizar(receta.tipo)}</p>
+            <p className="text-2xl font-bold text-tinta-900">Nº {receta.folio}</p>
+            <p className="text-sm text-tinta-600">{fechaLarga(receta.fecha)}</p>
           </div>
         </header>
 
@@ -109,18 +110,18 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
           </div>
         )}
 
-        <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-slate-500">Prescripción</h2>
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-tinta-500">Prescripción</h2>
         <ol className="mb-8 space-y-4">
           {receta.items.map((item, indice) => (
-            <li key={item.id} className="border-l-4 border-slate-800 pl-4">
-              <p className="font-semibold text-slate-900">
+            <li key={item.id} className="border-l-4 border-tinta-800 pl-4">
+              <p className="font-semibold text-tinta-900">
                 {indice + 1}. {item.medicamento}
-                {item.presentacion && <span className="font-normal text-slate-600"> — {item.presentacion}</span>}
+                {item.presentacion && <span className="font-normal text-tinta-600"> — {item.presentacion}</span>}
               </p>
               {item.principioActivo && (
-                <p className="text-sm italic text-slate-500">({item.principioActivo})</p>
+                <p className="text-sm italic text-tinta-500">({item.principioActivo})</p>
               )}
-              <p className="mt-1 text-sm text-slate-700">
+              <p className="mt-1 text-sm text-tinta-700">
                 {[
                   item.dosis && `Dosis: ${item.dosis}`,
                   item.via && `Vía: ${item.via.toLowerCase()}`,
@@ -130,35 +131,35 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
                   .filter(Boolean)
                   .join(' · ')}
               </p>
-              {item.cantidad && <p className="text-sm text-slate-600">Cantidad: {item.cantidad}</p>}
-              {item.indicaciones && <p className="text-sm text-slate-600">{item.indicaciones}</p>}
+              {item.cantidad && <p className="text-sm text-tinta-600">Cantidad: {item.cantidad}</p>}
+              {item.indicaciones && <p className="text-sm text-tinta-600">{item.indicaciones}</p>}
             </li>
           ))}
         </ol>
 
         {receta.indicacionesGenerales && (
-          <section className="mb-8 rounded-lg bg-slate-50 p-4">
-            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Indicaciones generales</p>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{receta.indicacionesGenerales}</p>
+          <section className="mb-8 rounded-lg bg-tinta-50 p-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-tinta-500">Indicaciones generales</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-tinta-700">{receta.indicacionesGenerales}</p>
           </section>
         )}
 
         <footer className="mt-12 flex items-end justify-between gap-6">
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-tinta-500">
             {receta.vigenteHasta && <p>Vigente hasta el {fechaCorta(receta.vigenteHasta)}.</p>}
             {receta.atencion && <p>Asociada a la atención del {fechaCorta(receta.atencion.fecha)}.</p>}
             {receta.firmadaAt && <p>Firmada digitalmente el {fechaCorta(receta.firmadaAt)}.</p>}
           </div>
 
           <div className="w-64 text-center">
-            <div className="border-t border-slate-800 pt-1">
-              <p className="text-sm font-semibold text-slate-900">
+            <div className="border-t border-tinta-800 pt-1">
+              <p className="text-sm font-semibold text-tinta-900">
                 {receta.profesional.nombres} {receta.profesional.apellidos}
               </p>
-              <p className="text-xs text-slate-600">{receta.profesional.especialidad}</p>
-              <p className="text-xs text-slate-600">RUT {formatearRut(receta.profesional.rut)}</p>
+              <p className="text-xs text-tinta-600">{receta.profesional.especialidad}</p>
+              <p className="text-xs text-tinta-600">RUT {formatearRut(receta.profesional.rut)}</p>
               {receta.profesional.registroSuperintendencia && (
-                <p className="text-xs text-slate-600">Reg. Nº {receta.profesional.registroSuperintendencia}</p>
+                <p className="text-xs text-tinta-600">Reg. Nº {receta.profesional.registroSuperintendencia}</p>
               )}
             </div>
           </div>
@@ -171,7 +172,7 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
         )}
       </article>
 
-      <p className="no-imprimir mt-4 text-center text-xs text-slate-400">
+      <p className="no-imprimir mt-4 text-center text-xs text-tinta-400">
         Usa Ctrl/Cmd + P para imprimir la receta o guardarla como PDF.
       </p>
     </>
@@ -181,8 +182,8 @@ export default async function DetalleReceta({ params }: { params: Promise<{ id: 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
     <div className="flex gap-2 text-sm">
-      <span className="shrink-0 font-semibold text-slate-500">{etiqueta}:</span>
-      <span className="text-slate-800">{valor}</span>
+      <span className="shrink-0 font-semibold text-tinta-500">{etiqueta}:</span>
+      <span className="text-tinta-800">{valor}</span>
     </div>
   );
 }

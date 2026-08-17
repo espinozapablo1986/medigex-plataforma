@@ -3,20 +3,21 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --fondo: 248 250 252;
-    --superficie: 255 255 255;
-    --borde: 226 232 240;
-    --texto: 15 23 42;
-    --texto-suave: 100 116 139;
-  }
-
   html {
     -webkit-text-size-adjust: 100%;
   }
 
+  /* Cuerpo: Source Sans 15/1.6 sobre marfil, según la norma gráfica. */
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-marfil font-sans text-base text-brand-900 antialiased;
+  }
+
+  /* Titulares en Geologica. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
   }
 
   /* Los inputs de fecha/hora nativos se ven mejor con el cursor de puntero */
@@ -25,22 +26,29 @@
   input[type='datetime-local'] {
     @apply cursor-pointer;
   }
+
+  /* Cifras siempre alineadas en columna */
+  table {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 @layer components {
   .campo {
-    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
-           placeholder:text-slate-400 shadow-sm transition
-           focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20
-           disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
+    @apply w-full border border-tinta-300 bg-white px-3 py-2 text-base text-brand-900
+           placeholder:text-tinta-400 transition
+           focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-400/30
+           disabled:cursor-not-allowed disabled:bg-tinta-100 disabled:text-tinta-500;
   }
 
+  /* Las mayúsculas siempre con tracking amplio */
   .etiqueta {
-    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500;
+    @apply mb-1 block font-sans text-[11px] font-semibold uppercase tracking-wider text-tinta-600;
   }
 
+  /* Superficies de esquina recta; la sombra no pasa de 0 2px 8px al 8 % */
   .tarjeta {
-    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    @apply border border-tinta-200 bg-white shadow-sm;
   }
 
   .tabla {
@@ -48,16 +56,21 @@
   }
 
   .tabla thead th {
-    @apply border-b border-slate-200 bg-slate-50 px-3 py-2.5 text-left text-xs font-semibold
-           uppercase tracking-wide text-slate-500;
+    @apply border-b border-tinta-200 bg-tinta-50 px-3 py-2.5 text-left font-sans text-[11px]
+           font-semibold uppercase tracking-wider text-tinta-600;
   }
 
   .tabla tbody td {
-    @apply border-b border-slate-100 px-3 py-2.5 align-middle text-slate-700;
+    @apply border-b border-tinta-100 px-3 py-2.5 align-middle text-brand-900;
   }
 
   .tabla tbody tr:hover {
-    @apply bg-slate-50/70;
+    @apply bg-tinta-50;
+  }
+
+  /* Folios, códigos y datos clínicos van en Plex Mono */
+  .dato {
+    @apply font-mono text-dato text-tinta-600;
   }
 
   /* Oculta elementos al imprimir recetas, presupuestos, fichas, etc. */
@@ -94,10 +107,6 @@
   }
 }
 
-@page {
-  margin: 15mm;
-}
-
 .solo-imprimir {
   display: none;
 }
@@ -108,8 +117,12 @@
   width: 8px;
 }
 .scroll-fino::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-slate-300;
+  @apply bg-tinta-300;
 }
 .scroll-fino::-webkit-scrollbar-track {
   @apply bg-transparent;
+}
+
+@page {
+  margin: 15mm;
 }

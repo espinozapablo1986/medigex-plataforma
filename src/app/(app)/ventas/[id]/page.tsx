@@ -72,7 +72,7 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                     <input type="hidden" name="pacienteId" value={venta.pacienteId} />
                     <input type="hidden" name="ventaId" value={venta.id} />
 
-                    <div className="rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                    <div className="rounded-lg bg-tinta-50 px-3 py-2 text-sm">
                       Saldo de la venta: <strong className="tabular-nums">{clp(venta.saldo)}</strong>
                     </div>
 
@@ -194,8 +194,8 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                 {venta.items.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <p className="font-medium text-slate-800">{item.descripcion}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="font-medium text-tinta-800">{item.descripcion}</p>
+                      <p className="text-xs text-tinta-400">
                         {humanizar(item.tipo)}
                         {item.servicio && ` · ${item.servicio.codigo}`}
                         {item.producto && ` · ${item.producto.sku}`}
@@ -203,17 +203,17 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                         {item.codigoPrestacion && ` · prestación ${item.codigoPrestacion}`}
                       </p>
                     </td>
-                    <td className="text-xs text-slate-600">
+                    <td className="text-xs text-tinta-600">
                       {item.profesional ? `${item.profesional.nombres} ${item.profesional.apellidos}` : '—'}
                     </td>
                     <td className="text-right tabular-nums">{numero(item.cantidad, item.cantidad % 1 === 0 ? 0 : 2)}</td>
                     <td className="text-right tabular-nums">{clp(item.precioUnitario)}</td>
                     <td className="text-right font-medium tabular-nums">{clp(item.total)}</td>
-                    <td className="text-right text-xs tabular-nums text-slate-600">
+                    <td className="text-right text-xs tabular-nums text-tinta-600">
                       {item.comisionMonto > 0 ? (
                         <>
                           {clp(item.comisionMonto)}
-                          <p className="text-slate-400">
+                          <p className="text-tinta-400">
                             {item.comisionTipo === 'PORCENTAJE' ? porcentaje(item.comisionPorcentaje) : 'monto fijo'}
                           </p>
                         </>
@@ -226,7 +226,7 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
               </tbody>
             </ContenedorTabla>
 
-            <div className="flex justify-end border-t border-slate-200 p-4">
+            <div className="flex justify-end border-t border-tinta-200 p-4">
               <dl className="w-full max-w-xs space-y-1.5 text-sm">
                 <Fila etiqueta="Subtotal" valor={clp(venta.subtotal)} />
                 {venta.descuento > 0 && <Fila etiqueta="Descuento" valor={`−${clp(venta.descuento)}`} tono="rose" />}
@@ -238,7 +238,7 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                     <Fila etiqueta="Copago del paciente" valor={clp(venta.montoPaciente)} />
                   </>
                 )}
-                <div className="flex justify-between border-t-2 border-slate-800 pt-2 text-base font-bold">
+                <div className="flex justify-between border-t-2 border-tinta-800 pt-2 text-base font-bold">
                   <dt>Total</dt>
                   <dd className="tabular-nums">{clp(venta.total)}</dd>
                 </div>
@@ -248,7 +248,7 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
 
           <Tarjeta titulo="Pagos recibidos" sinPadding>
             {venta.pagos.length === 0 ? (
-              <p className="p-4 text-sm text-slate-500">Aún no se registran pagos para esta venta.</p>
+              <p className="p-4 text-sm text-tinta-500">Aún no se registran pagos para esta venta.</p>
             ) : (
               <ContenedorTabla>
                 <thead>
@@ -266,13 +266,13 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                 <tbody>
                   {venta.pagos.map((pago) => (
                     <tr key={pago.id} className={pago.estado === 'ANULADO' ? 'opacity-50' : ''}>
-                      <td className="text-slate-500">{pago.folio}</td>
-                      <td className="text-slate-600">{fechaCorta(pago.fecha)}</td>
-                      <td className="text-slate-700">
+                      <td className="text-tinta-500">{pago.folio}</td>
+                      <td className="text-tinta-600">{fechaCorta(pago.fecha)}</td>
+                      <td className="text-tinta-700">
                         {pago.formaPago.nombre}
-                        {pago.cuotas > 1 && <p className="text-xs text-slate-400">{pago.cuotas} cuotas</p>}
+                        {pago.cuotas > 1 && <p className="text-xs text-tinta-400">{pago.cuotas} cuotas</p>}
                       </td>
-                      <td className="text-xs text-slate-500">
+                      <td className="text-xs text-tinta-500">
                         {pago.referencia ?? '—'}
                         {pago.banco && <p>{pago.banco}</p>}
                       </td>
@@ -288,7 +288,7 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
                             Ver
                           </a>
                         ) : (
-                          <span className="text-xs text-slate-400">—</span>
+                          <span className="text-xs text-tinta-400">—</span>
                         )}
                       </td>
                       <td>
@@ -379,10 +379,10 @@ export default async function DetalleVenta({ params }: { params: Promise<{ id: s
 }
 
 function Fila({ etiqueta, valor, tono }: { etiqueta: string; valor: string; tono?: 'rose' | 'emerald' }) {
-  const color = tono === 'rose' ? 'text-rose-600' : tono === 'emerald' ? 'text-emerald-600' : 'text-slate-800';
+  const color = tono === 'rose' ? 'text-rose-600' : tono === 'emerald' ? 'text-emerald-600' : 'text-tinta-800';
   return (
     <div className="flex justify-between">
-      <dt className="text-slate-600">{etiqueta}</dt>
+      <dt className="text-tinta-600">{etiqueta}</dt>
       <dd className={`tabular-nums ${color}`}>{valor}</dd>
     </div>
   );

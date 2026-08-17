@@ -114,13 +114,13 @@ export default async function PaginaLiquidaciones({
                   </Campo>
                 </Grilla>
 
-                <fieldset className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                  <label className="flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" name="incluirArriendo" defaultChecked className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+                <fieldset className="space-y-2 rounded-lg border border-tinta-200 bg-tinta-50 p-4">
+                  <label className="flex items-center gap-2 text-sm text-tinta-700">
+                    <input type="checkbox" name="incluirArriendo" defaultChecked className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
                     Descontar el arriendo de box del período
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" name="soloPagadas" className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+                  <label className="flex items-center gap-2 text-sm text-tinta-700">
+                    <input type="checkbox" name="soloPagadas" className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
                     Considerar sólo las ventas ya pagadas por el paciente
                   </label>
                 </fieldset>
@@ -181,9 +181,9 @@ export default async function PaginaLiquidaciones({
                 .sort((a, b) => (b._sum.comisionMonto ?? 0) - (a._sum.comisionMonto ?? 0))
                 .map((p) => (
                   <tr key={p.profesionalId ?? 'sin'}>
-                    <td className="font-medium text-slate-800">{nombreProfesional(p.profesionalId)}</td>
-                    <td className="text-right tabular-nums text-slate-600">{p._count}</td>
-                    <td className="text-right tabular-nums text-slate-600">{clp(p._sum.total ?? 0)}</td>
+                    <td className="font-medium text-tinta-800">{nombreProfesional(p.profesionalId)}</td>
+                    <td className="text-right tabular-nums text-tinta-600">{p._count}</td>
+                    <td className="text-right tabular-nums text-tinta-600">{clp(p._sum.total ?? 0)}</td>
                     <td className="text-right font-medium tabular-nums text-amber-600">
                       {clp(p._sum.comisionMonto ?? 0)}
                     </td>
@@ -214,7 +214,7 @@ export default async function PaginaLiquidaciones({
             <option value="ANULADA">Anulada</option>
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -243,17 +243,17 @@ export default async function PaginaLiquidaciones({
             <tbody>
               {liquidaciones.map((l) => (
                 <tr key={l.id} className={l.estado === 'ANULADA' ? 'opacity-50' : ''}>
-                  <td className="font-mono text-xs text-slate-500">{l.folio}</td>
+                  <td className="font-mono text-xs text-tinta-500">{l.folio}</td>
                   <td>
                     <Link href={`/profesionales/${l.profesional.id}`} className="font-medium text-brand-700 hover:underline">
                       {l.profesional.apellidos}, {l.profesional.nombres}
                     </Link>
-                    <p className="text-xs text-slate-400">{l.profesional.especialidad}</p>
+                    <p className="text-xs text-tinta-400">{l.profesional.especialidad}</p>
                   </td>
-                  <td className="whitespace-nowrap text-xs text-slate-600">
+                  <td className="whitespace-nowrap text-xs text-tinta-600">
                     {fechaCorta(l.periodoDesde)} → {fechaCorta(l.periodoHasta)}
                   </td>
-                  <td className="text-right tabular-nums text-slate-600">{clp(l.totalProducido)}</td>
+                  <td className="text-right tabular-nums text-tinta-600">{clp(l.totalProducido)}</td>
                   <td className="text-right tabular-nums text-emerald-600">{clp(l.totalComision)}</td>
                   <td className="text-right tabular-nums text-rose-600">
                     {l.totalArriendo > 0 ? `−${clp(l.totalArriendo)}` : '—'}
@@ -291,24 +291,24 @@ export default async function PaginaLiquidaciones({
           <tbody>
             {profesionales.map((p) => (
               <tr key={p.id}>
-                <td className="font-medium text-slate-800">
+                <td className="font-medium text-tinta-800">
                   {p.apellidos}, {p.nombres}
                 </td>
                 <td>
                   <Badge tono="azul">{humanizar(p.modeloPago)}</Badge>
                 </td>
-                <td className="text-slate-600">
+                <td className="text-tinta-600">
                   {p.comisionTipo === 'PORCENTAJE'
                     ? porcentaje(p.comisionPorcentaje)
                     : `${clp(p.comisionMontoFijo)} por prestación`}
                 </td>
-                <td className="text-xs text-slate-600">
+                <td className="text-xs text-tinta-600">
                   {p.arriendos.length === 0 ? '—' : p.arriendos.map((a) => a.box.codigo).join(', ')}
                 </td>
                 <td className="text-right tabular-nums">
                   {p.arriendos.length === 0 ? '—' : clp(p.arriendos.reduce((acc, a) => acc + a.monto, 0))}
                 </td>
-                <td className="text-xs text-slate-600">
+                <td className="text-xs text-tinta-600">
                   {p.arriendos.length === 0 ? '—' : humanizar(p.arriendos[0].periodicidad)}
                 </td>
               </tr>

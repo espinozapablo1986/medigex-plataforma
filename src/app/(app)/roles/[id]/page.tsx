@@ -81,7 +81,7 @@ export default async function PaginaRol({ params }: { params: Promise<{ id: stri
 
         {puedeEditar && (
           <div className="sticky bottom-4 flex justify-end">
-            <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+            <div className="rounded-xl border border-tinta-200 bg-white p-2 shadow-lg">
               <BotonEnviar>Guardar permisos</BotonEnviar>
             </div>
           </div>

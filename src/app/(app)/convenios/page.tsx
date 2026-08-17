@@ -73,8 +73,8 @@ export default async function PaginaConvenios() {
         </Campo>
       </Grilla>
 
-      <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Condiciones comerciales</p>
+      <div className="mt-4 rounded-lg border border-tinta-200 bg-tinta-50 p-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tinta-500">Condiciones comerciales</p>
         <Grilla cols={3}>
           <Campo etiqueta="Descuento general (%)" ayuda="Sobre el precio de lista, si el servicio no tiene tarifa propia.">
             <input
@@ -125,12 +125,12 @@ export default async function PaginaConvenios() {
             />
           </Campo>
         </Grilla>
-        <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+        <label className="mt-3 flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="requiereAutorizacion"
             defaultChecked={c?.requiereAutorizacion ?? false}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Requiere autorización previa de la aseguradora
         </label>
@@ -190,7 +190,7 @@ export default async function PaginaConvenios() {
                     <Link href={`/convenios/${c.id}`} className="font-medium text-brand-700 hover:underline">
                       {c.nombre}
                     </Link>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-tinta-400">
                       {c.codigo}
                       {c.rut && ` · ${formatearRut(c.rut)}`}
                     </p>
@@ -200,19 +200,19 @@ export default async function PaginaConvenios() {
                       {humanizar(c.tipo)}
                     </Badge>
                   </td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-xs text-tinta-500">
                     {c.contacto ?? '—'}
                     {c.telefono && <div>{c.telefono}</div>}
                   </td>
-                  <td className="text-right tabular-nums text-slate-600">{porcentaje(c.descuentoPorcentaje, 0)}</td>
-                  <td className="text-right tabular-nums text-slate-600">
+                  <td className="text-right tabular-nums text-tinta-600">{porcentaje(c.descuentoPorcentaje, 0)}</td>
+                  <td className="text-right tabular-nums text-tinta-600">
                     {porcentaje(c.coberturaPorcentaje, 0)}
                     {c.topePorPrestacion > 0 && (
-                      <p className="text-xs text-slate-400">tope {clp(c.topePorPrestacion)}</p>
+                      <p className="text-xs text-tinta-400">tope {clp(c.topePorPrestacion)}</p>
                     )}
                   </td>
-                  <td className="text-right tabular-nums text-slate-500">{c._count.pacientes}</td>
-                  <td className="text-right tabular-nums text-slate-500">{c._count.servicios}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{c._count.pacientes}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{c._count.servicios}</td>
                   <td className="text-right font-medium tabular-nums">
                     {clp(c.ventas.reduce((acc, v) => acc + v.total, 0))}
                     <p className="text-xs text-emerald-600">

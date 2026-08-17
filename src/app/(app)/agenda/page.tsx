@@ -117,21 +117,21 @@ export default async function PaginaAgenda({
 
       <div className="mb-4 flex flex-wrap items-end gap-3">
         <div className="flex items-center gap-1">
-          <Link href={paramsBase({ fecha: isoFecha(sumarDias(dia, -1)) })} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50">
+          <Link href={paramsBase({ fecha: isoFecha(sumarDias(dia, -1)) })} className="rounded-lg border border-tinta-300 bg-white px-3 py-2 text-sm hover:bg-tinta-50">
             ←
           </Link>
           <form className="flex items-center gap-1">
             {vista && <input type="hidden" name="vista" value={vista} />}
             {filtroProfesional && <input type="hidden" name="profesional" value={filtroProfesional} />}
             <input type="date" name="fecha" defaultValue={isoFecha(dia)} className="campo w-40" />
-            <button type="submit" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50">
+            <button type="submit" className="rounded-lg border border-tinta-300 bg-white px-3 py-2 text-sm hover:bg-tinta-50">
               Ir
             </button>
           </form>
-          <Link href={paramsBase({ fecha: isoFecha(sumarDias(dia, 1)) })} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50">
+          <Link href={paramsBase({ fecha: isoFecha(sumarDias(dia, 1)) })} className="rounded-lg border border-tinta-300 bg-white px-3 py-2 text-sm hover:bg-tinta-50">
             →
           </Link>
-          <Link href={paramsBase({ fecha: isoFecha(new Date()) })} className="ml-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50">
+          <Link href={paramsBase({ fecha: isoFecha(new Date()) })} className="ml-1 rounded-lg border border-tinta-300 bg-white px-3 py-2 text-sm hover:bg-tinta-50">
             Hoy
           </Link>
         </div>
@@ -154,7 +154,7 @@ export default async function PaginaAgenda({
               ))}
             </select>
           </Campo>
-          <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
             Aplicar
           </button>
         </form>
@@ -195,13 +195,13 @@ export default async function PaginaAgenda({
           <div className="scroll-fino overflow-x-auto">
             <div className="flex min-w-max">
               {/* Regla horaria */}
-              <div className="sticky left-0 z-10 w-16 shrink-0 border-r border-slate-200 bg-white">
-                <div className="h-14 border-b border-slate-200" />
+              <div className="sticky left-0 z-10 w-16 shrink-0 border-r border-tinta-200 bg-white">
+                <div className="h-14 border-b border-tinta-200" />
                 <div className="relative" style={{ height: alturaTotal }}>
                   {horasGuia.map((m) => (
                     <div
                       key={m}
-                      className="absolute right-2 -translate-y-1/2 text-xs tabular-nums text-slate-400"
+                      className="absolute right-2 -translate-y-1/2 text-xs tabular-nums text-tinta-400"
                       style={{ top: (m - apertura) * ALTO_POR_MINUTO }}
                     >
                       {minutosAHora(m)}
@@ -220,21 +220,21 @@ export default async function PaginaAgenda({
                   : disponibilidad.filter((d) => d.profesionalId === columna.id);
 
                 return (
-                  <div key={columna.id} className="w-56 shrink-0 border-r border-slate-200 last:border-r-0">
-                    <header className="flex h-14 flex-col justify-center border-b border-slate-200 px-3">
+                  <div key={columna.id} className="w-56 shrink-0 border-r border-tinta-200 last:border-r-0">
+                    <header className="flex h-14 flex-col justify-center border-b border-tinta-200 px-3">
                       <div className="flex items-center gap-1.5">
                         <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: columna.color }} />
-                        <p className="truncate text-sm font-medium text-slate-800">{columna.titulo}</p>
+                        <p className="truncate text-sm font-medium text-tinta-800">{columna.titulo}</p>
                       </div>
-                      <p className="truncate text-xs text-slate-400">{columna.subtitulo}</p>
+                      <p className="truncate text-xs text-tinta-400">{columna.subtitulo}</p>
                     </header>
 
-                    <div className="relative bg-slate-50/40" style={{ height: alturaTotal }}>
+                    <div className="relative bg-tinta-50/40" style={{ height: alturaTotal }}>
                       {/* Líneas de hora */}
                       {horasGuia.map((m) => (
                         <div
                           key={m}
-                          className="absolute inset-x-0 border-t border-slate-100"
+                          className="absolute inset-x-0 border-t border-tinta-100"
                           style={{ top: (m - apertura) * ALTO_POR_MINUTO }}
                         />
                       ))}
@@ -281,18 +281,18 @@ export default async function PaginaAgenda({
       {/* Listado del día, útil en móvil y para recepción */}
       {citas.length > 0 && (
         <Tarjeta titulo="Listado del día" className="mt-5" sinPadding>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-tinta-100">
             {citas.map((cita) => (
               <li key={cita.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <span className="w-24 shrink-0 text-sm font-medium tabular-nums text-slate-700">
+                  <span className="w-24 shrink-0 text-sm font-medium tabular-nums text-tinta-700">
                     {hora(cita.inicio)}–{hora(cita.fin)}
                   </span>
                   <div>
                     <Link href={`/pacientes/${cita.paciente.id}`} className="text-sm font-medium text-brand-700 hover:underline">
                       {cita.paciente.nombres} {cita.paciente.apellidoPaterno}
                     </Link>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-500">
                       {cita.profesional.nombres} {cita.profesional.apellidos}
                       {cita.servicios.length > 0 &&
                         ` · ${cita.servicios.map((s) => s.servicio.nombre).join(', ')}`}
@@ -304,7 +304,7 @@ export default async function PaginaAgenda({
                   {cita.paciente.alergias && <Badge tono="rojo">alergias</Badge>}
                   {cita.usaRayosX && <Badge tono="morado">rayos X</Badge>}
                   <BadgeEstado estado={cita.estado} />
-                  <span className="text-xs text-slate-400">{cita.paciente.telefonoPrincipal}</span>
+                  <span className="text-xs text-tinta-400">{cita.paciente.telefonoPrincipal}</span>
                 </div>
               </li>
             ))}

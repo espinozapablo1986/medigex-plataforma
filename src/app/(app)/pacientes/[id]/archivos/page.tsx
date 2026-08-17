@@ -77,7 +77,7 @@ export default async function ArchivosPaciente({
               ))}
             </select>
           </Campo>
-          <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
             Filtrar
           </button>
         </form>
@@ -140,27 +140,27 @@ export default async function ArchivosPaciente({
                   <img
                     src={`/api/adjuntos/${a.id}`}
                     alt={a.descripcion ?? a.nombreOriginal}
-                    className="h-40 w-full bg-slate-100 object-cover"
+                    className="h-40 w-full bg-tinta-100 object-cover"
                   />
                 ) : (
-                  <div className="flex h-40 w-full items-center justify-center bg-slate-100 text-4xl text-slate-300">
+                  <div className="flex h-40 w-full items-center justify-center bg-tinta-100 text-4xl text-tinta-300">
                     {a.mimeType.includes('pdf') ? 'PDF' : 'DOC'}
                   </div>
                 )}
               </a>
               <figcaption className="space-y-1.5 p-3">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="truncate text-sm font-medium text-slate-800" title={a.nombreOriginal}>
+                  <p className="truncate text-sm font-medium text-tinta-800" title={a.nombreOriginal}>
                     {a.nombreOriginal}
                   </p>
                   <Badge tono={a.categoria === 'RADIOGRAFIA' ? 'morado' : 'gris'}>{humanizar(a.categoria)}</Badge>
                 </div>
-                {a.descripcion && <p className="text-xs text-slate-500">{a.descripcion}</p>}
+                {a.descripcion && <p className="text-xs text-tinta-500">{a.descripcion}</p>}
                 {a.atencion && (
                   <p className="text-xs text-brand-600">Atención del {a.atencion.fecha.toLocaleDateString('es-CL')}</p>
                 )}
                 {a.examen && <p className="text-xs text-brand-600">Examen: {a.examen.nombre}</p>}
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-400">
                   {tamanoLegible(a.tamanoBytes)} · {fechaHora(a.createdAt)}
                   {a.subidoPor && ` · ${a.subidoPor.nombres} ${a.subidoPor.apellidos}`}
                 </p>

@@ -211,21 +211,21 @@ export default async function PaginaGastos({
       </Campo>
 
       <fieldset className="mt-4 space-y-2">
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="ivaRecuperable"
             defaultChecked={g?.ivaRecuperable ?? true}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           El IVA da derecho a crédito fiscal
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="esRecurrente"
             defaultChecked={g?.esRecurrente ?? false}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Es un gasto recurrente
         </label>
@@ -255,8 +255,8 @@ export default async function PaginaGastos({
                       ))}
                     </select>
                   </Campo>
-                  <label className="flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" name="deducible" defaultChecked className="h-4 w-4 rounded border-slate-300 text-brand-600" />
+                  <label className="flex items-center gap-2 text-sm text-tinta-700">
+                    <input type="checkbox" name="deducible" defaultChecked className="h-4 w-4 rounded border-tinta-300 text-brand-600" />
                     Gasto deducible (aceptado tributariamente)
                   </label>
                   <div className="flex justify-end">
@@ -323,7 +323,7 @@ export default async function PaginaGastos({
             <option value="ANULADO">Anulado</option>
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -351,17 +351,17 @@ export default async function PaginaGastos({
             <tbody>
               {gastos.map((g) => (
                 <tr key={g.id} className={g.estado === 'ANULADO' ? 'opacity-50' : ''}>
-                  <td className="font-mono text-xs text-slate-500">{g.folio}</td>
-                  <td className="whitespace-nowrap text-slate-600">{fechaCorta(g.fecha)}</td>
+                  <td className="font-mono text-xs text-tinta-500">{g.folio}</td>
+                  <td className="whitespace-nowrap text-tinta-600">{fechaCorta(g.fecha)}</td>
                   <td>
-                    <p className="font-medium text-slate-800">{g.descripcion}</p>
-                    {g.esRecurrente && <p className="text-xs text-slate-400">{humanizar(g.periodicidad)}</p>}
+                    <p className="font-medium text-tinta-800">{g.descripcion}</p>
+                    {g.esRecurrente && <p className="text-xs text-tinta-400">{humanizar(g.periodicidad)}</p>}
                   </td>
-                  <td className="text-xs text-slate-600">{g.categoria?.nombre ?? '—'}</td>
-                  <td className="text-xs text-slate-600">{g.proveedor?.razonSocial ?? '—'}</td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">{g.categoria?.nombre ?? '—'}</td>
+                  <td className="text-xs text-tinta-600">{g.proveedor?.razonSocial ?? '—'}</td>
+                  <td className="text-xs text-tinta-600">
                     {humanizar(g.tipoDocumento)}
-                    {g.numeroDocumento && <p className="text-slate-400">{g.numeroDocumento}</p>}
+                    {g.numeroDocumento && <p className="text-tinta-400">{g.numeroDocumento}</p>}
                     {g.adjuntos.length > 0 && (
                       <a
                         href={`/api/adjuntos/${g.adjuntos[0].id}`}
@@ -373,9 +373,9 @@ export default async function PaginaGastos({
                       </a>
                     )}
                   </td>
-                  <td className="text-right tabular-nums text-slate-600">{clp(g.neto)}</td>
-                  <td className="text-right tabular-nums text-slate-500">
-                    {g.iva > 0 ? clp(g.iva) : <span className="text-slate-300">—</span>}
+                  <td className="text-right tabular-nums text-tinta-600">{clp(g.neto)}</td>
+                  <td className="text-right tabular-nums text-tinta-500">
+                    {g.iva > 0 ? clp(g.iva) : <span className="text-tinta-300">—</span>}
                   </td>
                   <td className="text-right font-medium tabular-nums">{clp(g.total)}</td>
                   <td>

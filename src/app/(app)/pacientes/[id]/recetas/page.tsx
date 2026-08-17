@@ -67,16 +67,16 @@ export default async function RecetasPaciente({ params }: { params: Promise<{ id
                 const vencida = r.vigenteHasta && r.vigenteHasta < new Date();
                 return (
                   <tr key={r.id} className={r.anulada ? 'opacity-50' : ''}>
-                    <td className="font-mono text-xs text-slate-500">{r.folio}</td>
-                    <td className="whitespace-nowrap text-slate-600">{fechaCorta(r.fecha)}</td>
-                    <td className="text-xs text-slate-600">
+                    <td className="font-mono text-xs text-tinta-500">{r.folio}</td>
+                    <td className="whitespace-nowrap text-tinta-600">{fechaCorta(r.fecha)}</td>
+                    <td className="text-xs text-tinta-600">
                       {r.profesional.nombres} {r.profesional.apellidos}
-                      <p className="text-slate-400">{r.profesional.especialidad}</p>
+                      <p className="text-tinta-400">{r.profesional.especialidad}</p>
                     </td>
                     <td>
                       <Badge tono={r.tipo === 'RETENIDA' ? 'ambar' : 'gris'}>{humanizar(r.tipo)}</Badge>
                     </td>
-                    <td className="max-w-md text-xs text-slate-600">
+                    <td className="max-w-md text-xs text-tinta-600">
                       <ul className="space-y-0.5">
                         {r.items.map((i) => (
                           <li key={i.id}>

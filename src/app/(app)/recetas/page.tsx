@@ -101,7 +101,7 @@ export default async function PaginaRecetas({
             <option value="MAGISTRAL">Magistral</option>
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -132,22 +132,22 @@ export default async function PaginaRecetas({
                 const vencida = r.vigenteHasta && r.vigenteHasta < new Date();
                 return (
                   <tr key={r.id} className={r.anulada ? 'opacity-50' : ''}>
-                    <td className="font-mono text-xs text-slate-500">{r.folio}</td>
-                    <td className="whitespace-nowrap text-slate-600">{fechaCorta(r.fecha)}</td>
+                    <td className="font-mono text-xs text-tinta-500">{r.folio}</td>
+                    <td className="whitespace-nowrap text-tinta-600">{fechaCorta(r.fecha)}</td>
                     <td>
                       <Link href={`/pacientes/${r.paciente.id}`} className="font-medium text-brand-700 hover:underline">
                         {r.paciente.nombres} {r.paciente.apellidoPaterno}
                       </Link>
-                      <p className="text-xs text-slate-400">{r.paciente.rut}</p>
+                      <p className="text-xs text-tinta-400">{r.paciente.rut}</p>
                     </td>
-                    <td className="text-xs text-slate-600">
+                    <td className="text-xs text-tinta-600">
                       {r.profesional.nombres} {r.profesional.apellidos}
-                      <p className="text-slate-400">{r.profesional.especialidad}</p>
+                      <p className="text-tinta-400">{r.profesional.especialidad}</p>
                     </td>
                     <td>
                       <Badge tono={r.tipo === 'RETENIDA' ? 'ambar' : 'gris'}>{humanizar(r.tipo)}</Badge>
                     </td>
-                    <td className="max-w-xs text-xs text-slate-600">
+                    <td className="max-w-xs text-xs text-tinta-600">
                       {r.items.map((i) => i.medicamento).join(', ')}
                     </td>
                     <td className="text-xs">
@@ -156,7 +156,7 @@ export default async function PaginaRecetas({
                       ) : vencida ? (
                         <Badge tono="ambar">vencida</Badge>
                       ) : (
-                        <span className="text-slate-500">
+                        <span className="text-tinta-500">
                           {r.vigenteHasta ? `hasta ${fechaCorta(r.vigenteHasta)}` : 'sin vencimiento'}
                         </span>
                       )}

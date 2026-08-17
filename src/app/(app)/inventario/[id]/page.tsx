@@ -109,20 +109,20 @@ export default async function DetalleProducto({ params }: { params: Promise<{ id
                 <tbody>
                   {producto.movimientos.map((m) => (
                     <tr key={m.id}>
-                      <td className="whitespace-nowrap text-xs text-slate-600">{fechaHora(m.fecha)}</td>
+                      <td className="whitespace-nowrap text-xs text-tinta-600">{fechaHora(m.fecha)}</td>
                       <td>
                         <Badge tono={TONOS[m.tipo] ?? 'gris'}>{humanizar(m.tipo)}</Badge>
                       </td>
                       <td className="text-right font-medium tabular-nums">{numero(m.cantidad, 2)}</td>
-                      <td className="text-right tabular-nums text-slate-500">{numero(m.stockAnterior, 2)}</td>
-                      <td className="text-right tabular-nums text-slate-700">{numero(m.stockResultante, 2)}</td>
-                      <td className="text-right tabular-nums text-slate-500">{clp(m.costoUnitario)}</td>
-                      <td className="text-xs text-slate-500">
+                      <td className="text-right tabular-nums text-tinta-500">{numero(m.stockAnterior, 2)}</td>
+                      <td className="text-right tabular-nums text-tinta-700">{numero(m.stockResultante, 2)}</td>
+                      <td className="text-right tabular-nums text-tinta-500">{clp(m.costoUnitario)}</td>
+                      <td className="text-xs text-tinta-500">
                         {m.motivo ?? '—'}
                         {m.lote && <p>Lote {m.lote}</p>}
                         {m.fechaVencimiento && <p>Vence {fechaCorta(m.fechaVencimiento)}</p>}
                       </td>
-                      <td className="text-xs text-slate-500">
+                      <td className="text-xs text-tinta-500">
                         {m.usuario ? `${m.usuario.nombres} ${m.usuario.apellidos}` : 'sistema'}
                       </td>
                     </tr>
@@ -154,7 +154,7 @@ export default async function DetalleProducto({ params }: { params: Promise<{ id
 
           <Tarjeta titulo="Servicios que lo consumen">
             {producto.insumoDe.length === 0 ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-tinta-500">
                 No está asociado a ningún servicio. Puedes asociarlo desde la ficha del servicio.
               </p>
             ) : (
@@ -164,7 +164,7 @@ export default async function DetalleProducto({ params }: { params: Promise<{ id
                     <Link href={`/servicios/${i.servicio.id}`} className="text-brand-700 hover:underline">
                       {i.servicio.nombre}
                     </Link>
-                    <span className="tabular-nums text-slate-500">{numero(i.cantidad, 2)} por vez</span>
+                    <span className="tabular-nums text-tinta-500">{numero(i.cantidad, 2)} por vez</span>
                   </li>
                 ))}
               </ul>

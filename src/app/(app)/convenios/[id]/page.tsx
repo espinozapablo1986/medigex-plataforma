@@ -94,10 +94,10 @@ export default async function DetalleConvenio({ params }: { params: Promise<{ id
                         <Link href={`/servicios/${t.servicio.id}`} className="font-medium text-brand-700 hover:underline">
                           {t.servicio.nombre}
                         </Link>
-                        <p className="text-xs text-slate-400">{t.servicio.codigo}</p>
+                        <p className="text-xs text-tinta-400">{t.servicio.codigo}</p>
                       </td>
-                      <td className="font-mono text-xs text-slate-600">{t.codigoPrestacion ?? '—'}</td>
-                      <td className="text-right tabular-nums text-slate-500 line-through">{clp(t.servicio.precio)}</td>
+                      <td className="font-mono text-xs text-tinta-600">{t.codigoPrestacion ?? '—'}</td>
+                      <td className="text-right tabular-nums text-tinta-500 line-through">{clp(t.servicio.precio)}</td>
                       <td className="text-right font-medium tabular-nums">
                         {t.precioConvenio > 0 ? clp(t.precioConvenio) : 'precio lista'}
                       </td>
@@ -116,7 +116,7 @@ export default async function DetalleConvenio({ params }: { params: Promise<{ id
             )}
 
             {puedeEditar && (
-              <Formulario accion={guardarTarifa} className="mt-4 border-t border-slate-200 pt-4" reiniciarAlEnviar>
+              <Formulario accion={guardarTarifa} className="mt-4 border-t border-tinta-200 pt-4" reiniciarAlEnviar>
                 <input type="hidden" name="convenioId" value={convenio.id} />
                 <div className="flex flex-wrap items-end gap-3">
                   <Campo etiqueta="Servicio" className="min-w-[14rem] flex-1">
@@ -146,7 +146,7 @@ export default async function DetalleConvenio({ params }: { params: Promise<{ id
 
           <Tarjeta titulo="Pacientes adscritos" sinPadding>
             {convenio.pacientes.length === 0 ? (
-              <p className="p-4 text-sm text-slate-500">
+              <p className="p-4 text-sm text-tinta-500">
                 Ningún paciente tiene este convenio asignado. Se asigna en la ficha del paciente.
               </p>
             ) : (
@@ -166,8 +166,8 @@ export default async function DetalleConvenio({ params }: { params: Promise<{ id
                           {p.apellidoPaterno}, {p.nombres}
                         </Link>
                       </td>
-                      <td className="text-slate-600">{formatearRut(p.rut) || '—'}</td>
-                      <td className="text-slate-600">{p.numeroAfiliado ?? '—'}</td>
+                      <td className="text-tinta-600">{formatearRut(p.rut) || '—'}</td>
+                      <td className="text-tinta-600">{p.numeroAfiliado ?? '—'}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -248,7 +248,7 @@ export default async function PaginaCrm({
                   </Campo>
                   <button
                     type="submit"
-                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    className="h-10 rounded-lg border border-tinta-300 bg-white px-3 text-sm font-medium text-tinta-700 hover:bg-tinta-50"
                   >
                     Aplicar
                   </button>
@@ -314,10 +314,10 @@ export default async function PaginaCrm({
                     descripcion="No hay presupuestos enviados esperando respuesta hace más de una semana."
                   />
                 ) : (
-                  <div className="scroll-fino max-h-[26rem] overflow-y-auto rounded-lg border border-slate-200">
+                  <div className="scroll-fino max-h-[26rem] overflow-y-auto rounded-lg border border-tinta-200">
                     <table className="w-full text-sm">
-                      <thead className="sticky top-0 bg-slate-50">
-                        <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+                      <thead className="sticky top-0 bg-tinta-50">
+                        <tr className="border-b border-tinta-200 text-left text-xs uppercase tracking-wide text-tinta-500">
                           <th className="px-3 py-2">Nº</th>
                           <th>Paciente</th>
                           <th className="text-right">Total</th>
@@ -327,20 +327,20 @@ export default async function PaginaCrm({
                       </thead>
                       <tbody>
                         {datos.presupuestos.map((p) => (
-                          <tr key={p.presupuestoId} className="border-b border-slate-100 last:border-0">
+                          <tr key={p.presupuestoId} className="border-b border-tinta-100 last:border-0">
                             <td className="px-3 py-2">
                               <Link href={`/presupuestos/${p.presupuestoId}`} className="text-brand-700 hover:underline">
                                 {p.folio}
                               </Link>
                             </td>
                             <td>
-                              <Link href={`/pacientes/${p.pacienteId}`} className="font-medium text-slate-800 hover:underline">
+                              <Link href={`/pacientes/${p.pacienteId}`} className="font-medium text-tinta-800 hover:underline">
                                 {p.nombre}
                               </Link>
-                              <p className="text-xs text-slate-400">{p.telefono}</p>
+                              <p className="text-xs text-tinta-400">{p.telefono}</p>
                             </td>
                             <td className="text-right font-medium tabular-nums">{clp(p.total)}</td>
-                            <td className="text-right tabular-nums text-slate-600">{p.dias}</td>
+                            <td className="text-right tabular-nums text-tinta-600">{p.dias}</td>
                             <td>
                               <Badge tono={p.estado === 'ENVIADO' ? 'azul' : 'gris'}>{humanizar(p.estado)}</Badge>
                             </td>
@@ -362,13 +362,13 @@ export default async function PaginaCrm({
                     {datos.cumpleanos.map((p) => (
                       <li
                         key={p.id}
-                        className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-3 py-2"
+                        className="flex items-center justify-between gap-2 rounded-lg border border-tinta-200 px-3 py-2"
                       >
                         <div>
                           <Link href={`/pacientes/${p.id}`} className="text-sm font-medium text-brand-700 hover:underline">
                             {p.nombres} {p.apellidoPaterno}
                           </Link>
-                          <p className="text-xs text-slate-400">{p.telefonoPrincipal}</p>
+                          <p className="text-xs text-tinta-400">{p.telefonoPrincipal}</p>
                         </div>
                         <Badge tono="morado">día {p.dia}</Badge>
                       </li>
@@ -418,13 +418,13 @@ function BloqueSeguimientos({
       sinPadding
       className={tono === 'rojo' ? 'border-rose-200' : tono === 'ambar' ? 'border-amber-200' : undefined}
     >
-      <ul className="divide-y divide-slate-100">
+      <ul className="divide-y divide-tinta-100">
         {seguimientos.map((s) => (
           <li key={s.id} className="p-3">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-slate-800">{s.titulo}</p>
-                <p className="mt-0.5 text-xs text-slate-500">
+                <p className="text-sm font-medium text-tinta-800">{s.titulo}</p>
+                <p className="mt-0.5 text-xs text-tinta-500">
                   {fechaCorta(s.fechaVencimiento)}
                   {s.asignadoA && ` · ${s.asignadoA.nombres} ${s.asignadoA.apellidos}`}
                 </p>
@@ -465,7 +465,7 @@ function BloqueSeguimientos({
                 >
                   <Formulario accion={completarSeguimiento} className="space-y-4">
                     <input type="hidden" name="id" value={s.id} />
-                    <p className="text-sm text-slate-600">{s.titulo}</p>
+                    <p className="text-sm text-tinta-600">{s.titulo}</p>
                     <Grilla cols={2}>
                       <Campo etiqueta="Canal usado">
                         <select name="canal" defaultValue="LLAMADA" className="campo">
@@ -498,7 +498,7 @@ function BloqueSeguimientos({
                   <input type="hidden" name="dias" value="3" />
                   <button
                     type="submit"
-                    className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-50"
+                    className="rounded-lg border border-tinta-300 bg-white px-2.5 py-1.5 text-xs text-tinta-600 hover:bg-tinta-50"
                   >
                     +3 días
                   </button>

@@ -203,7 +203,7 @@ export default async function PaginaContactos({
         </Campo>
         <button
           type="submit"
-          className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50"
         >
           Filtrar
         </button>
@@ -240,25 +240,25 @@ export default async function PaginaContactos({
                       <p className="text-xs text-emerald-600">Ficha Nº {c.paciente.numeroFicha}</p>
                     )}
                   </td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-xs text-tinta-500">
                     {c.telefono ?? '—'}
                     {c.email && <div>{c.email}</div>}
                   </td>
-                  <td className="text-xs text-slate-600">{humanizar(c.origen)}</td>
-                  <td className="max-w-xs truncate text-xs text-slate-600" title={c.interes ?? ''}>
+                  <td className="text-xs text-tinta-600">{humanizar(c.origen)}</td>
+                  <td className="max-w-xs truncate text-xs text-tinta-600" title={c.interes ?? ''}>
                     {c.interes ?? '—'}
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {c.asignadoA ? `${c.asignadoA.nombres} ${c.asignadoA.apellidos}` : '—'}
                   </td>
-                  <td className="text-right text-xs tabular-nums text-slate-500">
+                  <td className="text-right text-xs tabular-nums text-tinta-500">
                     {c._count.interacciones} contacto(s)
                     {c._count.seguimientos > 0 && <p>{c._count.seguimientos} tarea(s)</p>}
                   </td>
                   <td>
                     <Badge tono={TONO_ESTADO_CONTACTO[c.estado] ?? 'gris'}>{humanizar(c.estado)}</Badge>
                   </td>
-                  <td className="whitespace-nowrap text-xs text-slate-500">{fechaCorta(c.createdAt)}</td>
+                  <td className="whitespace-nowrap text-xs text-tinta-500">{fechaCorta(c.createdAt)}</td>
                 </tr>
               ))}
             </tbody>

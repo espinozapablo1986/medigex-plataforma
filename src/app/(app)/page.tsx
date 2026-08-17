@@ -167,7 +167,7 @@ export default async function Dashboard({
             <Campo etiqueta="Año" className="w-24">
               <input name="anio" type="number" min={2020} max={2100} defaultValue={anio} className="campo" />
             </Campo>
-            <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
               Ver
             </button>
           </form>
@@ -206,17 +206,17 @@ export default async function Dashboard({
           >
             <div className="grid gap-4 sm:grid-cols-4">
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">IVA débito (ventas)</p>
-                <p className="mt-1 text-xl font-semibold tabular-nums text-slate-900">{clp(ivaDebito)}</p>
-                <p className="text-xs text-slate-500">Neto {clp(ventasMes._sum.neto ?? 0)}</p>
+                <p className="text-xs uppercase tracking-wide text-tinta-400">IVA débito (ventas)</p>
+                <p className="mt-1 text-xl font-semibold tabular-nums text-tinta-900">{clp(ivaDebito)}</p>
+                <p className="text-xs text-tinta-500">Neto {clp(ventasMes._sum.neto ?? 0)}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">IVA crédito (compras)</p>
-                <p className="mt-1 text-xl font-semibold tabular-nums text-slate-900">−{clp(ivaCredito)}</p>
-                <p className="text-xs text-slate-500">Neto {clp(gastosMes._sum.neto ?? 0)}</p>
+                <p className="text-xs uppercase tracking-wide text-tinta-400">IVA crédito (compras)</p>
+                <p className="mt-1 text-xl font-semibold tabular-nums text-tinta-900">−{clp(ivaCredito)}</p>
+                <p className="text-xs text-tinta-500">Neto {clp(gastosMes._sum.neto ?? 0)}</p>
               </div>
               <div className="sm:col-span-2">
-                <p className="text-xs uppercase tracking-wide text-slate-400">
+                <p className="text-xs uppercase tracking-wide text-tinta-400">
                   {ivaAPagar >= 0 ? 'IVA a pagar (estimado)' : 'Remanente de crédito fiscal'}
                 </p>
                 <p
@@ -224,7 +224,7 @@ export default async function Dashboard({
                 >
                   {clp(Math.abs(ivaAPagar))}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-tinta-500">
                   Estimación referencial para el F29 de {MESES[mes]}. No reemplaza la declaración formal ante el SII.
                 </p>
               </div>
@@ -303,7 +303,7 @@ export default async function Dashboard({
               <tbody>
                 {citasHoy.map((cita) => (
                   <tr key={cita.id}>
-                    <td className="whitespace-nowrap font-medium tabular-nums text-slate-700">
+                    <td className="whitespace-nowrap font-medium tabular-nums text-tinta-700">
                       {hora(cita.inicio)}–{hora(cita.fin)}
                     </td>
                     <td>
@@ -311,18 +311,18 @@ export default async function Dashboard({
                         {cita.paciente.nombres} {cita.paciente.apellidoPaterno}
                       </Link>
                     </td>
-                    <td className="text-xs text-slate-600">
+                    <td className="text-xs text-tinta-600">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: cita.profesional.colorAgenda }} />
                         {cita.profesional.nombres} {cita.profesional.apellidos}
                       </span>
                     </td>
-                    <td className="text-xs text-slate-600">
+                    <td className="text-xs text-tinta-600">
                       {cita.servicios.length > 0 ? cita.servicios.map((s) => s.servicio.nombre).join(', ') : '—'}
                       {cita.usaRayosX && <Badge tono="morado">RX</Badge>}
                     </td>
-                    <td className="text-xs text-slate-600">{cita.box?.codigo ?? '—'}</td>
-                    <td className="text-xs text-slate-500">{cita.paciente.telefonoPrincipal}</td>
+                    <td className="text-xs text-tinta-600">{cita.box?.codigo ?? '—'}</td>
+                    <td className="text-xs text-tinta-500">{cita.paciente.telefonoPrincipal}</td>
                     <td>
                       <BadgeEstado estado={cita.estado} />
                     </td>

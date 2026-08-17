@@ -175,7 +175,7 @@ export function FormularioCita({
     <div className="grid gap-5 lg:grid-cols-3">
       <div className="space-y-5 lg:col-span-2">
         <section className="tarjeta p-4">
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Paciente y profesional</h2>
+          <h2 className="mb-4 text-sm font-semibold text-tinta-900">Paciente y profesional</h2>
 
           <div className="space-y-4">
             <Campo etiqueta="Paciente" requerido>
@@ -203,8 +203,8 @@ export function FormularioCita({
         </section>
 
         <section className="tarjeta p-4">
-          <h2 className="mb-1 text-sm font-semibold text-slate-900">Servicios de la sesión</h2>
-          <p className="mb-4 text-xs text-slate-500">
+          <h2 className="mb-1 text-sm font-semibold text-tinta-900">Servicios de la sesión</h2>
+          <p className="mb-4 text-xs text-tinta-500">
             Puedes agregar varios si el paciente aprovechará la misma visita para más de un procedimiento. La duración
             de la hora es la suma de todos.
           </p>
@@ -221,18 +221,18 @@ export function FormularioCita({
           />
 
           {detalle.length > 0 && (
-            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <div className="mt-4 rounded-lg border border-tinta-200 bg-tinta-50 p-3">
               <ul className="space-y-1 text-sm">
                 {detalle.map((s) => (
-                  <li key={s.id} className="flex justify-between gap-3 text-slate-700">
+                  <li key={s.id} className="flex justify-between gap-3 text-tinta-700">
                     <span className="truncate">{s.nombre}</span>
-                    <span className="shrink-0 tabular-nums text-slate-500">
+                    <span className="shrink-0 tabular-nums text-tinta-500">
                       {s.duracionMinutos} min · {clp(s.precio)}
                     </span>
                   </li>
                 ))}
               </ul>
-              <div className="mt-2 flex justify-between border-t border-slate-200 pt-2 text-sm font-semibold text-slate-900">
+              <div className="mt-2 flex justify-between border-t border-tinta-200 pt-2 text-sm font-semibold text-tinta-900">
                 <span>{detalle.length} servicio(s)</span>
                 <span className="tabular-nums">
                   {duracionTotal} min · {clp(precioTotal)}
@@ -253,9 +253,9 @@ export function FormularioCita({
         <section className="tarjeta p-4">
           <div className="mb-1 flex items-center gap-1.5">
             <DoorOpen className="h-4 w-4 text-brand-600" />
-            <h2 className="text-sm font-semibold text-slate-900">Box o sala</h2>
+            <h2 className="text-sm font-semibold text-tinta-900">Box o sala</h2>
           </div>
-          <p className="mb-4 text-xs text-slate-500">
+          <p className="mb-4 text-xs text-tinta-500">
             {!inicioElegido
               ? 'Elige primero una hora para ver qué boxes quedan libres.'
               : cargandoBoxes
@@ -268,11 +268,11 @@ export function FormularioCita({
           <input type="hidden" name="boxId" value={boxId} />
 
           {!inicioElegido ? (
-            <p className="rounded-lg bg-slate-50 px-3 py-6 text-center text-sm text-slate-400">
+            <p className="rounded-lg bg-tinta-50 px-3 py-6 text-center text-sm text-tinta-400">
               Sin hora seleccionada
             </p>
           ) : cargandoBoxes ? (
-            <p className="flex items-center justify-center gap-2 rounded-lg bg-slate-50 px-3 py-6 text-sm text-slate-400">
+            <p className="flex items-center justify-center gap-2 rounded-lg bg-tinta-50 px-3 py-6 text-sm text-tinta-400">
               <Loader2 className="h-4 w-4 animate-spin" />
               Cargando boxes…
             </p>
@@ -295,19 +295,19 @@ export function FormularioCita({
                       className={cn(
                         'flex items-start justify-between gap-2 rounded-lg border px-3 py-2 text-left transition',
                         !box.disponible
-                          ? 'cursor-not-allowed border-slate-200 bg-slate-100 opacity-70'
+                          ? 'cursor-not-allowed border-tinta-200 bg-tinta-100 opacity-70'
                           : elegido
                             ? 'border-brand-600 bg-brand-600 text-white shadow-sm'
                             : box.recomendado
                               ? 'border-emerald-300 bg-emerald-50 hover:bg-emerald-100'
-                              : 'border-slate-300 bg-white hover:bg-slate-50',
+                              : 'border-tinta-300 bg-white hover:bg-tinta-50',
                       )}
                     >
                       <span className="min-w-0">
                         <span
                           className={cn(
                             'block text-sm font-semibold',
-                            !box.disponible ? 'text-slate-400 line-through' : elegido ? 'text-white' : 'text-slate-800',
+                            !box.disponible ? 'text-tinta-400 line-through' : elegido ? 'text-white' : 'text-tinta-800',
                           )}
                         >
                           {box.codigo} · {box.nombre}
@@ -315,7 +315,7 @@ export function FormularioCita({
                         <span
                           className={cn(
                             'block truncate text-xs',
-                            elegido ? 'text-brand-100' : box.disponible ? 'text-slate-500' : 'text-slate-400',
+                            elegido ? 'text-brand-100' : box.disponible ? 'text-tinta-500' : 'text-tinta-400',
                           )}
                         >
                           {box.motivo ?? box.tipo.replace(/_/g, ' ').toLowerCase()}
@@ -338,7 +338,7 @@ export function FormularioCita({
                 })}
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-2 text-xs text-slate-500">
+              <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-tinta-100 pt-2 text-xs text-tinta-500">
                 <span className="flex items-center gap-1">
                   <span className="h-2.5 w-2.5 rounded border border-emerald-300 bg-emerald-50" /> libre y apto
                 </span>
@@ -346,12 +346,12 @@ export function FormularioCita({
                   <span className="h-2.5 w-2.5 rounded bg-brand-600" /> elegido
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="h-2.5 w-2.5 rounded bg-slate-200" /> ocupado
+                  <span className="h-2.5 w-2.5 rounded bg-tinta-200" /> ocupado
                 </span>
                 <button
                   type="button"
                   onClick={() => setBoxId('')}
-                  className="ml-auto text-slate-400 underline hover:text-slate-600"
+                  className="ml-auto text-tinta-400 underline hover:text-tinta-600"
                 >
                   Agendar sin box
                 </button>
@@ -380,7 +380,7 @@ export function FormularioCita({
         </section>
 
         <section className="tarjeta p-4">
-          <h2 className="mb-4 text-sm font-semibold text-slate-900">Detalles de la cita</h2>
+          <h2 className="mb-4 text-sm font-semibold text-tinta-900">Detalles de la cita</h2>
           <Grilla cols={2}>
             <Campo etiqueta="Canal de agendamiento">
               <select name="canal" defaultValue="PRESENCIAL" className="campo">
@@ -402,27 +402,27 @@ export function FormularioCita({
           </Campo>
 
           <div className="mt-4 space-y-2">
-            <label className="flex items-center gap-2 text-sm text-slate-700">
+            <label className="flex items-center gap-2 text-sm text-tinta-700">
               <input
                 type="checkbox"
                 name="usaRayosX"
                 defaultChecked={necesitaRayosX}
                 key={`rx-${necesitaRayosX}`}
-                className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                className="h-4 w-4 rounded border-tinta-300 text-brand-600"
               />
               Usará la sala de rayos X
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
+            <label className="flex items-center gap-2 text-sm text-tinta-700">
               <input
                 type="checkbox"
                 name="sobrecupo"
                 checked={sobrecupo}
                 onChange={(e) => setSobrecupo(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-amber-600"
+                className="h-4 w-4 rounded border-tinta-300 text-amber-600"
               />
               Sobrecupo: permitir fuera del horario declarado del profesional
             </label>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-tinta-400">
               El sobrecupo nunca permite pisar una hora ya reservada ni un box ocupado.
             </p>
           </div>
@@ -432,12 +432,12 @@ export function FormularioCita({
       {/* ── Selección de horario ── */}
       <aside className="lg:sticky lg:top-4 lg:h-fit">
         <section className="tarjeta overflow-hidden">
-          <header className="border-b border-slate-200 px-4 py-3">
-            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+          <header className="border-b border-tinta-200 px-4 py-3">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-tinta-900">
               <CalendarClock className="h-4 w-4 text-brand-600" />
               Horario
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-tinta-500">
               {!profesionalId
                 ? 'Elige un profesional para ver sus horas libres'
                 : cargando
@@ -457,11 +457,11 @@ export function FormularioCita({
             <input type="hidden" name="volverA" value={volverA} />
 
             {!profesionalId ? (
-              <p className="rounded-lg bg-slate-50 px-3 py-6 text-center text-sm text-slate-400">
+              <p className="rounded-lg bg-tinta-50 px-3 py-6 text-center text-sm text-tinta-400">
                 Selecciona un profesional
               </p>
             ) : cargando ? (
-              <p className="flex items-center justify-center gap-2 rounded-lg bg-slate-50 px-3 py-6 text-sm text-slate-400">
+              <p className="flex items-center justify-center gap-2 rounded-lg bg-tinta-50 px-3 py-6 text-sm text-tinta-400">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Cargando cupos…
               </p>
@@ -492,7 +492,7 @@ export function FormularioCita({
                         className={cn(
                           'rounded-lg border px-2 py-1.5 text-xs font-medium tabular-nums transition',
                           !cupo.disponible
-                            ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400 line-through'
+                            ? 'cursor-not-allowed border-tinta-200 bg-tinta-100 text-tinta-400 line-through'
                             : elegido
                               ? 'border-brand-600 bg-brand-600 text-white shadow-sm'
                               : 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
@@ -504,7 +504,7 @@ export function FormularioCita({
                   })}
                 </div>
 
-                <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-2 text-xs text-slate-500">
+                <div className="flex flex-wrap gap-3 border-t border-tinta-100 pt-2 text-xs text-tinta-500">
                   <span className="flex items-center gap-1">
                     <span className="h-2.5 w-2.5 rounded border border-emerald-300 bg-emerald-50" /> libre
                   </span>
@@ -512,7 +512,7 @@ export function FormularioCita({
                     <span className="h-2.5 w-2.5 rounded bg-brand-600" /> elegida
                   </span>
                   <span className="flex items-center gap-1">
-                    <span className="h-2.5 w-2.5 rounded bg-slate-200" /> ocupada
+                    <span className="h-2.5 w-2.5 rounded bg-tinta-200" /> ocupada
                   </span>
                 </div>
               </>

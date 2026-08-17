@@ -100,39 +100,39 @@ export function CamposServicio({
 
       <fieldset className="mt-4 space-y-2">
         <legend className="etiqueta">Opciones</legend>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="requiereBox"
             defaultChecked={valores?.requiereBox ?? true}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Requiere reservar un box
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="usaRayosX"
             defaultChecked={valores?.usaRayosX ?? false}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Usa la sala de rayos X
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="afectoIva"
             defaultChecked={valores?.afectoIva ?? true}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Afecto a IVA
         </label>
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="requiereConsentimiento"
             defaultChecked={valores?.requiereConsentimiento ?? false}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           Requiere consentimiento informado firmado
         </label>

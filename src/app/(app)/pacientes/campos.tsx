@@ -95,7 +95,7 @@ export function CamposPaciente({
     <div className="space-y-6">
       {/* ── Identificación ── */}
       <section className="tarjeta p-4">
-        <h3 className="mb-3 text-sm font-semibold text-slate-900">Identificación</h3>
+        <h3 className="mb-3 text-sm font-semibold text-tinta-900">Identificación</h3>
         <Grilla cols={3}>
           <Campo etiqueta="RUT" ayuda="Si es extranjero sin RUT, deja vacío y usa el pasaporte.">
             <input name="rut" defaultValue={valores?.rut ?? ''} placeholder="12345678-9" className="campo" />
@@ -148,7 +148,7 @@ export function CamposPaciente({
 
       {/* ── Contacto ── */}
       <section className="tarjeta p-4">
-        <h3 className="mb-3 text-sm font-semibold text-slate-900">Contacto</h3>
+        <h3 className="mb-3 text-sm font-semibold text-tinta-900">Contacto</h3>
         <Grilla cols={3}>
           <Campo etiqueta="Teléfono principal" requerido>
             <input
@@ -176,8 +176,8 @@ export function CamposPaciente({
           </Campo>
         </Grilla>
 
-        <div className="mt-4 border-t border-slate-100 pt-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Contacto de emergencia</p>
+        <div className="mt-4 border-t border-tinta-100 pt-4">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-tinta-500">Contacto de emergencia</p>
           <Grilla cols={3}>
             <Campo etiqueta="Nombre">
               <input name="contactoEmergenciaNombre" defaultValue={valores?.contactoEmergenciaNombre ?? ''} className="campo" />
@@ -199,7 +199,7 @@ export function CamposPaciente({
 
       {/* ── Previsión y convenio ── */}
       <section className="tarjeta p-4">
-        <h3 className="mb-3 text-sm font-semibold text-slate-900">Previsión y convenio</h3>
+        <h3 className="mb-3 text-sm font-semibold text-tinta-900">Previsión y convenio</h3>
         <Grilla cols={2}>
           <Campo etiqueta="Previsión" ayuda="Se administra en Configuración → Previsiones.">
             <SelectorBuscable
@@ -252,7 +252,7 @@ export function CamposPaciente({
 
       {/* ── Procedencia ── */}
       <section className="tarjeta p-4">
-        <h3 className="mb-3 text-sm font-semibold text-slate-900">Procedencia</h3>
+        <h3 className="mb-3 text-sm font-semibold text-tinta-900">Procedencia</h3>
         <Campo etiqueta="¿Cómo nos conoció?">
           <select name="comoNosConocio" defaultValue={valores?.comoNosConocio ?? ''} className="campo">
             <option value="">Sin especificar</option>
@@ -264,13 +264,13 @@ export function CamposPaciente({
           </select>
         </Campo>
 
-        <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
+        <label className="mt-4 flex items-center gap-2 text-sm text-tinta-700">
           <input
             type="checkbox"
             name="vieneDeOtroCentro"
             checked={derivado}
             onChange={(e) => setDerivado(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-brand-600"
+            className="h-4 w-4 rounded border-tinta-300 text-brand-600"
           />
           El paciente viene derivado de otro centro clínico
         </label>
@@ -297,7 +297,7 @@ export function CamposPaciente({
 
       {/* ── Antecedentes ── */}
       <section className="tarjeta p-4">
-        <h3 className="mb-3 text-sm font-semibold text-slate-900">Antecedentes de salud</h3>
+        <h3 className="mb-3 text-sm font-semibold text-tinta-900">Antecedentes de salud</h3>
         <Grilla cols={2}>
           <Campo etiqueta="Alergias" ayuda="Se destaca en rojo en la ficha y en cada atención.">
             <textarea name="alergias" rows={2} defaultValue={valores?.alergias ?? ''} className="campo" />

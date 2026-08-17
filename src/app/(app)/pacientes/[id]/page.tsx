@@ -85,14 +85,14 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
             }
           >
             {proximasCitas.length === 0 ? (
-              <p className="text-sm text-slate-500">Sin horas agendadas a futuro.</p>
+              <p className="text-sm text-tinta-500">Sin horas agendadas a futuro.</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-tinta-100">
                 {proximasCitas.map((cita) => (
                   <li key={cita.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
                     <div>
-                      <p className="text-sm font-medium text-slate-800">{fechaHora(cita.inicio)}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-sm font-medium text-tinta-800">{fechaHora(cita.inicio)}</p>
+                      <p className="text-xs text-tinta-500">
                         {cita.profesional.nombres} {cita.profesional.apellidos}
                         {cita.servicios.length > 0 &&
                           ` · ${cita.servicios.map((s) => s.servicio.nombre).join(', ')}`}
@@ -124,17 +124,17 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
                   descripcion="Cuando el paciente sea atendido, la evolución aparecerá aquí."
                 />
               ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-tinta-100">
                   {ultimasAtenciones.map((a) => (
                     <li key={a.id} className="py-3">
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <p className="text-sm font-medium text-slate-800">{a.motivoConsulta}</p>
-                        <span className="text-xs text-slate-400">{fechaCorta(a.fecha)}</span>
+                        <p className="text-sm font-medium text-tinta-800">{a.motivoConsulta}</p>
+                        <span className="text-xs text-tinta-400">{fechaCorta(a.fecha)}</span>
                       </div>
-                      <p className="mt-0.5 text-xs text-slate-500">
+                      <p className="mt-0.5 text-xs text-tinta-500">
                         {a.profesional.nombres} {a.profesional.apellidos} · {a.profesional.especialidad}
                       </p>
-                      {a.diagnostico && <p className="mt-1 text-sm text-slate-600">Dg: {a.diagnostico}</p>}
+                      {a.diagnostico && <p className="mt-1 text-sm text-tinta-600">Dg: {a.diagnostico}</p>}
                     </li>
                   ))}
                 </ul>
@@ -153,16 +153,16 @@ export default async function FichaPaciente({ params }: { params: Promise<{ id: 
             }
           >
             {presupuestos.length === 0 ? (
-              <p className="text-sm text-slate-500">Sin presupuestos emitidos.</p>
+              <p className="text-sm text-tinta-500">Sin presupuestos emitidos.</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-tinta-100">
                 {presupuestos.map((p) => (
                   <li key={p.id} className="flex items-center justify-between gap-2 py-2.5">
                     <Link href={`/presupuestos/${p.id}`} className="text-sm text-brand-700 hover:underline">
                       Presupuesto Nº {p.folio}
                     </Link>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-slate-400">{fechaCorta(p.fecha)}</span>
+                      <span className="text-xs text-tinta-400">{fechaCorta(p.fecha)}</span>
                       <span className="text-sm font-medium tabular-nums">{clp(p.total)}</span>
                       <BadgeEstado estado={p.estado} />
                     </div>

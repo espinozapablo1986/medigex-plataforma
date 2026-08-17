@@ -14,6 +14,7 @@ import {
   EnlaceBoton,
   Tarjeta,
 } from '@/components/ui';
+import { Simbolo } from '@/components/marca';
 import { BotonEliminar } from '@/components/formulario';
 
 import { cambiarEstadoPresupuesto, eliminarPresupuesto } from '../acciones';
@@ -82,7 +83,7 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
                   <form action={cambiarEstadoPresupuesto}>
                     <input type="hidden" name="id" value={id} />
                     <input type="hidden" name="estado" value="RECHAZADO" />
-                    <button type="submit" className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    <button type="submit" className="rounded-lg border border-tinta-300 bg-white px-3.5 py-2 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
                       Rechazar
                     </button>
                   </form>
@@ -131,50 +132,50 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
 
       {/* ── Documento imprimible ── */}
       <div className="tarjeta mx-auto max-w-4xl p-8">
-        <header className="mb-6 flex items-start justify-between gap-4 border-b border-slate-200 pb-6">
+        <header className="mb-6 flex items-start justify-between gap-4 border-b border-tinta-200 pb-6">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">{config?.nombreClinica ?? 'MEDIGEX'}</h2>
-            {config?.rut && <p className="text-sm text-slate-600">RUT {formatearRut(config.rut)}</p>}
-            {config?.giro && <p className="text-sm text-slate-600">{config.giro}</p>}
-            <p className="text-sm text-slate-600">
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold text-brand-900"><Simbolo tamano={26} />{config?.nombreClinica ?? 'MEDIGEX'}</h2>
+            {config?.rut && <p className="text-sm text-tinta-600">RUT {formatearRut(config.rut)}</p>}
+            {config?.giro && <p className="text-sm text-tinta-600">{config.giro}</p>}
+            <p className="text-sm text-tinta-600">
               {[config?.direccion, config?.comuna, config?.ciudad].filter(Boolean).join(', ')}
             </p>
-            {config?.telefono && <p className="text-sm text-slate-600">{config.telefono}</p>}
+            {config?.telefono && <p className="text-sm text-tinta-600">{config.telefono}</p>}
           </div>
           <div className="text-right">
-            <p className="text-xs uppercase tracking-wide text-slate-400">Presupuesto</p>
-            <p className="text-2xl font-bold text-slate-900">Nº {presupuesto.folio}</p>
-            <p className="text-sm text-slate-600">{fechaCorta(presupuesto.fecha)}</p>
+            <p className="text-xs uppercase tracking-wide text-tinta-400">Presupuesto</p>
+            <p className="text-2xl font-bold text-tinta-900">Nº {presupuesto.folio}</p>
+            <p className="text-sm text-tinta-600">{fechaCorta(presupuesto.fecha)}</p>
             {presupuesto.validoHasta && (
-              <p className="text-xs text-slate-500">Válido hasta {fechaCorta(presupuesto.validoHasta)}</p>
+              <p className="text-xs text-tinta-500">Válido hasta {fechaCorta(presupuesto.validoHasta)}</p>
             )}
           </div>
         </header>
 
         <section className="mb-6 grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Paciente</p>
-            <p className="font-medium text-slate-900">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tinta-400">Paciente</p>
+            <p className="font-medium text-tinta-900">
               {paciente.nombres} {paciente.apellidoPaterno} {paciente.apellidoMaterno ?? ''}
             </p>
-            <p className="text-sm text-slate-600">{formatearRut(paciente.rut) || paciente.pasaporte}</p>
-            {edad !== null && <p className="text-sm text-slate-600">{edad} años</p>}
-            <p className="text-sm text-slate-600">{paciente.telefonoPrincipal}</p>
-            {paciente.email && <p className="text-sm text-slate-600">{paciente.email}</p>}
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-tinta-600">{formatearRut(paciente.rut) || paciente.pasaporte}</p>
+            {edad !== null && <p className="text-sm text-tinta-600">{edad} años</p>}
+            <p className="text-sm text-tinta-600">{paciente.telefonoPrincipal}</p>
+            {paciente.email && <p className="text-sm text-tinta-600">{paciente.email}</p>}
+            <p className="text-sm text-tinta-600">
               {paciente.prevision?.nombre ?? 'Sin previsión'}
               {paciente.convenio ? ` · Convenio ${paciente.convenio.nombre}` : ''}
             </p>
           </div>
           {presupuesto.profesional && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Profesional</p>
-              <p className="font-medium text-slate-900">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-tinta-400">Profesional</p>
+              <p className="font-medium text-tinta-900">
                 {presupuesto.profesional.nombres} {presupuesto.profesional.apellidos}
               </p>
-              <p className="text-sm text-slate-600">{presupuesto.profesional.especialidad}</p>
+              <p className="text-sm text-tinta-600">{presupuesto.profesional.especialidad}</p>
               {presupuesto.profesional.registroSuperintendencia && (
-                <p className="text-sm text-slate-600">Reg. {presupuesto.profesional.registroSuperintendencia}</p>
+                <p className="text-sm text-tinta-600">Reg. {presupuesto.profesional.registroSuperintendencia}</p>
               )}
             </div>
           )}
@@ -195,15 +196,15 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
             {presupuesto.items.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <p className="font-medium text-slate-800">{item.descripcion}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="font-medium text-tinta-800">{item.descripcion}</p>
+                  <p className="text-xs text-tinta-400">
                     {humanizar(item.tipo)}
                     {item.servicio && ` · ${item.servicio.codigo}`}
                     {item.producto && ` · ${item.producto.sku}`}
                     {!item.afectoIva && ' · exento de IVA'}
                   </p>
                 </td>
-                <td className="text-slate-600">{item.piezaDental ?? '—'}</td>
+                <td className="text-tinta-600">{item.piezaDental ?? '—'}</td>
                 <td className="text-right tabular-nums">{numero(item.cantidad, item.cantidad % 1 === 0 ? 0 : 2)}</td>
                 <td className="text-right tabular-nums">{clp(item.precioUnitario)}</td>
                 <td className="text-right tabular-nums text-rose-600">
@@ -227,7 +228,7 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
             )}
             <Total etiqueta="Neto" valor={clp(presupuesto.neto)} />
             <Total etiqueta={`IVA (${config?.ivaPorcentaje ?? 19}%)`} valor={clp(presupuesto.iva)} />
-            <div className="flex justify-between border-t-2 border-slate-800 pt-2 text-lg font-bold">
+            <div className="flex justify-between border-t-2 border-tinta-800 pt-2 text-lg font-bold">
               <dt>Total</dt>
               <dd className="tabular-nums">{clp(presupuesto.total)}</dd>
             </div>
@@ -235,13 +236,13 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
         </div>
 
         {presupuesto.observaciones && (
-          <section className="mt-6 rounded-lg bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Observaciones</p>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{presupuesto.observaciones}</p>
+          <section className="mt-6 rounded-lg bg-tinta-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">Observaciones</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-tinta-700">{presupuesto.observaciones}</p>
           </section>
         )}
 
-        <footer className="mt-8 border-t border-slate-200 pt-4 text-xs text-slate-400">
+        <footer className="mt-8 border-t border-tinta-200 pt-4 text-xs text-tinta-400">
           <p>
             Emitido por {presupuesto.creadoPor ? `${presupuesto.creadoPor.nombres} ${presupuesto.creadoPor.apellidos}` : 'el sistema'}
             {' · '}
@@ -256,7 +257,7 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
       <div className="no-imprimir mt-4 flex justify-center gap-2">
         <Link
           href={`/presupuestos/${id}?imprimir=1`}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="rounded-lg border border-tinta-300 bg-white px-4 py-2 text-sm font-medium text-tinta-700 hover:bg-tinta-50"
         >
           Vista de impresión
         </Link>
@@ -269,8 +270,8 @@ export default async function DetallePresupuesto({ params }: { params: Promise<{
 function Total({ etiqueta, valor, tono }: { etiqueta: string; valor: string; tono?: 'rose' }) {
   return (
     <div className="flex justify-between">
-      <dt className="text-slate-600">{etiqueta}</dt>
-      <dd className={`tabular-nums ${tono === 'rose' ? 'text-rose-600' : 'text-slate-800'}`}>{valor}</dd>
+      <dt className="text-tinta-600">{etiqueta}</dt>
+      <dd className={`tabular-nums ${tono === 'rose' ? 'text-rose-600' : 'text-tinta-800'}`}>{valor}</dd>
     </div>
   );
 }

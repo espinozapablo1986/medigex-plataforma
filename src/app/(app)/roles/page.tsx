@@ -82,9 +82,9 @@ export default async function PaginaRoles() {
                   <Link href={`/roles/${rol.id}`} className="font-medium text-brand-700 hover:underline">
                     {rol.nombre}
                   </Link>
-                  <p className="text-xs text-slate-400">{rol.slug}</p>
+                  <p className="text-xs text-tinta-400">{rol.slug}</p>
                 </td>
-                <td className="max-w-md text-slate-500">{rol.descripcion ?? '—'}</td>
+                <td className="max-w-md text-tinta-500">{rol.descripcion ?? '—'}</td>
                 <td className="text-right tabular-nums">{rol._count.usuarios}</td>
                 <td className="text-right tabular-nums">{rol.permisos.length}</td>
                 <td>

@@ -111,7 +111,7 @@ export default async function PaginaPresupuestos({
             <option value="FACTURADO">Facturado</option>
           </select>
         </Campo>
-        <button type="submit" className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
+        <button type="submit" className="h-10 rounded-lg border border-tinta-300 bg-white px-4 text-sm font-medium text-tinta-700 hover:bg-tinta-50">
           Filtrar
         </button>
       </form>
@@ -145,19 +145,19 @@ export default async function PaginaPresupuestos({
             <tbody>
               {presupuestos.map((p) => (
                 <tr key={p.id}>
-                  <td className="font-mono text-xs text-slate-500">{p.folio}</td>
+                  <td className="font-mono text-xs text-tinta-500">{p.folio}</td>
                   <td>
                     <Link href={`/pacientes/${p.paciente.id}`} className="font-medium text-brand-700 hover:underline">
                       {p.paciente.nombres} {p.paciente.apellidoPaterno}
                     </Link>
-                    <p className="text-xs text-slate-400">{p.paciente.rut}</p>
+                    <p className="text-xs text-tinta-400">{p.paciente.rut}</p>
                   </td>
-                  <td className="text-xs text-slate-600">
+                  <td className="text-xs text-tinta-600">
                     {p.profesional ? `${p.profesional.nombres} ${p.profesional.apellidos}` : '—'}
                   </td>
-                  <td className="text-slate-600">{fechaCorta(p.fecha)}</td>
-                  <td className="text-slate-600">{p.validoHasta ? fechaCorta(p.validoHasta) : '—'}</td>
-                  <td className="text-right tabular-nums text-slate-500">{p._count.items}</td>
+                  <td className="text-tinta-600">{fechaCorta(p.fecha)}</td>
+                  <td className="text-tinta-600">{p.validoHasta ? fechaCorta(p.validoHasta) : '—'}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{p._count.items}</td>
                   <td className="text-right font-medium tabular-nums">{clp(p.total)}</td>
                   <td>
                     <BadgeEstado estado={p.estado} />

@@ -126,23 +126,23 @@ export default async function PaginaBoxes() {
             <tbody>
               {boxes.map((box) => (
                 <tr key={box.id}>
-                  <td className="font-mono text-xs font-semibold text-slate-700">{box.codigo}</td>
-                  <td className="font-medium text-slate-800">{box.nombre}</td>
+                  <td className="font-mono text-xs font-semibold text-tinta-700">{box.codigo}</td>
+                  <td className="font-medium text-tinta-800">{box.nombre}</td>
                   <td>
                     <Badge tono={box.tipo === 'SALA_RAYOS_X' ? 'morado' : 'gris'}>{humanizar(box.tipo)}</Badge>
                   </td>
-                  <td className="text-slate-500">{box.ubicacion ?? '—'}</td>
+                  <td className="text-tinta-500">{box.ubicacion ?? '—'}</td>
                   <td className="text-right tabular-nums">
                     {box.valorArriendoHora > 0 ? clp(box.valorArriendoHora) : '—'}
                   </td>
-                  <td className="text-xs text-slate-500">
+                  <td className="text-xs text-tinta-500">
                     {box.arriendos.length === 0
                       ? '—'
                       : box.arriendos
                           .map((a) => `${a.profesional.nombres} ${a.profesional.apellidos}`)
                           .join(', ')}
                   </td>
-                  <td className="text-right tabular-nums text-slate-500">{box._count.citas}</td>
+                  <td className="text-right tabular-nums text-tinta-500">{box._count.citas}</td>
                   <td>{box.activo ? <Badge tono="verde">activo</Badge> : <Badge tono="rojo">inactivo</Badge>}</td>
                   <td>
                     <div className="flex flex-wrap justify-end gap-1.5">

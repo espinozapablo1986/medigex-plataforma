@@ -96,8 +96,8 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
         </Campo>
       </Grilla>
 
-      <fieldset className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-        <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Signos vitales</legend>
+      <fieldset className="rounded-lg border border-tinta-200 bg-tinta-50 p-4">
+        <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-tinta-500">Signos vitales</legend>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <Campo etiqueta="P. arterial">
             <input name="presionArterial" placeholder="120/80" className="campo" />
@@ -146,7 +146,7 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
       />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-tinta-500">
           {atenciones.length} atención(es) registradas en la historia clínica.
         </p>
         {puedeCrear && (
@@ -165,12 +165,12 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
         <div className="space-y-4">
           {atenciones.map((a) => (
             <article key={a.id} className="tarjeta overflow-hidden">
-              <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+              <header className="flex flex-wrap items-center justify-between gap-2 border-b border-tinta-200 bg-tinta-50 px-4 py-2.5">
                 <div className="flex items-center gap-2.5">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: a.profesional.colorAgenda }} />
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{fechaHora(a.fecha)}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm font-semibold text-tinta-900">{fechaHora(a.fecha)}</p>
+                    <p className="text-xs text-tinta-500">
                       {a.profesional.nombres} {a.profesional.apellidos} · {a.profesional.especialidad}
                     </p>
                   </div>
@@ -250,7 +250,7 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
                 </div>
 
                 {(a.presionArterial || a.frecuenciaCardiaca || a.temperatura || a.pesoKg || a.tallaCm || a.saturacion) && (
-                  <div className="flex flex-wrap gap-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  <div className="flex flex-wrap gap-3 rounded-lg bg-tinta-50 px-3 py-2 text-xs text-tinta-600">
                     {a.presionArterial && <span>PA {a.presionArterial}</span>}
                     {a.frecuenciaCardiaca && <span>FC {a.frecuenciaCardiaca} lpm</span>}
                     {a.temperatura && <span>T° {numero(a.temperatura, 1)}</span>}
@@ -265,7 +265,7 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
                   </div>
                 )}
 
-                <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-2 text-xs text-slate-400">
+                <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-tinta-100 pt-2 text-xs text-tinta-400">
                   <span>
                     Registrado por {a.registradoPor ? `${a.registradoPor.nombres} ${a.registradoPor.apellidos}` : 'sistema'}
                   </span>
@@ -275,18 +275,18 @@ export default async function HistoriaPaciente({ params }: { params: Promise<{ i
                 </footer>
 
                 {(a.recetas.length > 0 || a.examenes.length > 0) && (
-                  <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-2">
+                  <div className="flex flex-wrap gap-2 border-t border-tinta-100 pt-2">
                     {a.recetas.map((r) => (
                       <Link
                         key={r.id}
                         href={`/recetas/${r.id}`}
-                        className="rounded-lg border border-slate-200 px-2 py-1 text-xs text-brand-700 hover:bg-slate-50"
+                        className="rounded-lg border border-tinta-200 px-2 py-1 text-xs text-brand-700 hover:bg-tinta-50"
                       >
                         Receta Nº {r.folio}
                       </Link>
                     ))}
                     {a.examenes.map((e) => (
-                      <span key={e.id} className="rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600">
+                      <span key={e.id} className="rounded-lg border border-tinta-200 px-2 py-1 text-xs text-tinta-600">
                         {e.nombre}
                       </span>
                     ))}
@@ -313,8 +313,8 @@ function Seccion({
   if (!contenido) return null;
   return (
     <div className={destacado ? 'rounded-lg border-l-4 border-brand-500 bg-brand-50/50 px-3 py-2' : ''}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{titulo}</p>
-      <p className="mt-0.5 whitespace-pre-wrap text-sm text-slate-700">{contenido}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-tinta-400">{titulo}</p>
+      <p className="mt-0.5 whitespace-pre-wrap text-sm text-tinta-700">{contenido}</p>
     </div>
   );
 }

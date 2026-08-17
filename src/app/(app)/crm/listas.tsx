@@ -64,16 +64,16 @@ export function ListaRecall({
 
   return (
     <div className="space-y-3">
-      <div className="scroll-fino max-h-[26rem] overflow-y-auto rounded-lg border border-slate-200">
+      <div className="scroll-fino max-h-[26rem] overflow-y-auto rounded-lg border border-tinta-200">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-slate-50">
-            <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+          <thead className="sticky top-0 bg-tinta-50">
+            <tr className="border-b border-tinta-200 text-left text-xs uppercase tracking-wide text-tinta-500">
               <th className="w-10 px-3 py-2">
                 <input
                   type="checkbox"
                   checked={todos}
                   onChange={() => setMarcados(todos ? [] : filas.map((f) => f.pacienteId))}
-                  className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                  className="h-4 w-4 rounded border-tinta-300 text-brand-600"
                   aria-label="Marcar todos"
                 />
               </th>
@@ -89,7 +89,7 @@ export function ListaRecall({
               <tr
                 key={f.pacienteId}
                 className={cn(
-                  'border-b border-slate-100 last:border-0',
+                  'border-b border-tinta-100 last:border-0',
                   marcados.includes(f.pacienteId) && 'bg-brand-50/50',
                 )}
               >
@@ -98,7 +98,7 @@ export function ListaRecall({
                     type="checkbox"
                     checked={marcados.includes(f.pacienteId)}
                     onChange={() => alternar(f.pacienteId)}
-                    className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                    className="h-4 w-4 rounded border-tinta-300 text-brand-600"
                     aria-label={`Marcar ${f.nombre}`}
                   />
                 </td>
@@ -106,12 +106,12 @@ export function ListaRecall({
                   <a href={`/pacientes/${f.pacienteId}`} className="font-medium text-brand-700 hover:underline">
                     {f.nombre}
                   </a>
-                  <p className="text-xs text-slate-400">{f.telefono}</p>
+                  <p className="text-xs text-tinta-400">{f.telefono}</p>
                 </td>
-                <td className="max-w-xs truncate text-xs text-slate-600" title={f.detalle}>
+                <td className="max-w-xs truncate text-xs text-tinta-600" title={f.detalle}>
                   {f.detalle}
                 </td>
-                <td className="text-right tabular-nums text-slate-600">{f.dias}</td>
+                <td className="text-right tabular-nums text-tinta-600">{f.dias}</td>
                 {mostrarMonto && (
                   <td className="text-right font-medium tabular-nums text-rose-600">{clp(f.monto ?? 0)}</td>
                 )}
@@ -129,7 +129,7 @@ export function ListaRecall({
                     <a
                       href={`tel:${f.telefono.replace(/[^\d+]/g, '')}`}
                       title="Llamar"
-                      className="rounded p-1.5 text-slate-500 hover:bg-slate-100"
+                      className="rounded p-1.5 text-tinta-500 hover:bg-tinta-100"
                     >
                       <Phone className="h-4 w-4" />
                     </a>
@@ -141,7 +141,7 @@ export function ListaRecall({
         </table>
       </div>
 
-      <Formulario accion={agendarSeguimientosEnLote} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+      <Formulario accion={agendarSeguimientosEnLote} className="rounded-lg border border-tinta-200 bg-tinta-50 p-3">
         {marcados.map((id) => (
           <input key={id} type="hidden" name="pacienteIds" value={id} />
         ))}
@@ -175,7 +175,7 @@ export function ListaRecall({
         </Grilla>
 
         {marcados.length === 0 && (
-          <p className="mt-2 text-xs text-slate-500">Marca a quiénes vas a contactar para generar sus tareas.</p>
+          <p className="mt-2 text-xs text-tinta-500">Marca a quiénes vas a contactar para generar sus tareas.</p>
         )}
       </Formulario>
     </div>
