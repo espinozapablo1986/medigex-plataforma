@@ -24,9 +24,9 @@ jobs:
     name: Verificar tipos y build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -53,12 +53,48 @@ jobs:
       name: desarrollo
       url: https://medic.asdf123.cl
     steps:
+      - name: Comprobar que están los secretos
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USUARIO: ${{ secrets.VPS_USER }}
+          LLAVE: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          faltan=""
+          [ -z "$HOST" ]    && faltan="$faltan VPS_HOST"
+          [ -z "$USUARIO" ] && faltan="$faltan VPS_USER"
+          [ -z "$LLAVE" ]   && faltan="$faltan VPS_SSH_KEY"
+
+          if [ -n "$faltan" ]; then
+            echo "::error title=Faltan secretos::No se puede desplegar sin:$faltan"
+            echo ""
+            echo "Cárgalos en Settings → Secrets and variables → Actions:"
+            echo ""
+            echo "  VPS_HOST     159.195.7.134"
+            echo "  VPS_USER     deploy"
+            echo "  VPS_SSH_KEY  contenido de ~/.ssh/medigex_deploy (llave privada completa,"
+            echo "               incluidas las líneas BEGIN y END)"
+            echo ""
+            echo "Detalle en docs/despliegue.md → Despliegue automático."
+            exit 1
+          fi
+          echo "✅ Secretos presentes."
+
       - name: Preparar la llave SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Probar la conexión con el servidor
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USUARIO: ${{ secrets.VPS_USER }}
+        run: |
+          if ! ssh -o BatchMode=yes -o ConnectTimeout=15 "$USUARIO@$HOST" 'echo conectado'; then
+            echo "::error title=No se pudo conectar::Revisa VPS_SSH_KEY y que la llave pública esté en /home/$USUARIO/.ssh/authorized_keys"
+            exit 1
+          fi
 
       - name: Actualizar y levantar el stack
         env:
