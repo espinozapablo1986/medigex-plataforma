@@ -29,6 +29,13 @@ Si la versión que responde no es la del commit recién empujado, el despliegue
 no terminó. Un `307` de cualquier ruta no prueba nada: el middleware redirige
 al login cualquier path, exista o no.
 
+**Salvedad:** el workflow ignora los cambios que sólo tocan `**.md` y `docs/**`
+(ver `paths-ignore` en `.github/workflows/desplegar.yml`). Un commit de sólo
+documentación **no despliega y no debe hacerlo**: no hay nada que reconstruir.
+En ese caso `/api/health` seguirá respondiendo el último commit de código, y
+eso es lo correcto — no es un despliegue fallido. Comprobar la versión sólo
+después de un cambio que toque código.
+
 ## Convenciones que no se negocian
 
 - **Montos en CLP como `Int`.** El peso no usa decimales; un `Float` produce
