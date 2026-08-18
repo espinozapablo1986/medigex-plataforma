@@ -81,6 +81,25 @@ la pregunta de administración de si hay boxes libres a una hora dada. Los
 servicios marcados con `usaRayosX` marcan la cita automáticamente para que
 recepción sepa que necesita la sala de rayos.
 
+### Varios servicios en una misma hora
+
+Una cita admite **más de un servicio** (`cita_servicios`). La duración de la
+hora es la suma de los servicios elegidos, así que al agregar o quitar uno el
+bloque se ajusta solo. Esto evita el vicio de agendar dos horas seguidas
+falsas para una sesión que en realidad es una sola.
+
+### Cupos y boxes propuestos
+
+Recepción no tiene que adivinar. Al elegir profesional, fecha y servicios, la
+pantalla consulta `/api/agenda/cupos` y **muestra los horarios realmente
+disponibles** como botones, ya descontados los solapes, bloqueos y el horario
+declarado. Se propone el primero libre, pero se puede tomar cualquiera.
+
+Del mismo modo, `/api/agenda/boxes` **lista los boxes libres** para ese rango
+horario, marcando cuál es el preferente del profesional y cuál tiene rayos X
+si algún servicio lo necesita. Antes había que abrir la vista por box y
+cruzarla a ojo.
+
 ---
 
 ## Pacientes e historia clínica
@@ -97,8 +116,21 @@ Esto alimenta el reporte de captación.
 Las **alergias** se destacan en rojo en la cabecera de la ficha, en la pantalla
 de atención y en la receta impresa.
 
+La **previsión** (Fonasa con sus tramos, Isapres, particular) no está escrita
+en el código: es un mantenedor con CRUD en **Configuración**, porque el mapa
+de aseguradoras chilenas cambia y no puede exigir un despliegue.
+
 La ficha se organiza en pestañas: resumen, historia clínica, exámenes,
-archivos, cuenta corriente y recetas.
+archivos, cuenta corriente, recetas y —en pacientes dentales— odontograma y
+periodontograma.
+
+### Imprimir la ficha
+
+Desde la ficha se llega a una **vista de impresión** (`/pacientes/[id]/imprimir`)
+donde se elige qué incluir: datos personales, historia clínica, exámenes,
+recetas, presupuestos, cuenta corriente y odontograma. Sale por
+`Ctrl/Cmd + P` a papel o a PDF. Se pensó para el paciente que pide su ficha o
+para derivar a un especialista externo.
 
 ### El motivo de consulta
 
@@ -117,6 +149,82 @@ categoría y descripción. Se pueden asociar a una atención o a un examen
 concreto. Los archivos **no se sirven como estáticos**: pasan por
 `/api/adjuntos/[id]`, que valida la sesión y el permiso del módulo al que
 pertenece el adjunto.
+
+**Captura con la cámara del teléfono.** El campo de subida abre directamente
+la cámara trasera en móviles. Antes de enviar, la imagen se **comprime en el
+navegador** a WebP con el lado mayor acotado: una foto clínica de 4 MB queda
+en torno a 300 KB sin pérdida visible. Se comprime en el cliente y no en el
+servidor para no gastar los datos móviles del que sube la foto, y se respeta
+la orientación EXIF para que las fotos verticales no salgan giradas.
+
+---
+
+## Odontograma
+
+Ficha dental por pieza y por cara, en **notación FDI** (cuadrante + pieza:
+1.1 a 4.8 en dentición permanente, 5.1 a 8.5 en temporal). Se cambia entre
+ambas denticiones con una pestaña.
+
+Cada pieza se dibuja como una silueta con su raíz real —incisivo, canino,
+premolar o molar— y un esquema de **cinco superficies**: vestibular, palatino
+o lingual, mesial, distal y oclusal o incisal al centro.
+
+Un detalle que importa clínicamente: **mesial siempre mira hacia la línea
+media**. El esquema se refleja por cuadrante, de modo que una caries marcada
+en mesial queda del lado correcto de la boca y no espejada.
+
+### Cómo se marca
+
+Se trabaja con **pincel activo**: se elige una condición del catálogo y luego
+se van tocando las caras afectadas en todas las piezas que haga falta, y al
+final se confirma el lote completo. Marcar diente por diente, abriendo un
+formulario cada vez, era inviable en una revisión completa.
+
+El catálogo de **condiciones dentales** (caries, obturación, endodoncia,
+extracción, corona, implante, destartraje…) es un mantenedor: cada condición
+tiene código, color, categoría —diagnóstico o procedimiento— y si aplica por
+cara o a la pieza entera.
+
+### Del diagnóstico al presupuesto
+
+Cada condición puede enlazarse con un **servicio del tarifario**. Cuando lo
+está, lo marcado como pendiente se convierte en presupuesto con un botón:
+el sistema arma las líneas con la pieza dental anotada en cada una.
+
+> Si un procedimiento aparece como «sin servicio asociado», es que falta
+> enlazarlo en **Configuración → Condiciones dentales**. Hasta entonces se
+> registra igual en la ficha, pero no se puede presupuestar.
+
+Los registros no se borran al corregirlos: se **anulan**, y el historial
+completo queda debajo del esquema con fecha, profesional y observaciones.
+
+---
+
+## Periodontograma
+
+Examen periodontal completo, con **seis sitios por pieza**: mesial, central y
+distal, tanto por vestibular como por palatino/lingual.
+
+Por cada sitio se registra profundidad de sondaje, margen gingival, placa,
+sangrado y supuración. El **nivel de inserción clínica (NIC)** no se pide: se
+calcula como profundidad menos margen, porque es una resta que se hace mal a
+mano y de la que depende el diagnóstico. Por pieza se anota además movilidad,
+compromiso de furca y si está ausente o es un implante.
+
+El examen se dibuja como en papel: dos polilíneas sobre las piezas, roja para
+el margen gingival y azul para el fondo de la bolsa. El área entre ambas es
+la que el clínico lee de un vistazo.
+
+Arriba se calculan los índices del examen: porcentaje de sangrado al sondaje,
+índice de placa, profundidad media y recuento de sitios por severidad.
+
+**Se guarda todo de una vez.** Son casi doscientos valores; enviarlos campo a
+campo dejaría exámenes a medias si se corta la conexión, así que el examen
+viaja como un solo bloque y se escribe en una transacción.
+
+Un examen nuevo nace con las 32 piezas en cero, para que el profesional sólo
+corrija lo que difiere en vez de llenar una planilla vacía. Al ser fechados,
+los exámenes sucesivos permiten comparar la evolución del paciente.
 
 ---
 
@@ -188,6 +296,26 @@ El **informe de beneficio** reúne las prestaciones ya pagadas de un paciente en
 un período y genera un certificado imprimible con fecha, código de prestación,
 profesional, valor, cobertura y copago, para que el paciente lo presente a su
 Isapre o seguro. Sólo incluye prestaciones efectivamente canceladas.
+
+---
+
+## CRM
+
+Seguimiento comercial de quien **todavía no es paciente** o dejó de venir. Se
+separó de la ficha clínica a propósito: un interesado que llamó por WhatsApp
+no debe ensuciar el registro clínico ni contar como paciente.
+
+- **Contactos** con origen (Instagram, recomendación, campaña, sitio web,
+  llamada), estado del embudo —nuevo, contactado, interesado, agendado,
+  convertido, perdido— y el servicio que le interesa.
+- **Interacciones**: cada llamada, mensaje o correo con su fecha y resultado,
+  para que cualquiera retome la conversación sabiendo qué se habló.
+- **Seguimientos** con fecha comprometida, que aparecen como pendientes
+  cuando vencen.
+
+Al convertir un contacto en paciente se crea la ficha arrastrando los datos ya
+capturados, y el contacto queda enlazado para medir de dónde vino cada
+paciente nuevo.
 
 ---
 
@@ -280,12 +408,67 @@ pago, tasa de inasistencia y pacientes nuevos con cuántos vienen derivados.
 
 ---
 
+## Mantenedores
+
+### Profesionales
+
+Ficha con especialidad, RUT, registro de la Superintendencia de Salud, firma
+para las recetas y su **regla de liquidación** (ver arriba). Se vincula
+opcionalmente con un usuario para que el profesional vea su propia agenda.
+
+### Servicios
+
+El tarifario: código, nombre, categoría, duración en minutos, precio con IVA,
+si es exento y si requiere sala de rayos. Cada servicio puede declarar los
+**insumos que consume**, que es lo que descuenta el inventario al cerrar una
+atención, y su regla de honorarios cuando difiere de la del profesional.
+
+### Boxes
+
+Salas de atención, con su tipo, si tienen equipo de rayos X y el valor de
+arriendo cuando se cobra al profesional.
+
+### Proveedores
+
+Para el módulo de gastos y las compras de inventario: razón social, RUT,
+contacto y condiciones de pago.
+
+---
+
+## Configuración
+
+Datos de la clínica que se imprimen en documentos (razón social, RUT,
+dirección, teléfono, logo), y los mantenedores que cambian con el tiempo y no
+deben exigir un despliegue:
+
+- **Previsiones** — Fonasa y sus tramos, Isapres, particular.
+- **Formas de pago** — con sus exigencias de comprobante y costo de transacción.
+- **Condiciones dentales** — el catálogo del odontograma y su enlace al tarifario.
+- **Categorías de gasto** y parámetros de IVA.
+
+---
+
 ## Auditoría
 
 Toda operación de escritura queda registrada en `registro_auditoria` con
 usuario, módulo, acción, entidad afectada, detalle e IP. Las últimas acciones
 se ven en **Configuración**. La auditoría nunca interrumpe la operación
 principal: si falla el registro, la operación igual se completa.
+
+---
+
+## Detalles transversales de la interfaz
+
+**Todos los desplegables se buscan escribiendo.** Con doscientos pacientes o
+un tarifario largo, un `<select>` nativo es inservible. El componente
+`SelectorBuscable` filtra por varias palabras sueltas y **ignora tildes**, de
+modo que «jose perez» encuentra a «Pérez Soto, José Luis». Hay una variante
+múltiple para los campos que aceptan varias opciones, como los servicios de
+una cita.
+
+**Los montos son enteros.** El peso chileno no usa decimales, así que se
+guardan como `Int` y nunca como `Float`, para que no aparezcan diferencias de
+un peso al sumar. Los porcentajes sí son `Float`.
 
 ---
 

@@ -12,10 +12,11 @@ Ambiente de desarrollo: <https://medic.asdf123.cl>
 | Área | Módulos |
 |---|---|
 | **Clínico** | Agenda y disponibilidad · Pacientes y ficha clínica · Historia clínica · Exámenes · Recetas digitales · Interconsultas |
-| **Comercial** | Presupuestos · Ventas · Pagos y comprobantes · Convenios · Informes de beneficio (Isapre / seguro complementario) |
+| **Dental** | Odontograma por pieza y cara (FDI) · Periodontograma de seis sitios |
+| **Comercial** | Presupuestos · Ventas · Pagos y comprobantes · Convenios · Informes de beneficio (Isapre / seguro complementario) · CRM de interesados |
 | **Operaciones** | Inventario de insumos · Gastos y compras · Liquidaciones a profesionales · Reportes |
 | **Maestros** | Profesionales · Servicios · Boxes y salas · Proveedores |
-| **Administración** | Dashboard con IVA · Usuarios · Roles y permisos configurables · Configuración |
+| **Administración** | Dashboard con IVA · Usuarios · Roles y permisos configurables · Vista previa como otro usuario · Configuración |
 
 ## Stack
 
@@ -54,5 +55,12 @@ docker compose up -d --build
 
 ## Documentación
 
-- [`docs/despliegue.md`](docs/despliegue.md) — instalación en el VPS
+- [`CHANGELOG.md`](CHANGELOG.md) — qué cambió y cuándo
 - [`docs/modulos.md`](docs/modulos.md) — detalle funcional por módulo
+- [`docs/despliegue.md`](docs/despliegue.md) — instalación en el VPS
+- [`docs/plan-implementacion.md`](docs/plan-implementacion.md) — lo que falta, por etapas
+- [`docs/MEDIGEX - Estudio de brechas y plan.pdf`](docs/) — comparación con el mercado
+
+**La documentación se actualiza en el mismo commit que el código.** Un cambio
+funcional que no toque `CHANGELOG.md` y la sección correspondiente de
+`docs/modulos.md` está incompleto.
