@@ -15,6 +15,18 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
+### Corrección: las listas de recuperación del CRM fallaban al abrirse — `PENDIENTE`
+
+Las cuatro listas inteligentes del CRM (sin volver, controles, saldos e
+inasistencias) recibían el texto del mensaje de WhatsApp como una **función**
+generada en el servidor. React no puede serializar una función al pasarla a un
+componente de cliente, así que la página fallaba al renderizar.
+
+Ahora la plantilla viaja como texto con marcadores `{nombre}` y `{monto}`, que
+el navegador reemplaza. El error sólo aparecía en el registro del servidor, no
+en la verificación de tipos ni en el build, y se detectó revisando los logs de
+producción.
+
 ### Módulo de Ayuda con guías paso a paso — `1a15cdf`
 
 La plataforma ya no llega sin instrucciones. Se agrega un módulo de **Ayuda**

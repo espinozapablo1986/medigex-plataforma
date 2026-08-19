@@ -260,9 +260,7 @@ export default async function PaginaCrm({
                   tituloTarea="Invitar a retomar atención"
                   usuarios={opcionesUsuarios}
                   vacio={`Ningún paciente lleva más de ${mesesSinVolver} meses sin atenderse.`}
-                  plantillaMensaje={(f) =>
-                    `Hola ${f.nombre.split(' ')[0]}, te saludamos de ${centro}. Vimos que ha pasado un tiempo desde tu última atención y queríamos saber cómo estás. ¿Te gustaría agendar una hora de control?`
-                  }
+                  plantilla={`Hola {nombre}, te saludamos de ${centro}. Vimos que ha pasado un tiempo desde tu última atención y queríamos saber cómo estás. ¿Te gustaría agendar una hora de control?`}
                 />
               </>
             )}
@@ -274,9 +272,7 @@ export default async function PaginaCrm({
                 tituloTarea="Agendar control pendiente"
                 usuarios={opcionesUsuarios}
                 vacio="No hay controles indicados que estén vencidos."
-                plantillaMensaje={(f) =>
-                  `Hola ${f.nombre.split(' ')[0]}, te escribimos de ${centro}. Tu profesional dejó indicado un control que ya está pendiente. ¿Te acomoda que te agendemos una hora esta semana?`
-                }
+                plantilla={`Hola {nombre}, te escribimos de ${centro}. Tu profesional dejó indicado un control que ya está pendiente. ¿Te acomoda que te agendemos una hora esta semana?`}
               />
             )}
 
@@ -288,9 +284,7 @@ export default async function PaginaCrm({
                 usuarios={opcionesUsuarios}
                 mostrarMonto
                 vacio="No hay saldos pendientes con más de 15 días."
-                plantillaMensaje={(f) =>
-                  `Hola ${f.nombre.split(' ')[0]}, te contactamos de ${centro} por el saldo pendiente de tu atención (${clp(f.monto ?? 0)}). ¿Podemos coordinar el pago?`
-                }
+                plantilla={`Hola {nombre}, te contactamos de ${centro} por el saldo pendiente de tu atención ({monto}). ¿Podemos coordinar el pago?`}
               />
             )}
 
@@ -301,9 +295,7 @@ export default async function PaginaCrm({
                 tituloTarea="Reagendar hora perdida"
                 usuarios={opcionesUsuarios}
                 vacio="Todas las horas perdidas del último mes ya fueron reagendadas."
-                plantillaMensaje={(f) =>
-                  `Hola ${f.nombre.split(' ')[0]}, te saludamos de ${centro}. Notamos que no pudiste asistir a tu hora. ¿Te ayudamos a reagendarla?`
-                }
+                plantilla={`Hola {nombre}, te saludamos de ${centro}. Notamos que no pudiste asistir a tu hora. ¿Te ayudamos a reagendarla?`}
               />
             )}
 

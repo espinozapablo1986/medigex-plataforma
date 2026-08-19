@@ -23,6 +23,19 @@ function clp(monto: number) {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(monto);
 }
 
+/**
+ * Compone el mensaje a partir de una plantilla de texto.
+ *
+ * La plantilla llega como **cadena**, no como función: React no puede
+ * serializar una función al pasar del servidor a un componente de cliente, y
+ * al intentarlo la página entera fallaba al renderizar.
+ */
+function componerMensaje(plantilla: string, fila: FilaLista) {
+  return plantilla
+    .replace(/\{nombre\}/g, fila.nombre.split(' ')[0] ?? fila.nombre)
+    .replace(/\{monto\}/g, clp(fila.monto ?? 0));
+}
+
 function enlaceWhatsapp(telefono: string, mensaje: string) {
   const numero = telefono.replace(/[^\d]/g, '');
   const internacional = numero.startsWith('56') ? numero : `56${numero.replace(/^0+/, '')}`;
@@ -38,7 +51,7 @@ export function ListaRecall({
   filas,
   tipo,
   tituloTarea,
-  plantillaMensaje,
+  plantilla,
   usuarios,
   mostrarMonto,
   vacio,
@@ -46,7 +59,8 @@ export function ListaRecall({
   filas: FilaLista[];
   tipo: string;
   tituloTarea: string;
-  plantillaMensaje: (fila: FilaLista) => string;
+  /** Texto del mensaje; admite los marcadores {nombre} y {monto}. */
+  plantilla: string;
   usuarios: { id: string; nombre: string }[];
   mostrarMonto?: boolean;
   vacio: string;
@@ -118,7 +132,7 @@ export function ListaRecall({
                 <td className="pr-3 text-right">
                   <div className="flex justify-end gap-1">
                     <a
-                      href={enlaceWhatsapp(f.telefono, plantillaMensaje(f))}
+                      href={enlaceWhatsapp(f.telefono, componerMensaje(plantilla, f))}
                       target="_blank"
                       rel="noreferrer"
                       title="Abrir WhatsApp con el mensaje escrito"
