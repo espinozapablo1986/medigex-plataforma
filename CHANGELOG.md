@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Módulo de Ayuda con guías paso a paso — `a5698ac`
+### Módulo de Ayuda con guías paso a paso — `1a15cdf`
 
 La plataforma ya no llega sin instrucciones. Se agrega un módulo de **Ayuda**
 en el pie del menú lateral, sin permiso que lo restrinja, con:
