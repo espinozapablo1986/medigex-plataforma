@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Buscador global, vista móvil y contacto por WhatsApp — `PENDIENTE`
+### Buscador global, vista móvil y contacto por WhatsApp — `5652639`
 
 **Buscar en todo.** Desde cualquier pantalla, con **Ctrl/⌘ + K**: pacientes por
 nombre, RUT, ficha o teléfono; profesionales, servicios, contactos del CRM,
