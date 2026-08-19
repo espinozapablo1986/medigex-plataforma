@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Las condiciones dentales quedan enlazadas a su servicio — `PENDIENTE`
+### Las condiciones dentales quedan enlazadas a su servicio — `b22eb06`
 
 El odontograma podía registrar procedimientos pero no presupuestarlos: ninguna
 condición estaba enlazada a un servicio del tarifario. La causa era que el
