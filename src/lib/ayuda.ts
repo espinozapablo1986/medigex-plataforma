@@ -544,6 +544,42 @@ export const GUIAS: Guia[] = [
         titulo: 'Deja que se descuente solo',
         detalle: 'Al cerrar una atención con servicio, los insumos configurados salen del stock sin que nadie los anote.',
       },
+      {
+        titulo: 'Carga muchos productos de una vez',
+        detalle:
+          'En «Carga masiva» descargas la plantilla, la llenas y la subes. Antes de aplicar nada verás qué se va a crear, qué se va a actualizar y qué filas tienen error. El SKU es la llave.',
+      },
+      {
+        titulo: 'Cuenta la bodega de verdad',
+        detalle:
+          'En «Conteos» abres un recuento, opcionalmente acotado a una categoría o ubicación. Puedes contar en pantalla o descargar la planilla, anotar en la bodega y subirla después.',
+      },
+      {
+        titulo: 'Cierra el conteo para ajustar',
+        detalle:
+          'Al cerrarlo, el sistema iguala el stock a lo contado y deja un movimiento de ajuste por cada diferencia. Cerrar exige el permiso «aprobar», que puede tenerlo otra persona distinta de quien contó.',
+      },
+    ],
+    consejos: [
+      'La existencia del sistema va oculta mientras cuentas: ver la cifra esperada empuja a confirmarla en vez de contar. Se puede revelar con un botón para revisar antes de cerrar.',
+      'El stock teórico se congela al abrir el conteo, así que lo que se consuma en atenciones mientras cuentas no aparece como diferencia de bodega.',
+      'Una carga masiva nunca reescribe el stock de un producto que ya existe: las existencias se corrigen con un conteo, que deja registro de la diferencia.',
+    ],
+    problemas: [
+      {
+        problema: 'La planilla me dice que faltan columnas obligatorias.',
+        solucion:
+          'Se cambió el nombre de algún encabezado. Descarga la plantilla de nuevo y copia tus datos dentro; los encabezados se comparan sin tildes ni mayúsculas, pero el texto debe coincidir.',
+      },
+      {
+        problema: 'Mi archivo es .xls y no lo acepta.',
+        solucion: 'Ábrelo en Excel y guárdalo como .xlsx o .csv. El formato .xls antiguo no se lee.',
+      },
+      {
+        problema: 'No puedo cerrar un conteo.',
+        solucion:
+          'Cerrar aplica ajustes de stock y exige el permiso «aprobar» del módulo Inventario. Un administrador puede activarlo en Roles y permisos.',
+      },
     ],
     relacionados: ['servicios', 'gastos', 'proveedores'],
   },

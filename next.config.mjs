@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // exceljs usa requires dinámicos: empaquetarlo rompe la generación de
+  // plantillas en producción, donde no hay árbol de node_modules completo.
+  serverExternalPackages: ['exceljs'],
   reactStrictMode: true,
   experimental: {
     serverActions: {

@@ -15,6 +15,28 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
+### Conteos de inventario y carga masiva desde Excel — `PENDIENTE`
+
+**Conteos físicos.** Se abre un recuento —de todo, o acotado a una categoría o
+ubicación—, se cuenta en pantalla o en una planilla descargable, y al cerrarlo
+el sistema iguala el stock a lo contado dejando un movimiento de ajuste por
+cada diferencia. La existencia teórica se congela al abrir, para que lo
+consumido en atenciones durante el recuento no se confunda con un descuadre de
+bodega, y va oculta mientras se cuenta para no sesgar el recuento. Cerrar exige
+el nuevo permiso **aprobar**, de modo que contar y aprobar el ajuste puedan ser
+personas distintas.
+
+**Carga masiva de productos.** Plantilla `.xlsx` descargable, con una hoja de
+instrucciones que incluye las unidades admitidas y las categorías existentes.
+El SKU es la llave: crea o actualiza. La importación muestra primero qué va a
+pasar —altas, actualizaciones y filas descartadas con su motivo— y sólo aplica
+al confirmar. El stock de un producto que ya existe nunca se reescribe desde
+una planilla.
+
+De paso se corrigió un fallo en el motor de stock: un ajuste a cero unidades se
+rechazaba por «cantidad cero», cuando dejar un producto sin existencias es
+justamente el resultado más común de un conteo.
+
 ### Corrección: poner el repositorio en privado rompía el despliegue — `6491945`
 
 Tres despliegues seguidos fallaron sin causa aparente. El VPS traía el código

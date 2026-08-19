@@ -362,6 +362,64 @@ stock: deja el saldo en negativo y lo destaca en las alertas de inventario para
 que se regularice con un ajuste. Es preferible eso a impedir que se registre
 una atención que ya ocurrió.
 
+### Conteos físicos
+
+Un conteo compara lo que dice el sistema con lo que hay en la repisa, y deja
+registrada la diferencia en vez de corregir el stock a mano y en silencio.
+
+Se abre acotado a una categoría, a una ubicación, o a todo. Al abrirlo, **la
+existencia teórica de cada producto se congela**: si se comparara contra el
+stock vivo al cerrar, el consumo de las atenciones ocurrido durante el
+recuento aparecería como diferencia de bodega, culpando al inventario de algo
+que hizo el sistema.
+
+Se puede contar de dos maneras, y mezclarlas:
+
+- **En pantalla**, con buscador, filtro de «sólo lo que falta contar» y las
+  cantidades guardándose todas juntas.
+- **En planilla**, descargando el conteo ya prellenado, anotando en la bodega
+  y subiéndolo después.
+
+En ambos casos **la existencia del sistema va oculta mientras se cuenta**. Ver
+la cifra esperada empuja a confirmarla en lugar de contar, que es el error
+clásico de los inventarios; hay un botón para revelarla al revisar.
+
+Al **cerrar**, el sistema iguala el stock a lo contado y deja un movimiento de
+ajuste por cada diferencia, con el folio del conteo como motivo. Nada se
+sobrescribe sin rastro. Cerrar exige el permiso **aprobar**, distinto de
+**editar**, para que contar y aprobar el ajuste puedan ser dos personas: el
+ajuste borra una diferencia que quizá había que explicar.
+
+Un conteo cerrado no se puede anular —ya aplicó sus ajustes—; se corrige con
+un conteo nuevo.
+
+### Carga masiva desde planilla
+
+Para dar de alta o actualizar muchos productos de una vez. La **plantilla se
+descarga desde la plataforma** e incluye una segunda hoja con las
+instrucciones, las unidades admitidas y las categorías que ya existen.
+
+El **SKU es la llave**: si existe, el producto se actualiza; si no, se crea.
+Las categorías que se nombren y no existan se crean solas.
+
+La importación es **en dos pasos**: primero se muestra qué se va a crear, qué
+se va a actualizar y qué filas se descartan con su motivo; recién al confirmar
+se toca la base de datos. Una carga que escribe de inmediato es la forma más
+rápida de arruinar un inventario con una columna corrida.
+
+Dos decisiones que conviene conocer:
+
+- **El stock de un producto existente nunca se reescribe** desde la planilla.
+  La columna «Stock inicial» sólo actúa en productos nuevos. Las existencias
+  se corrigen con un conteo, que deja registro de la diferencia.
+- Los números se interpretan como los escribe la gente: «1.234», «1.234,56» y
+  «$12.990» se leen bien. Lo que no se entiende **no se guarda como cero**: se
+  informa la fila, porque un cero silencioso descuadra el inventario sin que
+  nadie se entere.
+
+Se aceptan `.xlsx` y `.csv` —Excel en español guarda con punto y coma y también
+se detecta—, hasta 2000 filas por archivo.
+
 ---
 
 ## Gastos

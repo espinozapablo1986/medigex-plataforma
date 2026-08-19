@@ -14,7 +14,7 @@ Ambiente de desarrollo: <https://medic.asdf123.cl>
 | **Clínico** | Agenda y disponibilidad · Pacientes y ficha clínica · Historia clínica · Exámenes · Recetas digitales · Interconsultas |
 | **Dental** | Odontograma por pieza y cara (FDI) · Periodontograma de seis sitios |
 | **Comercial** | Presupuestos · Ventas · Pagos y comprobantes · Convenios · Informes de beneficio (Isapre / seguro complementario) · CRM de interesados |
-| **Operaciones** | Inventario de insumos · Gastos y compras · Liquidaciones a profesionales · Reportes |
+| **Operaciones** | Inventario de insumos · Conteos físicos · Carga masiva desde Excel · Gastos y compras · Liquidaciones a profesionales · Reportes |
 | **Maestros** | Profesionales · Servicios · Boxes y salas · Proveedores |
 | **Administración** | Dashboard con IVA · Usuarios · Roles y permisos configurables · Vista previa como otro usuario · Configuración |
 | **Acompañamiento** | Ayuda con guías paso a paso por módulo · Puesta en marcha guiada · Buscador global · Contacto por WhatsApp |

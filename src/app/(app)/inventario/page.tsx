@@ -9,6 +9,7 @@ import {
   Campo,
   ContenedorTabla,
   EncabezadoPagina,
+  EnlaceBoton,
   EstadoVacio,
   Grilla,
   Metrica,
@@ -178,7 +179,16 @@ export default async function PaginaInventario({
         titulo="Inventario"
         descripcion="Consumibles e insumos clínicos, con control de stock y movimientos."
         acciones={
-          puedeCrear && (
+          <>
+            <EnlaceBoton href="/inventario/conteos" variante="secundario">
+              Conteos
+            </EnlaceBoton>
+            {puedeCrear && (
+              <EnlaceBoton href="/inventario/importar" variante="secundario">
+                Carga masiva
+              </EnlaceBoton>
+            )}
+            {puedeCrear && (
             <>
               <Modal titulo="Nueva categoría" etiquetaBoton="Nueva categoría" varianteBoton="secundario" ancho="max-w-md">
                 <Formulario accion={crearCategoriaProducto} className="space-y-4" reiniciarAlEnviar>
@@ -203,7 +213,8 @@ export default async function PaginaInventario({
                 </Formulario>
               </Modal>
             </>
-          )
+            )}
+          </>
         }
       />
 

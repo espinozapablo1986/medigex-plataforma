@@ -85,6 +85,9 @@ model Usuario {
   sesiones             Sesion[]
 
   @@index([rolId])
+  conteosAbiertos  ConteoInventario[] @relation("ConteosAbiertos")
+  conteosCerrados  ConteoInventario[] @relation("ConteosCerrados")
+
   @@map("usuarios")
 }
 
@@ -1183,6 +1186,7 @@ model CategoriaProducto {
   activo      Boolean @default(true)
 
   productos Producto[]
+  conteos   ConteoInventario[]
 
   @@map("categorias_producto")
 }
@@ -1247,6 +1251,7 @@ model Producto {
   categoria   CategoriaProducto? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
   proveedor   Proveedor?         @relation(fields: [proveedorId], references: [id], onDelete: SetNull)
   movimientos MovimientoStock[]
+  conteos     ConteoInventarioItem[]
   insumoDe    InsumoServicio[]
   itemsPresupuesto PresupuestoItem[]
   itemsVenta  VentaItem[]
@@ -1264,6 +1269,59 @@ enum TipoMovimientoStock {
   CONSUMO_SERVICIO
   VENTA
   INVENTARIO_INICIAL
+}
+
+/// Conteo físico de existencias.
+///
+/// El stock teórico se congela al abrir el conteo: comparar contra el stock
+/// vivo mientras se cuenta daría diferencias falsas, porque el consumo de las
+/// atenciones sigue ocurriendo durante el recuento.
+model ConteoInventario {
+  id            String        @id @default(cuid())
+  folio         Int           @unique @default(autoincrement())
+  nombre        String
+  estado        EstadoConteo  @default(ABIERTO)
+  /// Acota el conteo a una bodega o repisa; vacío significa todo.
+  ubicacion     String?
+  categoriaId   String?
+  observaciones String?
+  abiertoPorId  String?
+  cerradoPorId  String?
+  abiertoAt     DateTime      @default(now())
+  cerradoAt     DateTime?
+
+  categoria  CategoriaProducto?     @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  abiertoPor Usuario?               @relation("ConteosAbiertos", fields: [abiertoPorId], references: [id], onDelete: SetNull)
+  cerradoPor Usuario?               @relation("ConteosCerrados", fields: [cerradoPorId], references: [id], onDelete: SetNull)
+  items      ConteoInventarioItem[]
+
+  @@index([estado, abiertoAt])
+  @@map("conteos_inventario")
+}
+
+model ConteoInventarioItem {
+  id            String    @id @default(cuid())
+  conteoId      String
+  productoId    String
+  /// Existencia según el sistema en el momento de abrir el conteo.
+  stockTeorico  Float     @default(0)
+  /// Nulo mientras la persona no haya contado esa posición.
+  stockContado  Float?
+  observaciones String?
+  contadoAt     DateTime?
+
+  conteo   ConteoInventario @relation(fields: [conteoId], references: [id], onDelete: Cascade)
+  producto Producto         @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@unique([conteoId, productoId])
+  @@index([conteoId])
+  @@map("conteo_inventario_items")
+}
+
+enum EstadoConteo {
+  ABIERTO
+  CERRADO
+  ANULADO
 }
 
 model MovimientoStock {

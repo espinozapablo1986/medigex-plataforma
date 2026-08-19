@@ -129,8 +129,8 @@ export const MODULOS: ModuloDef[] = [
     slug: 'inventario',
     nombre: 'Inventario',
     grupo: 'Operaciones',
-    descripcion: 'Productos, insumos, stock y movimientos',
-    acciones: ['ver', 'crear', 'editar', 'eliminar', 'exportar'],
+    descripcion: 'Productos, insumos, stock, movimientos y conteos físicos',
+    acciones: ['ver', 'crear', 'editar', 'eliminar', 'exportar', 'aprobar'],
   },
   {
     slug: 'gastos',

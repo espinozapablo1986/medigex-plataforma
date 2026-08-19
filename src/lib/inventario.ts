@@ -37,7 +37,15 @@ export async function moverStock(
   if (!producto) throw new Error('El producto no existe.');
 
   const cantidad = Math.abs(datos.cantidad);
-  if (cantidad === 0) throw new Error('La cantidad del movimiento debe ser distinta de cero.');
+  // En un AJUSTE la cantidad es el stock final, y dejar un producto en cero es
+  // un resultado legítimo —de hecho el más común tras un conteo físico—. En
+  // los demás tipos, un movimiento de cero unidades no significa nada.
+  if (cantidad === 0 && datos.tipo !== 'AJUSTE') {
+    throw new Error('La cantidad del movimiento debe ser distinta de cero.');
+  }
+  if (datos.tipo === 'AJUSTE' && datos.cantidad < 0) {
+    throw new Error('El stock ajustado no puede ser negativo.');
+  }
 
   const stockAnterior = producto.stockActual;
   let stockResultante: number;
