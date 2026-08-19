@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Corrección: las listas de recuperación del CRM fallaban al abrirse — `PENDIENTE`
+### Corrección: las listas de recuperación del CRM fallaban al abrirse — `186182d`
 
 Las cuatro listas inteligentes del CRM (sin volver, controles, saldos e
 inasistencias) recibían el texto del mensaje de WhatsApp como una **función**
