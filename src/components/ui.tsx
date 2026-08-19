@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
+import { EtiquetasTabla } from './etiquetas-tabla';
 
 // ─────────────────────────────────────────────────────────────
 //  Encabezado de página
@@ -345,10 +346,22 @@ export function Definicion({ termino, children }: { termino: string; children: R
 //  Tabla
 // ─────────────────────────────────────────────────────────────
 
-export function ContenedorTabla({ children }: { children: ReactNode }) {
+export function ContenedorTabla({
+  children,
+  tarjetasEnMovil = true,
+}: {
+  children: ReactNode;
+  /**
+   * En pantallas angostas cada fila se muestra como una tarjeta con las
+   * etiquetas de su columna. Se puede desactivar en tablas que se leen mejor
+   * como rejilla, por ejemplo el periodontograma.
+   */
+  tarjetasEnMovil?: boolean;
+}) {
   return (
-    <div className="scroll-fino overflow-x-auto">
-      <table className="tabla">{children}</table>
+    <div className={cn('scroll-fino', tarjetasEnMovil ? 'md:overflow-x-auto' : 'overflow-x-auto')}>
+      <table className={cn('tabla', tarjetasEnMovil && 'tabla-tarjetas')}>{children}</table>
+      {tarjetasEnMovil && <EtiquetasTabla />}
     </div>
   );
 }

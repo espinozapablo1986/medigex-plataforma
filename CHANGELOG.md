@@ -15,6 +15,24 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
+### Buscador global, vista móvil y contacto por WhatsApp — `PENDIENTE`
+
+**Buscar en todo.** Desde cualquier pantalla, con **Ctrl/⌘ + K**: pacientes por
+nombre, RUT, ficha o teléfono; profesionales, servicios, contactos del CRM,
+folios de presupuesto y venta, y guías de ayuda. Ignora tildes —«jose perez»
+encuentra a «José Pérez»— y sólo muestra lo que el rol puede abrir.
+
+**Las tablas se vuelven tarjetas en el teléfono.** Bajo los 768 px cada fila se
+apila con la etiqueta de su columna junto al dato, en lugar de desplazarse de
+lado. Las etiquetas se toman del propio encabezado de cada tabla, así que
+sirve para las veinte tablas existentes y para las que vengan.
+
+**Contactar por WhatsApp**, manual y sin proveedor: un botón abre la
+conversación con el mensaje ya escrito, distinto según el caso (recordatorio de
+hora, saldo pendiente, seguimiento de presupuesto, invitar a volver). Si el
+teléfono registrado no sirve, el botón no aparece. El envío automático queda
+aplazado por decisión del cliente.
+
 ### Corrección: las listas de recuperación del CRM fallaban al abrirse — `186182d`
 
 Las cuatro listas inteligentes del CRM (sin volver, controles, saldos e

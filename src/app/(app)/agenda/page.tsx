@@ -1,9 +1,12 @@
 import Link from 'next/link';
 
 import { prisma } from '@/lib/prisma';
+import { nombreDelCentro } from '@/lib/configuracion';
+import { MENSAJES } from '@/lib/whatsapp';
+import { BotonWhatsapp } from '@/components/boton-whatsapp';
 import { puede, requerirPermiso } from '@/lib/auth';
 import { finDelDia, inicioDelDia, sumarDias } from '@/lib/agenda';
-import { DIAS_SEMANA, fechaLarga, hora, horaAMinutos, isoFecha, minutosAHora } from '@/lib/format';
+import { DIAS_SEMANA, fechaCorta, fechaLarga, hora, horaAMinutos, isoFecha, minutosAHora } from '@/lib/format';
 import {
   Badge,
   BadgeEstado,
@@ -69,6 +72,8 @@ export default async function PaginaAgenda({
   ]);
 
   // Rango horario visible: del bloque más temprano al más tardío, con margen.
+  const centro = await nombreDelCentro();
+
   const minutosDisponibles = disponibilidad.flatMap((d) => [horaAMinutos(d.horaInicio), horaAMinutos(d.horaFin)]);
   const minutosCitas = citas.flatMap((c) => [
     c.inicio.getHours() * 60 + c.inicio.getMinutes(),
@@ -306,6 +311,17 @@ export default async function PaginaAgenda({
                   {cita.usaRayosX && <Badge tono="morado">rayos X</Badge>}
                   <BadgeEstado estado={cita.estado} />
                   <span className="text-xs text-tinta-400">{cita.paciente.telefonoPrincipal}</span>
+                  <BotonWhatsapp
+                    telefono={cita.paciente.telefonoPrincipal}
+                    mensaje={MENSAJES.recordatorioHora({
+                      nombre: `${cita.paciente.nombres} ${cita.paciente.apellidoPaterno}`,
+                      centro,
+                      fecha: fechaCorta(cita.inicio),
+                      hora: hora(cita.inicio),
+                      profesional: `${cita.profesional.nombres} ${cita.profesional.apellidos}`,
+                    })}
+                    className="px-1.5 py-1"
+                  />
                 </div>
               </li>
             ))}

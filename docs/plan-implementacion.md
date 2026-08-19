@@ -29,13 +29,18 @@ deja de ser una casilla que no hace nada.
 
 ---
 
-## Etapa 1 · Recordatorios y sala de espera
+## Etapa 1 · Recordatorios y sala de espera — *aplazada por decisión del cliente*
 
 **Objetivo:** recuperar las horas que hoy se pierden por inasistencia. Es la
 etapa con retorno más directo.
 
 | Tarea | Esfuerzo | Depende de |
 |---|---|---|
+> **Agosto 2026:** se aplaza el envío automático. Por ahora hay un **botón
+> manual** que abre WhatsApp con el mensaje escrito, sin proveedor ni trámite
+> (ver «Contactar por WhatsApp» en `docs/modulos.md`). El resto de esta etapa
+> queda pendiente para cuando se retome.
+
 | Evaluar proveedor de mensajería, dar de alta el número y las plantillas | 2 días | **Trámite externo** |
 | Motor de envíos con cola, reintentos y registro de entregas | 3 días | Proveedor |
 | Proceso diario que barre las citas del día siguiente | 1 día | Motor |
@@ -110,10 +115,10 @@ una o dos por etapa.
 
 | Mejora | Qué resuelve |
 |---|---|
-| Buscador global con atajo de teclado | Hoy hay que navegar al módulo antes de buscar |
+| ~~Buscador global con atajo de teclado~~ **hecho** | Hoy hay que navegar al módulo antes de buscar |
 | Agenda semanal y reagendar arrastrando | La vista diaria sirve para operar, no para planificar |
 | Tablas ordenables y exportables | El permiso existe; falta el botón |
-| Vista móvil con tarjetas | Las tablas se desplazan de lado en el teléfono |
+| ~~Vista móvil con tarjetas~~ **hecha** | Las tablas se desplazan de lado en el teléfono |
 | ~~Puesta en marcha guiada~~ **hecha** en el módulo de Ayuda | Una instalación limpia arranca vacía y sin rumbo |
 
 ---

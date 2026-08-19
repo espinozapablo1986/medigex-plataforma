@@ -448,6 +448,65 @@ deben exigir un despliegue:
 
 ---
 
+## Buscar en todo
+
+Antes había que entrar al módulo para poder buscar: para abrir una ficha había
+que ir a Pacientes, esperar la tabla y recién ahí escribir.
+
+El buscador vive en la barra superior y se abre desde cualquier pantalla con
+**Ctrl + K** (o **⌘ + K**). Se recorre con las flechas y se abre con Enter,
+porque en recepción se escribe mirando al paciente y no a la pantalla.
+
+Busca en una sola pasada:
+
+| Qué | Por qué campos |
+|---|---|
+| Pacientes | nombre, apellidos, RUT, N.º de ficha, teléfono |
+| Profesionales | nombre y especialidad |
+| Servicios | nombre y código |
+| Contactos del CRM | nombre, teléfono y correo |
+| Presupuestos y ventas | número de folio |
+| Guías de ayuda | título, sinónimos y texto de los pasos |
+
+**Ignora tildes**: «jose perez» encuentra a «José Pérez». Eso se apoya en la
+extensión `unaccent` de PostgreSQL, y la búsqueda ocurre en la base de datos y
+no en memoria, porque traer miles de fichas para filtrarlas sería insostenible.
+
+Cada bloque se salta entero si el rol no puede ver ese módulo, de modo que el
+buscador **nunca revela la existencia de algo que la persona no podría abrir**.
+
+Las guías de ayuda van al final a propósito: quien busca «pacientes» quiere sus
+pacientes, no el manual — pero si no aparece nada más, la guía suele ser la
+respuesta.
+
+La página `/buscar` muestra los resultados completos, es enlazable y funciona
+sin JavaScript.
+
+---
+
+## Contactar por WhatsApp
+
+Un botón que **abre WhatsApp con el mensaje ya escrito**, usando el teléfono
+registrado. El envío es manual: la plataforma no manda nada por su cuenta, no
+hay cola ni proveedor ni trámite de alta de por medio. La persona revisa el
+mensaje y decide si lo envía.
+
+Está donde surge la necesidad:
+
+| Dónde | Mensaje |
+|---|---|
+| Ficha del paciente | Saludo abierto, o cobro del saldo si debe |
+| Agenda | Recordatorio con fecha, hora y profesional |
+| Presupuestos | Seguimiento de los que están enviados y sin respuesta |
+| CRM | Invitar a volver, control pendiente, saldo, reagendar |
+
+El teléfono se normaliza al formato internacional aceptando lo que la gente
+escribe de verdad («+56 9 1234 5678», «912345678», «09 1234 5678»). **Si el
+número registrado no sirve, el botón no aparece**: es preferible que no esté a
+que lleve a una conversación en blanco.
+
+---
+
 ## Ayuda
 
 Módulo de acompañamiento al usuario. Vive en el pie del menú lateral y **no
@@ -520,6 +579,14 @@ una cita.
 **Los montos son enteros.** El peso chileno no usa decimales, así que se
 guardan como `Int` y nunca como `Float`, para que no aparezcan diferencias de
 un peso al sumar. Los porcentajes sí son `Float`.
+
+**En el teléfono, las tablas se vuelven tarjetas.** Bajo los 768 px cada fila
+se muestra apilada, con la etiqueta de cada columna junto a su dato. Las
+etiquetas se copian del propio `<thead>` de la tabla mediante un componente de
+cliente, así que ninguna de las más de veinte tablas hubo que marcarla a mano
+ni habrá que hacerlo con las nuevas. Las rejillas que se leen mejor
+desplazándose —el periodontograma y la matriz de permisos— tienen tabla propia
+y conservan su comportamiento.
 
 ---
 

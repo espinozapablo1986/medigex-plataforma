@@ -68,6 +68,51 @@
     @apply bg-tinta-50;
   }
 
+  /*
+   * Vista móvil: cada fila se convierte en una tarjeta.
+   *
+   * Una tabla de ocho columnas en un teléfono obliga a desplazarse de lado y
+   * a perder de vista a quién corresponde cada dato. Aquí la cabecera se
+   * oculta y cada celda muestra su propia etiqueta, que un componente de
+   * cliente copia desde el `<thead>` de la misma tabla. Así no hubo que
+   * reescribir ni marcar a mano ninguna de las tablas existentes.
+   */
+  @media (max-width: 767px) {
+    .tabla-tarjetas thead {
+      @apply hidden;
+    }
+
+    .tabla-tarjetas tbody tr {
+      @apply mb-3 block border border-tinta-200 bg-white;
+    }
+
+    .tabla-tarjetas tbody tr:hover {
+      @apply bg-white;
+    }
+
+    .tabla-tarjetas tbody td {
+      @apply flex items-baseline justify-between gap-4 border-0 border-b border-tinta-100
+             px-3 py-2 text-right last:border-b-0;
+    }
+
+    /* La etiqueta viene del encabezado de su columna. */
+    .tabla-tarjetas tbody td[data-etiqueta]:not([data-etiqueta=''])::before {
+      content: attr(data-etiqueta);
+      @apply shrink-0 text-left font-sans text-[11px] font-semibold uppercase
+             tracking-wider text-tinta-500;
+    }
+
+    /* Celdas sin encabezado —normalmente la de acciones— ocupan todo el ancho. */
+    .tabla-tarjetas tbody td[data-etiqueta=''] {
+      @apply justify-end bg-tinta-50;
+    }
+
+    /* Dentro de una tarjeta, el contenido de una celda puede envolver. */
+    .tabla-tarjetas tbody td > * {
+      @apply min-w-0;
+    }
+  }
+
   /* Folios, códigos y datos clínicos van en Plex Mono */
   .dato {
     @apply font-mono text-dato text-tinta-600;

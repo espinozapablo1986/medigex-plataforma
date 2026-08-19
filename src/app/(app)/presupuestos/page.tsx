@@ -1,6 +1,9 @@
 import Link from 'next/link';
 
 import { prisma } from '@/lib/prisma';
+import { nombreDelCentro } from '@/lib/configuracion';
+import { MENSAJES } from '@/lib/whatsapp';
+import { BotonWhatsapp } from '@/components/boton-whatsapp';
 import { puede, requerirPermiso } from '@/lib/auth';
 import { clp, fechaCorta } from '@/lib/format';
 import {
@@ -50,7 +53,7 @@ export default async function PaginaPresupuestos({
       skip: (pagina - 1) * POR_PAGINA,
       take: POR_PAGINA,
       include: {
-        paciente: { select: { id: true, nombres: true, apellidoPaterno: true, rut: true } },
+        paciente: { select: { id: true, nombres: true, apellidoPaterno: true, rut: true, telefonoPrincipal: true } },
         profesional: { select: { nombres: true, apellidos: true } },
         _count: { select: { items: true, ventas: true } },
       },
@@ -59,6 +62,7 @@ export default async function PaginaPresupuestos({
     prisma.presupuesto.groupBy({ by: ['estado'], _sum: { total: true }, _count: true }),
   ]);
 
+  const centro = await nombreDelCentro();
   const totalPaginas = Math.ceil(total / POR_PAGINA);
   const filtros = new URLSearchParams();
   if (estado) filtros.set('estado', estado);
@@ -164,9 +168,23 @@ export default async function PaginaPresupuestos({
                     <BadgeEstado estado={p.estado} />
                   </td>
                   <td className="text-right">
-                    <EnlaceBoton href={`/presupuestos/${p.id}`} variante="secundario" tamano="sm">
-                      Ver
-                    </EnlaceBoton>
+                    <div className="flex justify-end gap-1.5">
+                      {/* Sólo tiene sentido perseguir lo que se envió y sigue esperando respuesta. */}
+                      {p.estado === 'ENVIADO' && (
+                        <BotonWhatsapp
+                          telefono={p.paciente.telefonoPrincipal}
+                          mensaje={MENSAJES.presupuesto({
+                            nombre: `${p.paciente.nombres} ${p.paciente.apellidoPaterno}`,
+                            centro,
+                            folio: p.folio,
+                          })}
+                          className="px-1.5 py-1"
+                        />
+                      )}
+                      <EnlaceBoton href={`/presupuestos/${p.id}`} variante="secundario" tamano="sm">
+                        Ver
+                      </EnlaceBoton>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { MessageCircle, Phone } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
+import { enlaceWhatsapp } from '@/lib/whatsapp';
+import { EtiquetasTabla } from '@/components/etiquetas-tabla';
 import { Campo, EstadoVacio, Grilla } from '@/components/ui';
 import { BotonEnviar, Formulario } from '@/components/formulario';
 
@@ -34,12 +36,6 @@ function componerMensaje(plantilla: string, fila: FilaLista) {
   return plantilla
     .replace(/\{nombre\}/g, fila.nombre.split(' ')[0] ?? fila.nombre)
     .replace(/\{monto\}/g, clp(fila.monto ?? 0));
-}
-
-function enlaceWhatsapp(telefono: string, mensaje: string) {
-  const numero = telefono.replace(/[^\d]/g, '');
-  const internacional = numero.startsWith('56') ? numero : `56${numero.replace(/^0+/, '')}`;
-  return `https://wa.me/${internacional}?text=${encodeURIComponent(mensaje)}`;
 }
 
 /**
@@ -79,7 +75,7 @@ export function ListaRecall({
   return (
     <div className="space-y-3">
       <div className="scroll-fino max-h-[26rem] overflow-y-auto rounded-lg border border-tinta-200">
-        <table className="w-full text-sm">
+        <table className="tabla-tarjetas w-full text-sm">
           <thead className="sticky top-0 bg-tinta-50">
             <tr className="border-b border-tinta-200 text-left text-xs uppercase tracking-wide text-tinta-500">
               <th className="w-10 px-3 py-2">
@@ -131,15 +127,20 @@ export function ListaRecall({
                 )}
                 <td className="pr-3 text-right">
                   <div className="flex justify-end gap-1">
-                    <a
-                      href={enlaceWhatsapp(f.telefono, componerMensaje(plantilla, f))}
-                      target="_blank"
-                      rel="noreferrer"
-                      title="Abrir WhatsApp con el mensaje escrito"
-                      className="rounded p-1.5 text-emerald-600 hover:bg-emerald-50"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                    </a>
+                    {(() => {
+                      const enlace = enlaceWhatsapp(f.telefono, componerMensaje(plantilla, f));
+                      return enlace ? (
+                        <a
+                          href={enlace}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Abrir WhatsApp con el mensaje escrito"
+                          className="rounded p-1.5 text-exito hover:bg-exito-fondo"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </a>
+                      ) : null;
+                    })()}
                     <a
                       href={`tel:${f.telefono.replace(/[^\d+]/g, '')}`}
                       title="Llamar"
@@ -153,6 +154,7 @@ export function ListaRecall({
             ))}
           </tbody>
         </table>
+        <EtiquetasTabla />
       </div>
 
       <Formulario accion={agendarSeguimientosEnLote} className="rounded-lg border border-tinta-200 bg-tinta-50 p-3">

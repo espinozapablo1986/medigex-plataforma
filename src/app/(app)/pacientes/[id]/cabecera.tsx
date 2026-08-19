@@ -1,5 +1,9 @@
 import Link from 'next/link';
 
+import { nombreDelCentro } from '@/lib/configuracion';
+import { MENSAJES } from '@/lib/whatsapp';
+import { BotonWhatsapp } from '@/components/boton-whatsapp';
+
 import { calcularEdad, clp, formatearRut, humanizar } from '@/lib/format';
 import { Aviso, Badge, EnlaceBoton, Pestanas } from '@/components/ui';
 
@@ -35,7 +39,7 @@ export function nombreCompleto(p: {
 }
 
 /** Cabecera y pestañas comunes a todas las vistas de la ficha del paciente. */
-export function CabeceraPaciente({
+export async function CabeceraPaciente({
   paciente,
   saldo,
   activo,
@@ -53,6 +57,15 @@ export function CabeceraPaciente({
 }) {
   const edad = calcularEdad(paciente.fechaNacimiento, paciente.edadRegistrada);
   const base = `/pacientes/${paciente.id}`;
+
+  // El mensaje se elige según la situación del paciente: si debe, lo natural
+  // es escribirle por el saldo; si no, un saludo abierto.
+  const centro = await nombreDelCentro();
+  const nombre = nombreCompleto(paciente);
+  const mensajeWhatsapp =
+    saldo > 0
+      ? MENSAJES.saldoPendiente({ nombre, centro, monto: saldo })
+      : MENSAJES.contactoGeneral({ nombre, centro });
 
   return (
     <div className="mb-5">
@@ -99,6 +112,12 @@ export function CabeceraPaciente({
               </p>
             </div>
             <div className="flex flex-wrap justify-end gap-2 no-imprimir">
+              <BotonWhatsapp
+                telefono={paciente.telefonoPrincipal}
+                mensaje={mensajeWhatsapp}
+                etiqueta="WhatsApp"
+                className="py-1 text-xs"
+              />
               <EnlaceBoton href={`/agenda/nueva?paciente=${paciente.id}`} variante="secundario" tamano="sm">
                 Agendar hora
               </EnlaceBoton>
