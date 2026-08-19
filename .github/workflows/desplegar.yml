@@ -15,6 +15,11 @@ on:
         type: boolean
         default: false
 
+# `contents: read` habilita el GITHUB_TOKEN efímero con el que el VPS trae el
+# código. Sin él, un repositorio privado rompe el despliegue.
+permissions:
+  contents: read
+
 concurrency:
   group: despliegue-produccion
   cancel-in-progress: false
@@ -101,14 +106,28 @@ jobs:
           HOST: ${{ secrets.VPS_HOST }}
           USUARIO: ${{ secrets.VPS_USER }}
           SEMBRAR: ${{ inputs.sembrar }}
+          # El VPS clona por HTTPS. Si el repositorio es privado, un fetch
+          # anónimo falla y el despliegue muere en su primera línea con un
+          # error poco evidente. Este token dura lo que dura el trabajo y da
+          # sólo lectura, así que sirve en ambos casos.
+          ORIGEN: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          REVISION: ${{ github.sha }}
         run: |
-          ssh -o BatchMode=yes "$USUARIO@$HOST" bash -s <<'REMOTO'
+          ssh -o BatchMode=yes "$USUARIO@$HOST" bash -s -- "$ORIGEN" "$REVISION" <<'REMOTO'
             set -euo pipefail
+            origen="$1"
+            revision="$2"
             cd /opt/stacks/medigex
 
             echo "▸ Trayendo los últimos cambios…"
-            git fetch --all --prune
-            git reset --hard origin/main
+            if ! git fetch --prune "$origen" main; then
+              echo "::error title=No se pudo traer el código::El VPS no pudo hacer fetch desde GitHub."
+              exit 1
+            fi
+            # Se despliega exactamente el commit que disparó el workflow, no
+            # "lo último que haya en main": si alguien empuja mientras esto
+            # corre, se sabe qué quedó instalado.
+            git reset --hard "$revision"
 
             # Se construyen ambas imágenes: `migrator` vive tras un perfil, así
             # que `docker compose build` a secas lo omite y las migraciones

@@ -29,6 +29,11 @@ Si la versión que responde no es la del commit recién empujado, el despliegue
 no terminó. Un `307` de cualquier ruta no prueba nada: el middleware redirige
 al login cualquier path, exista o no.
 
+El VPS trae el código desde GitHub por HTTPS, autenticándose con el
+`GITHUB_TOKEN` efímero del propio workflow. Antes lo hacía de forma anónima, y
+poner el repositorio en privado rompía el despliegue con un error poco
+evidente: fallaba `git fetch`, la primera línea del paso.
+
 **Salvedad:** el workflow ignora los cambios que sólo tocan `**.md` y `docs/**`
 (ver `paths-ignore` en `.github/workflows/desplegar.yml`). Un commit de sólo
 documentación **no despliega y no debe hacerlo**: no hay nada que reconstruir.

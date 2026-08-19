@@ -15,6 +15,19 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
+### Corrección: poner el repositorio en privado rompía el despliegue — `PENDIENTE`
+
+Tres despliegues seguidos fallaron sin causa aparente. El VPS traía el código
+desde GitHub **por HTTPS de forma anónima**, así que al pasar el repositorio a
+privado `git fetch` se quedaba sin credenciales y el paso moría en su primera
+línea.
+
+Ahora el workflow le pasa al servidor el `GITHUB_TOKEN` efímero —de sólo
+lectura y válido únicamente durante la ejecución—, con lo que funciona tanto
+en público como en privado. Además se despliega **el commit exacto que disparó
+el workflow** y no «lo último que haya en main», y un fetch fallido se anuncia
+con un mensaje claro en vez de un error críptico.
+
 ### Buscador global, vista móvil y contacto por WhatsApp — `5652639`
 
 **Buscar en todo.** Desde cualquier pantalla, con **Ctrl/⌘ + K**: pacientes por
