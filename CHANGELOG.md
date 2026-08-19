@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Corrección: poner el repositorio en privado rompía el despliegue — `PENDIENTE`
+### Corrección: poner el repositorio en privado rompía el despliegue — `6491945`
 
 Tres despliegues seguidos fallaron sin causa aparente. El VPS traía el código
 desde GitHub **por HTTPS de forma anónima**, así que al pasar el repositorio a
