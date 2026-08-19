@@ -219,7 +219,17 @@ export const CARAS_PERIODONTALES = ['VESTIBULAR', 'PALATINO_LINGUAL'] as const;
  * directamente la pérdida de inserción.
  */
 export function nivelInsercion(profundidad: number, margen: number): number {
-  return profundidad + margen;
+  // El margen se registra como distancia al límite amelocementario, positiva
+  // cuando la encía lo cubre y negativa cuando hay recesión (ver el esquema).
+  // Con esa convención, la pérdida de inserción es lo que la bolsa baja por
+  // debajo del límite: sondaje menos margen.
+  //
+  //   sondaje 5, margen +2 (encía cubre 2 mm)  → NIC 3, no 7.
+  //   sondaje 4, margen -2 (2 mm de recesión)  → NIC 6.
+  //
+  // Sumarlos, como se hacía antes, inflaba el diagnóstico justo en los
+  // pacientes con encía sana y lo subestimaba en los que tienen recesión.
+  return profundidad - margen;
 }
 
 /** Una bolsa se considera patológica desde los 4 mm. */

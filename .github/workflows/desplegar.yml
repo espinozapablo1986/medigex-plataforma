@@ -44,6 +44,9 @@ jobs:
       - name: Revisar tipos
         run: npx tsc --noEmit
 
+      - name: Probar la lógica
+        run: npm run probar
+
       - name: Compilar
         run: npm run build
         env:

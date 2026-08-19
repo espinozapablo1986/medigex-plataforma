@@ -503,7 +503,7 @@ export function TablaPeriodontal({
           <span className="h-0.5 w-4 bg-brand-600" /> fondo de bolsa
         </span>
         <span className="flex items-center gap-1.5">
-          <Droplet className="h-3 w-3" /> NIC = sondaje + margen
+          <Droplet className="h-3 w-3" /> NIC = sondaje − margen
         </span>
       </div>
 

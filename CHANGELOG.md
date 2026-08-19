@@ -15,6 +15,28 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
+### Batería de pruebas, y dos defectos que sacó a la luz — `PENDIENTE`
+
+Se agregan pruebas automatizadas de la lógica pura (`npm run probar`, 90
+comprobaciones) y se enchufan al despliegue: si fallan, no se despliega. Es la
+brecha que el estudio señalaba como más barata y la que más disgustos evita.
+
+Al ejecutarlas y recorrer las 59 rutas de la plataforma aparecieron dos
+defectos reales:
+
+- **El nivel de inserción clínica se calculaba al revés.** El periodontograma
+  usaba `sondaje + margen`, pero el esquema y el propio gráfico definen el
+  margen como distancia al límite amelocementario, positiva cuando la encía lo
+  cubre. Con sondaje 5 mm y margen +2 el gráfico mostraba 3 mm de pérdida y la
+  cifra decía 7: periodontitis leve frente a severa. La fórmula correcta es
+  `sondaje − margen`. El NIC no se guarda en la base, así que la corrección
+  arregla también todos los exámenes ya registrados.
+- **El buscador global devolvía error 500.** Un byte NUL se había colado en el
+  código fuente, en el valor centinela que se usaba cuando la búsqueda no traía
+  dígitos; PostgreSQL rechaza de plano el texto que lo contiene. Se reemplazó
+  por una condición explícita, y una prueba nueva vigila que no vuelva a
+  colarse un NUL en ningún archivo.
+
 ### Conteos de inventario y carga masiva desde Excel — `b67b9b0`
 
 **Conteos físicos.** Se abre un recuento —de todo, o acotado a una categoría o
