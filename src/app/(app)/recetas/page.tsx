@@ -73,6 +73,7 @@ export default async function PaginaRecetas({
   return (
     <>
       <EncabezadoPagina
+        ayuda="recetas"
         titulo="Recetas"
         descripcion="Prescripciones digitales emitidas por los profesionales del centro."
         acciones={puede(sesion, 'recetas', 'crear') && <EnlaceBoton href="/recetas/nueva">Nueva receta</EnlaceBoton>}

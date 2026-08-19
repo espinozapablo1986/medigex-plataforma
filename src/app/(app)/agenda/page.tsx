@@ -110,6 +110,7 @@ export default async function PaginaAgenda({
   return (
     <>
       <EncabezadoPagina
+        ayuda="agenda"
         titulo="Agenda"
         descripcion={`${DIAS_SEMANA[dia.getDay()]} ${fechaLarga(dia)}`}
         acciones={puedeCrear && <EnlaceBoton href={`/agenda/nueva?fecha=${isoFecha(dia)}`}>Agendar hora</EnlaceBoton>}

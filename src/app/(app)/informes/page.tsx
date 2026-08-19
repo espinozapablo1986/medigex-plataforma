@@ -66,6 +66,7 @@ export default async function PaginaInformes({
   return (
     <>
       <EncabezadoPagina
+        ayuda="informes_beneficio"
         titulo="Informes de beneficio"
         descripcion="Certificados de prestaciones para que el paciente cobre su reembolso o bono en Isapre, Fonasa o seguro complementario."
         acciones={

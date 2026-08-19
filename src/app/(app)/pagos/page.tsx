@@ -85,6 +85,7 @@ export default async function PaginaPagos({
   return (
     <>
       <EncabezadoPagina
+        ayuda="pagos"
         titulo="Pagos"
         descripcion="Cobros recibidos, con su forma de pago y comprobante."
         acciones={

@@ -14,6 +14,7 @@ import {
   FileText,
   Handshake,
   LayoutDashboard,
+  LifeBuoy,
   LogOut,
   Menu,
   Package,
@@ -38,6 +39,7 @@ import type { GrupoNav } from '@/lib/navegacion';
 
 const ICONOS: Record<string, LucideIcon> = {
   LayoutDashboard,
+  LifeBuoy,
   CalendarDays,
   Users,
   ArrowLeftRight,
@@ -114,6 +116,22 @@ export function BarraLateral({
       </nav>
 
       <div className="border-t border-brand-800 p-3">
+        {/* La ayuda no depende de ningún permiso: quien menos acceso tiene es
+            justamente quien más necesita saber cómo funciona esto. */}
+        <Link
+          href="/ayuda"
+          onClick={() => setAbierto(false)}
+          className={cn(
+            'mb-2 flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm transition',
+            pathname.startsWith('/ayuda')
+              ? 'bg-brand-600 font-medium text-white'
+              : 'text-brand-200 hover:bg-brand-800 hover:text-white',
+          )}
+        >
+          <LifeBuoy className="h-4 w-4 shrink-0" />
+          Ayuda
+        </Link>
+
         <div className="mb-2 flex items-center gap-2.5 px-1">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-700 text-xs font-semibold text-white">
             {usuario.iniciales}

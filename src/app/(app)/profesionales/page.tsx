@@ -37,6 +37,7 @@ export default async function PaginaProfesionales() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="profesionales"
         titulo="Profesionales"
         descripcion="Fichas de los profesionales, sus condiciones de pago y su disponibilidad horaria."
         acciones={

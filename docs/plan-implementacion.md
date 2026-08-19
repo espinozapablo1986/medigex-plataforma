@@ -53,16 +53,17 @@ y nunca se usa.
 
 ---
 
-## Etapa 2 · Odontograma y planes de tratamiento
+## Etapa 2 · Odontograma y planes de tratamiento — *parcialmente hecha*
 
 **Objetivo:** que un odontólogo pueda trabajar el día entero sin salir de
 MEDIGEX. Sin esto, un centro dental no adopta la plataforma.
 
 | Tarea | Esfuerzo | Depende de |
 |---|---|---|
-| Modelo de piezas y hallazgos (adulta y temporal, estado por cara, historial) | 3 días | — |
-| Odontograma interactivo con comparación entre fechas | 5 días | Modelo |
-| Generar presupuesto desde los hallazgos marcados | 2 días | Odontograma |
+| ~~Modelo de piezas y hallazgos (adulta y temporal, estado por cara, historial)~~ **hecho** | 3 días | — |
+| ~~Odontograma interactivo~~ **hecho** (falta la comparación entre fechas) | 5 días | Modelo |
+| ~~Generar presupuesto desde los hallazgos marcados~~ **hecho** | 2 días | Odontograma |
+| ~~Periodontograma de seis sitios con NIC e índices~~ **hecho** (no estaba en el plan) | — | — |
 | Plan de tratamiento por fases, con avance por sesión | 4 días | Presupuesto |
 | Consentimiento informado firmado en pantalla | 2 días | — |
 
@@ -113,7 +114,7 @@ una o dos por etapa.
 | Agenda semanal y reagendar arrastrando | La vista diaria sirve para operar, no para planificar |
 | Tablas ordenables y exportables | El permiso existe; falta el botón |
 | Vista móvil con tarjetas | Las tablas se desplazan de lado en el teléfono |
-| Puesta en marcha guiada | Una instalación limpia arranca vacía y sin rumbo |
+| ~~Puesta en marcha guiada~~ **hecha** en el módulo de Ayuda | Una instalación limpia arranca vacía y sin rumbo |
 
 ---
 

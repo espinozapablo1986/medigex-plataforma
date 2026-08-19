@@ -86,6 +86,7 @@ export default async function PaginaInterconsultas({
   return (
     <>
       <EncabezadoPagina
+        ayuda="interconsultas"
         titulo="Interconsultas"
         descripcion="Derivaciones de pacientes entre profesionales del centro."
         acciones={

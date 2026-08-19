@@ -106,6 +106,7 @@ export default async function PaginaUsuarios() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="usuarios"
         titulo="Usuarios"
         descripcion="Cuentas de acceso al sistema y el perfil de permisos asignado a cada una."
         acciones={

@@ -81,6 +81,7 @@ export default async function PaginaVentas({
   return (
     <>
       <EncabezadoPagina
+        ayuda="ventas"
         titulo="Ventas"
         descripcion="Prestaciones y productos facturados a los pacientes."
         acciones={puede(sesion, 'ventas', 'crear') && <EnlaceBoton href="/ventas/nueva">Nueva venta</EnlaceBoton>}

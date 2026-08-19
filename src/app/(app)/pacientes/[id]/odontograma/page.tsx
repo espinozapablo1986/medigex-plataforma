@@ -86,6 +86,7 @@ export default async function PaginaOdontograma({
       />
 
       <EncabezadoPagina
+        ayuda="odontograma"
         titulo="Odontograma"
         descripcion="Registro de lo encontrado y lo realizado en cada pieza y cara."
         acciones={

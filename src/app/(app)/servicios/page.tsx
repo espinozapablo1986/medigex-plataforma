@@ -59,6 +59,7 @@ export default async function PaginaServicios({
   return (
     <>
       <EncabezadoPagina
+        ayuda="servicios"
         titulo="Servicios"
         descripcion="Catálogo de prestaciones con precio, duración y requisitos de box."
         acciones={

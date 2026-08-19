@@ -79,6 +79,7 @@ export default async function PaginaLiquidaciones({
   return (
     <>
       <EncabezadoPagina
+        ayuda="liquidaciones"
         titulo="Liquidaciones de profesionales"
         descripcion="Honorarios calculados por porcentaje o monto fijo por prestación, menos el arriendo de box."
         acciones={

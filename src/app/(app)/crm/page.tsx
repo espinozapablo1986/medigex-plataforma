@@ -102,6 +102,7 @@ export default async function PaginaCrm({
   return (
     <>
       <EncabezadoPagina
+        ayuda="crm"
         titulo="CRM y seguimiento"
         descripcion="Interesados, tareas de contacto y listas de pacientes que conviene recuperar."
         acciones={

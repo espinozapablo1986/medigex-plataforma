@@ -86,6 +86,7 @@ export default async function PaginaBoxes() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="boxes"
         titulo="Boxes y salas"
         descripcion="Dependencias del centro. La agenda valida que el box esté libre antes de confirmar una hora."
         acciones={

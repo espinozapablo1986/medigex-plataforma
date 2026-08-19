@@ -11,11 +11,18 @@ export function EncabezadoPagina({
   descripcion,
   acciones,
   volver,
+  ayuda,
 }: {
   titulo: string;
   descripcion?: string;
   acciones?: ReactNode;
   volver?: { href: string; texto: string };
+  /**
+   * Slug de la guía del módulo. Pone un «?» junto al título que lleva al
+   * paso a paso, que es donde alguien se pregunta cómo se usa esto: mandarlo
+   * a buscar en un menú de ayuda aparte es perderlo.
+   */
+  ayuda?: string;
 }) {
   return (
     <div className="mb-6">
@@ -26,7 +33,19 @@ export function EncabezadoPagina({
       )}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-h1 text-brand-900">{titulo}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-display text-h1 text-brand-900">{titulo}</h1>
+            {ayuda && (
+              <Link
+                href={`/ayuda/${ayuda}`}
+                title={`Cómo se usa ${titulo}`}
+                aria-label={`Cómo se usa ${titulo}`}
+                className="flex h-6 w-6 items-center justify-center rounded-full border border-tinta-300 text-xs font-semibold text-tinta-500 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-600"
+              >
+                ?
+              </Link>
+            )}
+          </div>
           {descripcion && <p className="mt-1 text-sm text-tinta-500">{descripcion}</p>}
         </div>
         {acciones && <div className="flex flex-wrap items-center gap-2">{acciones}</div>}

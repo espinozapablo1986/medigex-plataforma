@@ -71,6 +71,7 @@ export default async function PaginaProveedores() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="proveedores"
         titulo="Proveedores"
         descripcion="Proveedores de insumos y servicios, usados en compras y gastos."
         acciones={

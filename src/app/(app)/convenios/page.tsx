@@ -145,6 +145,7 @@ export default async function PaginaConvenios() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="convenios"
         titulo="Convenios"
         descripcion="Isapres, seguros complementarios y empresas con tarifas y cobertura negociadas."
         acciones={

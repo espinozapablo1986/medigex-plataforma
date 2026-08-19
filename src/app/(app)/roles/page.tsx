@@ -32,6 +32,7 @@ export default async function PaginaRoles() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="roles"
         titulo="Roles y permisos"
         descripcion="Define qué puede ver y hacer cada perfil de usuario en cada módulo del sistema."
         acciones={

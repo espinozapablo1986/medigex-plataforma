@@ -151,6 +151,7 @@ export default async function Dashboard({
   return (
     <>
       <EncabezadoPagina
+        ayuda="dashboard"
         titulo={`Hola, ${sesion.nombres}`}
         descripcion={`${MESES[mes]} ${anio} · ${sesion.rolNombre}`}
         acciones={

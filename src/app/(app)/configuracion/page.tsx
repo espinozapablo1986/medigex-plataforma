@@ -211,6 +211,7 @@ export default async function PaginaConfiguracion() {
   return (
     <>
       <EncabezadoPagina
+        ayuda="configuracion"
         titulo="Configuración"
         descripcion="Datos del centro, parámetros tributarios, horarios, previsiones y formas de pago."
       />

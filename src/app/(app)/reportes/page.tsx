@@ -169,6 +169,7 @@ export default async function PaginaReportes({
   return (
     <>
       <EncabezadoPagina
+        ayuda="reportes"
         titulo="Reportes"
         descripcion={`Período del ${fechaCorta(fechaDesde)} al ${fechaCorta(fechaHasta)}`}
       />

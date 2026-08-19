@@ -69,6 +69,7 @@ export default async function PaginaPeriodontogramas({ params }: { params: Promi
       />
 
       <EncabezadoPagina
+        ayuda="periodontograma"
         titulo="Periodontograma"
         descripcion="Exámenes periodontales del paciente. Cada uno queda con su fecha para poder comparar la evolución."
         acciones={

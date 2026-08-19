@@ -174,6 +174,7 @@ export default async function PaginaInventario({
   return (
     <>
       <EncabezadoPagina
+        ayuda="inventario"
         titulo="Inventario"
         descripcion="Consumibles e insumos clínicos, con control de stock y movimientos."
         acciones={

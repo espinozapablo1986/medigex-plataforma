@@ -80,6 +80,7 @@ export default async function PaginaPresupuestos({
   return (
     <>
       <EncabezadoPagina
+        ayuda="presupuestos"
         titulo="Presupuestos"
         descripcion="Propuestas de tratamiento con servicios e insumos para cada paciente."
         acciones={

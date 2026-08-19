@@ -77,6 +77,7 @@ export default async function PaginaPacientes({
   return (
     <>
       <EncabezadoPagina
+        ayuda="pacientes"
         titulo="Pacientes"
         descripcion="Fichas de pacientes. Al ingresar uno nuevo se crea su ficha clínica automáticamente."
         acciones={

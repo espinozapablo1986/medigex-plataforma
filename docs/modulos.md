@@ -448,6 +448,57 @@ deben exigir un despliegue:
 
 ---
 
+## Ayuda
+
+Módulo de acompañamiento al usuario. Vive en el pie del menú lateral y **no
+depende de ningún permiso**, por una razón deliberada: quien menos acceso
+tiene es justamente quien más necesita entender cómo funciona la plataforma.
+
+### Guías por módulo
+
+Cada módulo tiene su guía en `/ayuda/[slug]`, con cuatro partes:
+
+1. **Paso a paso** numerado, en el orden real de trabajo. La numeración aquí
+   sí es información: el orden importa.
+2. **Conviene saber** — lo que no es obvio y ahorra un error.
+3. **Si algo no sale** — los problemas frecuentes con su causa y solución.
+4. **Seguir por aquí** — enlaces a las guías relacionadas.
+
+El índice se **filtra por permisos**: sólo se ofrecen guías de módulos que la
+persona puede abrir, porque enseñar a usar algo inaccesible sólo frustra. Si
+alguien llega por enlace directo a una guía sin acceso, la lee igual pero con
+un aviso de que le falta el permiso.
+
+El **buscador** funciona sobre títulos, resúmenes, sinónimos y el texto de los
+pasos, ignorando tildes y aceptando varias palabras en cualquier orden: buscar
+«marcar caries» lleva al odontograma.
+
+### Ayuda contextual
+
+Junto al título de cada módulo hay un **«?»** que abre su guía. Es donde de
+verdad surge la duda; mandar a la persona a buscar en un menú aparte es
+perderla.
+
+### Puesta en marcha
+
+En el índice, y sólo para administradores, aparece una lista de puesta en
+marcha que **comprueba el estado real de la base de datos**, no una lista
+fija: si hay profesionales, servicios, boxes, formas de pago, datos de la
+clínica y condiciones dentales enlazadas. Cada punto pendiente enlaza a donde
+se resuelve, y la lista completa desaparece sola cuando ya no queda nada.
+
+Resuelve el problema de que una instalación limpia arranca vacía y sin rumbo:
+se entra a la agenda, no ofrece ninguna hora y no se sabe por qué.
+
+### Cómo se amplía
+
+El contenido son **datos, no páginas**: viven en `src/lib/ayuda.ts` como una
+lista tipada. El `slug` de cada guía coincide con el del módulo en
+`permissions.ts`, y eso es lo que permite filtrar por permisos y enlazar desde
+el encabezado sin duplicar texto. Al agregar un módulo, se agrega su guía ahí.
+
+---
+
 ## Auditoría
 
 Toda operación de escritura queda registrada en `registro_auditoria` con

@@ -236,6 +236,7 @@ export default async function PaginaGastos({
   return (
     <>
       <EncabezadoPagina
+        ayuda="gastos"
         titulo="Gastos y compras"
         descripcion="Egresos del centro, con su documento tributario y el IVA crédito asociado."
         acciones={

@@ -17,6 +17,7 @@ Ambiente de desarrollo: <https://medic.asdf123.cl>
 | **Operaciones** | Inventario de insumos · Gastos y compras · Liquidaciones a profesionales · Reportes |
 | **Maestros** | Profesionales · Servicios · Boxes y salas · Proveedores |
 | **Administración** | Dashboard con IVA · Usuarios · Roles y permisos configurables · Vista previa como otro usuario · Configuración |
+| **Acompañamiento** | Ayuda con guías paso a paso por módulo · Puesta en marcha guiada |
 
 ## Stack
 

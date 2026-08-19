@@ -13,6 +13,30 @@ documentación en vez de añadir una nota suelta.
 
 ---
 
+## 19 de agosto de 2026
+
+### Módulo de Ayuda con guías paso a paso — `a5698ac`
+
+La plataforma ya no llega sin instrucciones. Se agrega un módulo de **Ayuda**
+en el pie del menú lateral, sin permiso que lo restrinja, con:
+
+- **24 guías**, una por módulo, con paso a paso numerado, lo que conviene
+  saber, los problemas frecuentes con su solución, y enlaces a lo relacionado.
+- **Buscador** por título, sinónimos y contenido de los pasos, ignorando
+  tildes: «marcar caries» lleva al odontograma.
+- **Ayuda contextual**: un «?» junto al título de cada módulo abre su guía,
+  que es donde de verdad surge la duda.
+- **Lista de puesta en marcha** para administradores, que comprueba el estado
+  real de la instalación —profesionales, servicios, boxes, formas de pago,
+  datos de la clínica, condiciones dentales enlazadas— y desaparece sola al
+  completarse.
+
+El índice sólo ofrece guías de módulos que la persona puede abrir.
+
+→ `docs/modulos.md`, sección «Ayuda»
+
+---
+
 ## 17 de agosto de 2026
 
 ### Vista previa como otro usuario — `5c91b58`
