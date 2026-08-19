@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Conteos de inventario y carga masiva desde Excel — `PENDIENTE`
+### Conteos de inventario y carga masiva desde Excel — `b67b9b0`
 
 **Conteos físicos.** Se abre un recuento —de todo, o acotado a una categoría o
 ubicación—, se cuenta en pantalla o en una planilla descargable, y al cerrarlo
