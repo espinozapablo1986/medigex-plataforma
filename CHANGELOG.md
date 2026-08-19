@@ -15,7 +15,7 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
-### Batería de pruebas, y dos defectos que sacó a la luz — `PENDIENTE`
+### Batería de pruebas, y dos defectos que sacó a la luz — `7e85f46`
 
 Se agregan pruebas automatizadas de la lógica pura (`npm run probar`, 90
 comprobaciones) y se enchufan al despliegue: si fallan, no se despliega. Es la
