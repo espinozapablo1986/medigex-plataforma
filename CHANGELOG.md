@@ -15,6 +15,22 @@ documentación en vez de añadir una nota suelta.
 
 ## 19 de agosto de 2026
 
+### Las condiciones dentales quedan enlazadas a su servicio — `PENDIENTE`
+
+El odontograma podía registrar procedimientos pero no presupuestarlos: ninguna
+condición estaba enlazada a un servicio del tarifario. La causa era que el
+bucle que hace ese enlace vivía **después** del `return` de la semilla base, de
+modo que una instalación real (`SEED_DEMO=0`) nunca lo ejecutaba.
+
+Ahora el enlace forma parte de la semilla base, es idempotente y **sólo
+rellena lo que está vacío**: si un administrador eligió otro servicio desde
+Configuración, esa decisión manda.
+
+Quedan enlazadas Obturación, Destartraje, Extracción y Endodoncia. Sellante,
+Corona, Implante y Prótesis siguen sin enlazar porque **no existe el servicio
+correspondiente en el tarifario**; se enlazan solas en cuanto se cree, o a mano
+desde Configuración → Condiciones dentales.
+
 ### Batería de pruebas, y dos defectos que sacó a la luz — `7e85f46`
 
 Se agregan pruebas automatizadas de la lógica pura (`npm run probar`, 90

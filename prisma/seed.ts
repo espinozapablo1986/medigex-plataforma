@@ -21,6 +21,45 @@ const PASSWORD_ADMIN = process.env.SEED_ADMIN_PASSWORD || 'Medigex2026!';
 const EMAIL_ADMIN = process.env.SEED_ADMIN_EMAIL || 'admin@medigex.cl';
 const CON_DEMO = process.env.SEED_DEMO !== '0';
 
+/**
+ * Asocia cada condición dental con el servicio que se cobra por ella.
+ *
+ * Es idempotente y respeta al administrador: sólo escribe donde todavía no hay
+ * nada. Un servicio que aún no existe simplemente se salta, y el enlace se
+ * hará la próxima vez que se siembre, cuando ya esté en el tarifario.
+ */
+async function enlazarCondicionesConServicios(
+  condiciones: { codigo: string; servicio: string | null }[],
+) {
+  let enlazadas = 0;
+  let pendientes = 0;
+
+  for (const { codigo, servicio } of condiciones) {
+    if (!servicio) continue;
+
+    const condicion = await prisma.condicionDental.findUnique({
+      where: { codigo },
+      select: { id: true, servicioId: true },
+    });
+    if (!condicion) continue;
+    if (condicion.servicioId) continue; // ya enlazada, a mano o antes
+
+    const asociado = await prisma.servicio.findUnique({ where: { codigo: servicio } });
+    if (!asociado) {
+      pendientes++;
+      continue;
+    }
+
+    await prisma.condicionDental.update({ where: { codigo }, data: { servicioId: asociado.id } });
+    enlazadas++;
+  }
+
+  if (enlazadas > 0) log(`${enlazadas} condiciones dentales enlazadas a su servicio.`);
+  if (pendientes > 0) {
+    log(`${pendientes} condiciones esperan un servicio que aún no está en el tarifario.`);
+  }
+}
+
 function log(mensaje: string) {
   console.log(`  ${mensaje}`);
 }
@@ -189,6 +228,18 @@ async function main() {
   }
   log(`${condiciones.length} condiciones dentales.`);
 
+  // Enlaza cada procedimiento con el servicio que se le cobra al paciente, que
+  // es lo que permite generar un presupuesto desde el odontograma.
+  //
+  // Va aquí y no en la sección de demostración: antes vivía después del
+  // `return` de la semilla base, así que una instalación real se quedaba con
+  // el catálogo dental sin enlazar y el botón «Armar presupuesto» sin nada que
+  // presupuestar.
+  //
+  // Sólo rellena lo que está vacío. Si un administrador eligió otro servicio
+  // desde Configuración, esa decisión manda y la semilla no la pisa.
+  await enlazarCondicionesConServicios(condiciones);
+
   if (!CON_DEMO) {
     console.log('\n✅ Semilla base lista (sin datos de demostración).\n');
     return;
@@ -258,17 +309,9 @@ async function main() {
   }
   log(`${servicios.length} servicios en el catálogo.`);
 
-  // Ahora que existen los servicios, se vinculan a las condiciones que
-  // corresponde cobrar, para poder presupuestar desde el odontograma.
-  let vinculadas = 0;
-  for (const { codigo, servicio } of condiciones) {
-    if (!servicio) continue;
-    const asociado = await prisma.servicio.findUnique({ where: { codigo: servicio } });
-    if (!asociado) continue;
-    await prisma.condicionDental.update({ where: { codigo }, data: { servicioId: asociado.id } });
-    vinculadas++;
-  }
-  log(`${vinculadas} condiciones vinculadas a un servicio.`);
+  // Los servicios acaban de crearse, así que se reintenta el enlace: en una
+  // base recién sembrada, cuando corrió la semilla base todavía no existían.
+  await enlazarCondicionesConServicios(condiciones);
 
   // ── Proveedores ──────────────────────────────────────────────
   const proveedores = [

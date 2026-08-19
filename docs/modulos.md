@@ -191,9 +191,14 @@ Cada condición puede enlazarse con un **servicio del tarifario**. Cuando lo
 está, lo marcado como pendiente se convierte en presupuesto con un botón:
 el sistema arma las líneas con la pieza dental anotada en cada una.
 
-> Si un procedimiento aparece como «sin servicio asociado», es que falta
-> enlazarlo en **Configuración → Condiciones dentales**. Hasta entonces se
-> registra igual en la ficha, pero no se puede presupuestar.
+La semilla enlaza sola los procedimientos cuyo servicio existe en el
+tarifario, y **respeta lo que el administrador haya elegido a mano**: sólo
+rellena lo que está vacío.
+
+> Si un procedimiento aparece como «sin servicio asociado», es que ese servicio
+> todavía no está en el tarifario. Se registra igual en la ficha, pero no se
+> puede presupuestar. Se resuelve creando el servicio —y entonces el enlace se
+> hace solo— o eligiéndolo a mano en **Configuración → Condiciones dentales**.
 
 Los registros no se borran al corregirlos: se **anulan**, y el historial
 completo queda debajo del esquema con fecha, profesional y observaciones.
